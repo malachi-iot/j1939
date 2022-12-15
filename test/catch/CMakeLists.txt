@@ -11,7 +11,7 @@ set(ROOT_DIR ../..)
 set(EXT_DIR ${ROOT_DIR}/ext)
 set(SRC_DIR ${ROOT_DIR}/src)
 
-add_subdirectory(${EXT_DIR}/embr/ext/Catch2 catch2)
+add_subdirectory(${EXT_DIR}/embr/ext/estdlib/ext/Catch2 catch2)
 add_subdirectory(${SRC_DIR}/can can)
 add_subdirectory(${SRC_DIR}/j1939 j1939)
 
