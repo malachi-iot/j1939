@@ -1,5 +1,3 @@
-#include <catch.hpp>
-
 #include <map>
 
 

@@ -10,12 +10,8 @@ add_definitions(-DUNIT_TESTING)
 set(ROOT_DIR ../..)
 set(EXT_DIR ${ROOT_DIR}/ext)
 set(SRC_DIR ${ROOT_DIR}/src)
-set(CATCH_DIR ${EXT_DIR}/embr/ext/Catch2/single_include/catch2)
 
-include_directories(${CATCH_DIR})
-
-add_subdirectory(${EXT_DIR}/embr/src embr)
-
+add_subdirectory(${EXT_DIR}/embr/ext/Catch2 catch2)
 add_subdirectory(${SRC_DIR}/can can)
 add_subdirectory(${SRC_DIR}/j1939 j1939)
 
@@ -38,5 +34,6 @@ set(SOURCE_FILES
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
 target_link_libraries(${PROJECT_NAME}
+    Catch2
     malachi-iot::embr malachi-iot::estd
     can j1939)

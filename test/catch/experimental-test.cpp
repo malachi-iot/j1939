@@ -1,5 +1,3 @@
-#include <catch.hpp>
-
 #include <j1939/units/distance.h>
 #include <j1939/units/time.h>
 

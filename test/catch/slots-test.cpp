@@ -1,5 +1,3 @@
-#include <catch.hpp>
-
 #include <j1939/slots.hpp>
 
 #include "test-data.h"

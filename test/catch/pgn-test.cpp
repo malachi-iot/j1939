@@ -1,5 +1,3 @@
-#include <catch.hpp>
-
 #include <j1939/data_field/all.hpp>
 
 

@@ -4,8 +4,6 @@
  * 1. J1939-81 (MAY2003)
  * 2. J1939 (OCT2007)
  */
-#include <catch.hpp>
-
 //#include <j1939/bits.hpp>
 
 #include <j1939/NAME/name.h>

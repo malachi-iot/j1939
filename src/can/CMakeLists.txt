@@ -14,7 +14,7 @@ include(tools/cmake/sources.cmake)
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(${PROJECT_NAME} INTERFACE .)
 
-target_link_libraries(${PROJECT_NAME} INTERFACE estd_lib malachi-iot::embr)
+target_link_libraries(${PROJECT_NAME} INTERFACE estd malachi-iot::embr)
 
 # It seems only properties prefixed with INTERFACE_ are permitted
 # (https://stackoverflow.com/questions/68502038/custom-properties-for-interface-libraries)

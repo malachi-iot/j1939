@@ -1,4 +1,4 @@
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 #include <j1939/spn.h>
 #include <j1939/spn/traits.h>

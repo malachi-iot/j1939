@@ -1,5 +1,3 @@
-#include <catch.hpp>
-
 #include <embr/bits/bits.hpp>
 
 #include "test-data.h"

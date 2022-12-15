@@ -1,5 +1,3 @@
-#include <catch.hpp>
-
 #include <embr/scheduler.hpp>
 
 #include <can/loopback.h>

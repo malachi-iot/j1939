@@ -9,6 +9,8 @@
  */
 #pragma once
 
+#include <catch2/catch.hpp>
+
 #include <estd/cstdint.h>
 
 #include <j1939/pdu.h>
