@@ -1,0 +1,13 @@
+# References
+
+1. J1939 (2007)
+2. https://www.isobus.net/isobus/pGNAndSPN
+3. J1939-21 (DEC2006)
+4. J1939-71
+    1. J1939-71 (DEC2003)
+    2. J1939-71 (MAR2011)
+5. J1939-73 (FEB1996)
+6. J1939-81 (draft MAY2003)
+7. RESERVED
+8. RESERVED
+9. RESERVED
