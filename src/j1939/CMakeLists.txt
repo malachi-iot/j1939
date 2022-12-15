@@ -4,17 +4,19 @@
 
 cmake_minimum_required(VERSION 3.6)
 
-project(j1939)
+project(j1939 VERSION 0.1.0 LANGUAGES CXX)
 
 include(../lib.cmake)
 
 include(tools/cmake/sources.cmake)
 
 if (NOT TARGET can)
-    add_subdirectory(${LIB_DIR}/can can)
+    add_subdirectory(../can can)
 endif()
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
+add_library(embr::j1939 ALIAS ${PROJECT_NAME})
+add_library(malachi-iot::embr::j1939 ALIAS ${PROJECT_NAME})
 
 target_include_directories(${PROJECT_NAME} PUBLIC .)
 

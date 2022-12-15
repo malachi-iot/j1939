@@ -12,6 +12,8 @@ include(tools/cmake/sources.cmake)
 # "INTERFACE library can only be used with the INTERFACE keyword of
 #  target_link_libraries"
 add_library(${PROJECT_NAME} INTERFACE)
+add_library(embr::can ALIAS ${PROJECT_NAME})
+
 target_include_directories(${PROJECT_NAME} INTERFACE .)
 
 target_link_libraries(${PROJECT_NAME} INTERFACE estd malachi-iot::embr)
