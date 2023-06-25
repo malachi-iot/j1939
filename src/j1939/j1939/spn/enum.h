@@ -69,10 +69,15 @@ enum class spns
     month = 963,                                    // [13] DEBT: Change name so plural is consistent
     year = 964,                                     // [13] DEBT: Change name so plural is consistent
     number_of_software_identification_fields = 965, // [11]
-    estimated_percent_fan_speed = 975,              // [6]
-    fan_drive_state = 977,                          // [6]
+    estimated_percent_fan_speed = 975,              // [7]
+    fan_drive_state = 977,                          // [7]
+    ac_high_pressure_fan_switch = 985,              // [7]
     requested_percent_fan_speed = 986,              // [13]
     trip_group_1 = 988,                             // [13]
+    trip_fan_on_time = 994,                         // [7]
+    trip_fan_on_time_due_to_engine = 995,           // [7]
+    trip_fan_on_time_due_to_manual_switch = 996,    // [7]
+    trip_fan_on_time_due_to_ac = 997,               // [7]
     engine_intercooler_thermostat_opening = 1134,
     anti_theft_encryption_seed_present_indicator = 1194, // [13]
     anti_theft_password_valid_indicator = 1195,     // [13]
@@ -99,7 +104,7 @@ enum class spns
     adjust_local_hour_offset = 1609,                // [13]
     driver1_identification = 1625,                  // [11] ASCII
     driver2_identification = 1626,                  // [11] ASCII
-    fan_speed = 1639,                               // [6]
+    fan_speed = 1639,                               // [7]
     engine_automatic_start_enable_switch = 1656,    // [13]
     engine_starter_mode = 1675,                     // [5]
     auxiliary_heater_mode = 1677,                   // [13]
@@ -107,6 +112,7 @@ enum class spns
     auxiliary_heater_mode_request = 1683,           // [13]
     request_cab_zone_heating = 1686,                // [13]
     cab_interior_temperature_command = 1691,        // [13]
+    operator_seat_direction_switch = 1714,          // [7]
     alternator_current_highres = 1795,              // [7]
     battery1_temperature = 1800,                    // [7]
     battery2_temperature = 1801,                    // [7]

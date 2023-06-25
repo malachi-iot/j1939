@@ -74,6 +74,7 @@ enum class pgns : uint32_t
     vehicle_electrical_power_2 = 65165,         // [11]
     trip_fan_information = 65211,               // [12]
     fan_drive_1 = 65213,                        // [17]
+    shutdown = 65252,                           // [13]
     time_date = 65254,                          // [13]
     vehicle_hours = 65255,                      // [13]
     vehicle_direction_speed = 65256,            // [13]
