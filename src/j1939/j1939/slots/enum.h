@@ -18,10 +18,14 @@ enum class slots
     SAEad01 = 7,
     SAEds03 = 13,
     SAEds04 = 14,
+    SAEpc01 = 30,
     SAEr02 = 31,
     SAEr01 = 32,
     SAEsa01 = 35,           ///< Source Address
     SAEec02 = 40,
+    SAEpc03 = 44,           ///< Percent
+    SAEpc05 = 45,
+    SAEpc06 = 46,
     SAEpw03 = 55,
     SAEcd01 = 60,
     SAEtm08 = 61,
@@ -36,9 +40,11 @@ enum class slots
     SAEec01 = 104,
     SAEpw02 = 107,
     SAEpg00 = 116,          ///< PGN
+    SAEpc04 = 128,
     SAEds02 = 142,
     SAEpw01 = 147,
     SAEnm01 = 159,          ///< NAME
+    SAEpc02 = 205,          ///< Percent
     SAEtm13 = 206,
     SAESP00 = 214,
     SAEtm14 = 224,
