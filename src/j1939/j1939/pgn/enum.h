@@ -25,6 +25,9 @@
 
 #include <estd/cstdint.h>
 
+// DEBT: Resolve naming convention discrepancy for things like "cab_message1" vs
+// "cab_message_3"
+
 namespace embr { namespace j1939 {
 
 // Group extension (pdu2) flavor only
@@ -64,6 +67,8 @@ enum class pgns : uint32_t
     evoi1 = 64617,                              ///<  EV Operator Indicators 1 [8]
     armswimc =  64745,                          ///<  Armrest Switch Matrix Commands [8]
     aiso = 64770,                               ///<  All implements stop operations switch state [8]
+    wireless_communications_message_2 = 64936,  // [13]
+    wireless_communications_message_1 = 64937,  // [13]
     signal_preemption = 64957,                  // [13]
     oel = 64972,                                ///<  Operator External Light Controls Message [8]
     cab_message_3 = 64980,                      // [8]

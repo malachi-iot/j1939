@@ -68,6 +68,12 @@ bool process_incoming(internal::app_state<TTransport, TImpl, TContext> state, co
 
     switch(pgn)
     {
+        case pgns::cab_message1:
+            return state.template invoker<pgns::cab_message1>(id, payload);
+
+        case pgns::cab_message_3:
+            return state.template invoker<pgns::cab_message_3>(id, payload);
+
         case pgns::NAME_management_message:
             return state.template invoker<pgns::NAME_management_message>(id, payload);
 
@@ -115,6 +121,9 @@ bool process_incoming(internal::app_state<TTransport, TImpl, TContext> state, co
 
         case pgns::time_date:
             return state.template invoker<pgns::time_date>(id, payload);
+
+        case pgns::shutdown:
+            return state.template invoker<pgns::shutdown>(id, payload);
 
         default:
             // NOTE: Would use the same 'process_incoming' name, but inheritance member hiding

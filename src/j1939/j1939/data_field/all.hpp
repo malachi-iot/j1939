@@ -3,6 +3,8 @@
 #include <embr/platform/guard-in.h>
 
 #include "ccvs.hpp"
+#include "cm1.hpp"
+#include "cm3.hpp"
 #include "ecuid.hpp"
 #include "eec1.hpp"
 #include "lighting_command.hpp"
