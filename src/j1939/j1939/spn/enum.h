@@ -69,6 +69,8 @@ enum class spns
     month = 963,                                    // [13] DEBT: Change name so plural is consistent
     year = 964,                                     // [13] DEBT: Change name so plural is consistent
     number_of_software_identification_fields = 965, // [11]
+    estimated_percent_fan_speed = 975,              // [6]
+    fan_drive_state = 977,                          // [6]
     requested_percent_fan_speed = 986,              // [13]
     trip_group_1 = 988,                             // [13]
     engine_intercooler_thermostat_opening = 1134,
@@ -97,6 +99,7 @@ enum class spns
     adjust_local_hour_offset = 1609,                // [13]
     driver1_identification = 1625,                  // [11] ASCII
     driver2_identification = 1626,                  // [11] ASCII
+    fan_speed = 1639,                               // [6]
     engine_automatic_start_enable_switch = 1656,    // [13]
     engine_starter_mode = 1675,                     // [5]
     auxiliary_heater_mode = 1677,                   // [13]
