@@ -84,6 +84,10 @@ protected:
     {
         typedef estd::ratio_divide<Period2, Period> rd;
 
+        // DEBT: Would like to do a static_cast to Rep, but experimenting with that
+        // this causes rounding issues.  In the short term, this precludes things like
+        // 'Rep' being a double
+
         return s.count() * rd::num / rd::den;
     }
 

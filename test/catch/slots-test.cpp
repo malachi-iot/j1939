@@ -24,6 +24,45 @@ TEST_CASE("slots")
 
         REQUIRE(a.count() == -125);
     }
+    SECTION("SAEpc03")
+    {
+        slot_type<slots::SAEpc03> percent1{0}, percent2{5};
+        embr::units::percent<int> p{0};
+
+        p = percent1;
+
+        REQUIRE(p.count() == 0);
+
+        p = percent2;
+
+        REQUIRE(p.count() == 2);
+    }
+    SECTION("SAEpc04")
+    {
+        slot_type<slots::SAEpc04> percent1{0};
+        embr::units::percent<int> p{percent1};
+
+        REQUIRE(p.count() == -100);
+    }
+    SECTION("SAEpc07")
+    {
+        slot_type<slots::SAEpc07> percent1{0};
+        embr::units::percent<int> p{percent1};
+
+        REQUIRE(p.count() == -100);
+    }
+    SECTION("SAEpc07")
+    {
+        slot_type<slots::SAEpc08> percent1{0};
+        embr::units::percent<int> p{percent1};
+
+        REQUIRE(p.count() == -251);
+
+        percent1 = 64250;
+        p = percent1;
+
+        REQUIRE(p.count() == 250);
+    }
     SECTION("SAEtm12")
     {
         slot_type<slots::SAEtm12> time1{0};
