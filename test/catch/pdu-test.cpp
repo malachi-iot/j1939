@@ -53,6 +53,8 @@ TEST_CASE("pdu")
         // TODO: Consider a mechanism which deduces which setter to use based solely on the unique
         // enum.  Would have limited use, but still useful in general
         p.turn_signal_switch(enum_type<spns::turn_signal_switch>::left_turn_to_be_flashing);
+
+        p.operators_desired_delay_lamp_off_time();
     }
     SECTION("time_date")
     {
