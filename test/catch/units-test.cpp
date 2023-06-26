@@ -52,6 +52,10 @@ TEST_CASE("units")
         percent<uint16_t, estd::ratio<1, 10> > percent1{974};
 
         REQUIRE(percent<uint8_t>(percent1).count() == 97);
+
+        auto percent2 = 50_pct;
+
+        REQUIRE(percent2.count() == 50);
     }
     SECTION("conversions")
     {

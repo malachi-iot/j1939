@@ -9,14 +9,19 @@ namespace spn {
 
 template <>
 struct type_traits<spns::estimated_percent_fan_speed> :
-    //internal::measured_type_traits {};
     internal::slot_type_traits<slots::SAEpc03> {};
 
 
 template<>
 constexpr descriptor get_descriptor<spns::estimated_percent_fan_speed>()
 {
-    return descriptor{ 1, 1, 1 };
+    return { 1, 1, 8 };
+}
+
+template<>
+constexpr descriptor get_descriptor<spns::fan_drive_state>()
+{
+    return { 2, 1, 4 };
 }
 
 }

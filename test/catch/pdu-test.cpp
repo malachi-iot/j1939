@@ -28,7 +28,14 @@ TEST_CASE("pdu")
     }
     SECTION("cm1")
     {
+        pdu<pgns::cab_message1> p;
+        embr::units::percent<int> percent{50};
 
+        p.requested_percent_fan_speed(percent);
+
+        auto v = p.requested_percent_fan_speed();
+
+        REQUIRE(v.count() == 125);
     }
     SECTION("fd")
     {
@@ -37,10 +44,9 @@ TEST_CASE("pdu")
 
         p.estimated_percent_fan_speed(percent);
 
-        // FIX: Doesn't work yet
-        //auto v = p.estimated_percent_fan_speed();
+        auto v = p.estimated_percent_fan_speed();
 
-        //REQUIRE(v.count() == 127);
+        REQUIRE(v.count() == 125);
     }
     SECTION("oel")
     {

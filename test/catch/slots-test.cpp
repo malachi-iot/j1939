@@ -36,6 +36,15 @@ TEST_CASE("slots")
         p = percent2;
 
         REQUIRE(p.count() == 2);
+
+        p = 50;
+
+        percent1 = p;
+
+        // DEBT: Make assignment overloads to more tightly control
+        // raw int assignment vs converting assignment
+
+        REQUIRE((int)percent1.count() == 125);
     }
     SECTION("SAEpc04")
     {

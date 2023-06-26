@@ -1,16 +1,31 @@
 #pragma once
 
 #include "base.hpp"
+#include "../slots/percent.hpp"
 
 namespace embr { namespace j1939 {
 
 namespace spn {
 
 template <>
-struct type_traits<spns::requested_percent_fan_speed> : internal::measured_type_traits {};
+struct type_traits<spns::requested_percent_fan_speed> :
+    internal::slot_type_traits<slots::SAEpc03> {};
 
 template <>
-struct type_traits<spns::cab_interior_temperature_command> : internal::measured_type_traits {};
+struct type_traits<spns::cab_interior_temperature_command> :
+    internal::measured_type_traits {};
+
+template<>
+constexpr descriptor get_descriptor<spns::requested_percent_fan_speed>()
+{
+    return { 1, 1, 8 };
+}
+
+template<>
+constexpr descriptor get_descriptor<spns::cab_interior_temperature_command>()
+{
+    return { 2, 1, 16 };
+}
 
 }
 
@@ -23,7 +38,9 @@ struct data_field<pgns::cab_message1, TContainer> :
 
     data_field() = default;
 
-    data_field(const uint8_t* copy_from) : base_type(copy_from) {}
+    constexpr data_field(const uint8_t* copy_from) : base_type(copy_from) {}
+
+    EMBR_J1939_PROPERTY(requested_percent_fan_speed);
 };
 
 
