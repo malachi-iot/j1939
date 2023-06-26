@@ -34,3 +34,8 @@
 # CLion, CMake
 build/
 cmake-*/
+
+# Qt Creator
+build-*/
+*.user
+

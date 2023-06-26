@@ -17,7 +17,7 @@ struct aggregated_transport
         decltype(estd::get<0>(transports))>::frame frame;
 
     template <size_t idx, estd::enable_if_t<idx == 0, bool> = true>
-    constexpr bool _send(const frame& f) { return true; }
+    static constexpr bool _send(const frame& f) { return true; }
 
     template <size_t idx, estd::enable_if_t<(idx > 0), bool> = true>
     bool _send(const frame& f)
@@ -27,7 +27,7 @@ struct aggregated_transport
     }
 
     template <size_t idx, estd::enable_if_t<idx == 0, bool> = true>
-    constexpr bool _receive(frame* f, int* i) { return false; }
+    static constexpr bool _receive(frame* f, int* i) { return false; }
 
     template <size_t idx, estd::enable_if_t<(idx > 0), bool> = true>
     bool _receive(frame* f, int* i)

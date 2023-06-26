@@ -22,7 +22,7 @@ namespace layer2 {
 
 template<pgns pgn>
 using data_field = embr::j1939::data_field<pgn,
-    estd::layer2::array<uint8_t, pgn::get_descriptor<pgn>().length> >;
+    estd::legacy::layer2::array<uint8_t, pgn::get_descriptor<pgn>().length> >;
 
 }
 
