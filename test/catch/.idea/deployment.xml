@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" remoteFilesAllowedToDisappearOnAutoupload="false">
+    <serverData>
+      <paths name="RPI0 GCC [remote] (60eb2818-14cc-419d-bc16-34322751c998)">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$/../../ext/embr/ext/estdlib/ext/Catch2" web="/" />
+            <mapping local="$PROJECT_DIR$/../../ext/embr/ext/estdlib/src" web="/" />
+            <mapping local="$PROJECT_DIR$/../../ext/embr/src" web="/" />
+            <mapping local="$PROJECT_DIR$" web="/" />
+            <mapping local="$PROJECT_DIR$/../../src/can" web="/" />
+            <mapping local="$PROJECT_DIR$/../../src/j1939" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="Remote GDB Server (bb0300f7-0cc4-4d74-ac6d-8635f1029672)">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$/../../ext/embr/ext/estdlib/ext/Catch2" web="/" />
+            <mapping local="$PROJECT_DIR$/../../ext/embr/ext/estdlib/src" web="/" />
+            <mapping local="$PROJECT_DIR$/../../ext/embr/src" web="/" />
+            <mapping local="$PROJECT_DIR$" web="/" />
+            <mapping local="$PROJECT_DIR$/../../src/can" web="/" />
+            <mapping local="$PROJECT_DIR$/../../src/j1939" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+  </component>
+</project>

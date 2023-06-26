@@ -11,9 +11,15 @@ template <class Rep, class Period = estd::ratio<1>, typename F = internal::passt
 using percent = internal::unit_base<Rep, Period, internal::percent_tag, F>;
 
 // EXPERIMENTAL
-constexpr percent<int> operator ""_pct (unsigned long long int v)
+constexpr percent<unsigned> operator ""_pct (unsigned long long int v)
 {
-    return percent<int>(v);
+    return { (unsigned)v };
+}
+
+// EXPERIMENTAL
+constexpr percent<double> operator ""_pct (long double v)
+{
+    return { (double)v };
 }
 
 }}

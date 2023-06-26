@@ -56,6 +56,23 @@ TEST_CASE("units")
         auto percent2 = 50_pct;
 
         REQUIRE(percent2.count() == 50);
+
+        percent<double> percent3{50.1};
+
+        percent1 = percent3;
+
+        REQUIRE(percent1.count() == 501);
+
+        percent1 = 507;
+        percent3 = percent1;
+
+        REQUIRE(percent3.count() == 50.7);
+
+        REQUIRE(percent3 == 50.7_pct);
+        REQUIRE(percent1 == percent3);
+
+        // lhs precision is lower so dangling .7% falls away
+        REQUIRE(50_pct == percent1);
     }
     SECTION("conversions")
     {

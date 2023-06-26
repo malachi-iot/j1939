@@ -83,12 +83,12 @@ protected:
     static constexpr Rep convert_from(const unit_base<Rep2, Period2, Tag, F2>& s)
     {
         typedef estd::ratio_divide<Period2, Period> rd;
+        // find common type so that we more often have the precision we need.
+        // still doesn't fully protect us from overflows though (we'd need to go
+        // one higher precision for that)
+        using ct = estd::common_type_t<Rep, Rep2>;
 
-        // DEBT: Would like to do a static_cast to Rep, but experimenting with that
-        // this causes rounding issues.  In the short term, this precludes things like
-        // 'Rep' being a double
-
-        return s.count() * rd::num / rd::den;
+        return static_cast<ct>(s.count()) * rd::num / rd::den;
     }
 
 public:
@@ -114,6 +114,12 @@ public:
     // EXPERIMENTAL
     template <class TCompountUnit>
     using per = typename compound_unit_helper<unit_base, TCompountUnit>::type;
+
+    // DEBT: Not tested against F() adjuster
+    constexpr bool operator==(const unit_base& compare_to) const
+    {
+        return rep_ == compare_to.rep_;
+    }
 };
 
 
