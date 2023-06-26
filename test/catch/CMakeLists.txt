@@ -3,7 +3,10 @@ cmake_minimum_required(VERSION 3.0)
 project(j1939-unit-test VERSION 1.0.0)
 
 # necessary for Catch2
-set(CMAKE_CXX_STANDARD 11)
+if(NOT DEFINED CMAKE_CXX_STANDARD)
+    message(STATUS "Forcing to minimum c++11")
+    set(CMAKE_CXX_STANDARD 11)
+endif()
 
 add_definitions(-DUNIT_TESTING)
 

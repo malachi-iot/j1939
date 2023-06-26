@@ -7,7 +7,7 @@ namespace embr { namespace units {
 // Copying the playbook from chrono
 namespace internal {
 
-// DEBT: Pretty sure theres a std/estd flavor of this we can use
+// DEBT: Pretty sure there's a std/estd flavor of this we can use
 template <typename TInt, TInt add>
 struct adder
 {
@@ -20,6 +20,8 @@ struct adder
         return v + add;
     }
 };
+
+
 
 
 
@@ -69,7 +71,12 @@ struct compound_unit_helper
 /// @tparam Period scaling ratio
 /// @tparam Tag differentiating tag so as to disallow one unit from automatically converting to another
 /// @tparam F final conversion.  defaults to passhtrough (noop)
-template <typename Rep, class Period, class Tag, class F>
+template <typename Rep, class Period, class Tag,
+#if __cpp_concepts
+    Adder F>
+#else
+    class F>
+#endif
 class unit_base : public Tag        // Deriving from tag not necessary, but might be useful for is_base_of query
 {
 protected:
