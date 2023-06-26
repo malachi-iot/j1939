@@ -7,7 +7,7 @@
  */
 #pragma once
 
-//#include <estd/chrono.h>
+#include <estd/chrono.h>
 
 #include "base.hpp"
 
@@ -216,20 +216,21 @@ struct data_field<pgns::oel, TContainer> :
     internal::data_field_base<TContainer>
 {
     typedef internal::data_field_base<TContainer> base_type;
+    typedef estd::chrono::duration<uint16_t, estd::ratio<1> > seconds_type;
 
     data_field() = default;
 
     data_field(const uint8_t* copy_from) : base_type(copy_from) {}
 
-    // DEBT: Do this with alias and newly upgraded use of chrono::duration
-    void delay_off_time(uint16_t seconds)
+    // DEBT: Do this with alias
+    void delay_off_time(seconds_type seconds)
     {
-        base_type::template set<spns::operators_desired_delay_lamp_off_time>(seconds);
+        base_type::template set<spns::operators_desired_delay_lamp_off_time>(seconds.count());
     }
 
-    uint16_t delay_off_time() const
+    seconds_type delay_off_time() const
     {
-        return base_type::template get<spns::operators_desired_delay_lamp_off_time>();
+        return seconds_type(base_type::template get<spns::operators_desired_delay_lamp_off_time>());
     }
 
     EMBR_J1939_PROPERTY(operators_desired_delay_lamp_off_time);

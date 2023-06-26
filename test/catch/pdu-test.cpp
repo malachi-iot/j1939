@@ -54,7 +54,14 @@ TEST_CASE("pdu")
         // enum.  Would have limited use, but still useful in general
         p.turn_signal_switch(enum_type<spns::turn_signal_switch>::left_turn_to_be_flashing);
 
-        p.operators_desired_delay_lamp_off_time();
+        p.operators_desired_delay_lamp_off_time(10);
+        auto v = p.delay_off_time();
+
+        REQUIRE(v == estd::chrono::seconds(10));
+
+        p.delay_off_time(estd::chrono::milliseconds(20000));
+
+        REQUIRE(p.operators_desired_delay_lamp_off_time() == 20);
     }
     SECTION("time_date")
     {
