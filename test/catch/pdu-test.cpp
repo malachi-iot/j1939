@@ -2,6 +2,11 @@
 
 #include <j1939/pdu.h>
 
+#include <j1939/data_field/all.hpp>
+
+#include <j1939/data_field/cm1.hpp>
+#include <j1939/data_field/cm3.hpp>
+#include <j1939/data_field/fd.hpp>
 #include <j1939/data_field/oel.hpp>
 #include <j1939/data_field/network.hpp>
 
@@ -21,7 +26,23 @@ TEST_CASE("pdu")
             REQUIRE(id.priority() == 5);
         }
     }
-    SECTION("A")
+    SECTION("cm1")
+    {
+
+    }
+    SECTION("fd")
+    {
+        pdu<pgns::fan_drive_1> p;
+        embr::units::percent<int> percent{50};
+
+        p.estimated_percent_fan_speed(percent);
+
+        // FIX: Doesn't work yet
+        //auto v = p.estimated_percent_fan_speed();
+
+        //REQUIRE(v.count() == 127);
+    }
+    SECTION("oel")
     {
         pdu<pgns::oel> p;
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <estd/array.h>
+#include <estd/span.h>
 
 #include "../pgn/fwd.h"
 
@@ -22,7 +23,7 @@ namespace layer2 {
 
 template<pgns pgn>
 using data_field = embr::j1939::data_field<pgn,
-    estd::legacy::layer2::array<uint8_t, pgn::get_descriptor<pgn>().length> >;
+    estd::span<uint8_t, pgn::get_descriptor<pgn>().length> >;
 
 }
 

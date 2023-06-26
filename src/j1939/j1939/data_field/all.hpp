@@ -7,6 +7,7 @@
 #include "cm3.hpp"
 #include "ecuid.hpp"
 #include "eec1.hpp"
+#include "fd.hpp"
 #include "lighting_command.hpp"
 #include "lighting_data.hpp"
 #include "network.hpp"
