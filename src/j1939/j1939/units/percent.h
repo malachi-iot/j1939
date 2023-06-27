@@ -10,16 +10,19 @@ namespace internal { struct percent_tag {}; }
 template <class Rep, class Period = estd::ratio<1>, typename F = internal::passthrough<Rep> >
 using percent = internal::unit_base<Rep, Period, internal::percent_tag, F>;
 
-// EXPERIMENTAL
+inline namespace literals {
+
 constexpr percent<unsigned> operator ""_pct (unsigned long long int v)
 {
     return { (unsigned)v };
 }
 
-// EXPERIMENTAL
 constexpr percent<double> operator ""_pct (long double v)
 {
     return { (double)v };
 }
+
+}
+
 
 }}

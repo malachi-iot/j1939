@@ -99,6 +99,7 @@ protected:
     }
 
 public:
+    // DEBT: Make this guy explicit
     constexpr unit_base(const Rep& rep_) : rep_{rep_} {}
 
     template <class Rep2, class Period2, class F2>
