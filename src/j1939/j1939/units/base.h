@@ -100,7 +100,7 @@ protected:
 
 public:
     // DEBT: Make this guy explicit
-    constexpr unit_base(const Rep& rep_) : rep_{rep_} {}
+    explicit constexpr unit_base(const Rep& rep_) : rep_{rep_} {}
 
     template <class Rep2, class Period2, class F2>
     constexpr unit_base(const unit_base<Rep2, Period2, Tag, F2>& s) : rep_{convert_from(s)}

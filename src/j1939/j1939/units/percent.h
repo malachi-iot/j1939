@@ -14,12 +14,12 @@ inline namespace literals {
 
 constexpr percent<unsigned> operator ""_pct (unsigned long long int v)
 {
-    return { (unsigned)v };
+    return percent<unsigned>(v);
 }
 
 constexpr percent<double> operator ""_pct (long double v)
 {
-    return { (double)v };
+    return percent<double>(static_cast<double>(v));
 }
 
 }

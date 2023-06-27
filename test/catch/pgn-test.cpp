@@ -89,7 +89,7 @@ TEST_CASE("pgn")
         SECTION("time_date")
         {
             data_field<pgns::time_date> data;
-            embr::units::days<int> d = 10;
+            embr::units::days<int> d(10);
 
             data.seconds(3);
             data.minutes(3);

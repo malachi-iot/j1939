@@ -3,6 +3,7 @@
 #include "test-data.h"
 
 using namespace embr::j1939;
+using namespace embr::units::literals;
 
 TEST_CASE("slots")
 {
@@ -37,7 +38,7 @@ TEST_CASE("slots")
 
         REQUIRE(p.count() == 2);
 
-        p = 50;
+        p = 50_pct;
 
         percent1 = p;
 
