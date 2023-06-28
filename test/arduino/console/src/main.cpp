@@ -6,7 +6,7 @@
 
 // DEBT: Not available on AVR
 #include <vector>
-//#include <estd/expected.h>
+#include <estd/expected.h>
 
 uint32_t start_ms;
 
@@ -44,10 +44,13 @@ public:
 
     estd::expected<void, estd::errc> activate(int index)
     {
-        if(index < 0) return;
-        if(index > items.size()) return;
+        // CTAD not a full option since we're c++11 mostly
+        if(index < 0) return unexpected<errc>(errc::invalid_argument);
+        if(index > items.size()) return unexpected<errc>(errc::invalid_argument);
 
         items[index]->action();
+
+        return {};
     }
 };
 
