@@ -92,24 +92,27 @@ constexpr bool noop(TInt v, unsigned bitpos)
     return v == numeric_traits<N>::noop << (bitpos - 1);
 }
 
-template <class TInt, class TFactor = estd::ratio<1> >
+// Yields matching int_type and value_type
+template <class TInt>
 struct type_traits_base
 {
     typedef TInt int_type;
     typedef int_type value_type;
 };
 
-struct status_type_traits : internal::type_traits_base<uint8_t>
+// Overrides value_type with enum_type
+template <class TEnum, class TInt = uint8_t>
+struct enum_traits_base : type_traits_base<TInt>
 {
-    typedef control_commands enum_type;
-    typedef control_commands value_type;
+    typedef TEnum enum_type;
+    typedef TEnum value_type;
 };
 
-struct measured_type_traits : internal::type_traits_base<uint8_t>
-{
-    typedef discrete_parameters enum_type;
-    typedef discrete_parameters value_type;
-};
+// helper for status command types
+using status_type_traits = enum_traits_base<control_commands>;
+
+// helper for measured command types
+using measured_type_traits = enum_traits_base<discrete_parameters>;
 
 // TODO: Does a whole lotta nothing right now, but still makes a good placeholder
 struct ascii_type_traits

@@ -69,6 +69,7 @@ struct range_traits;
 // - value_type
 // - enum_type
 // - slot_traits (optional)
+// Frequently specializes
 template <spns spn>
 struct type_traits;
 
