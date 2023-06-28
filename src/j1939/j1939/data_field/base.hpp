@@ -113,10 +113,13 @@ struct data_field_base :
 
 }
 
+// DEBT: Accepting all inputs for name temporarily as we reduce overall
+// unit_type implicit behaviors
 #define EMBR_J1939_PROPERTY(name)   \
-void name(unit_type<spns::name> v)  \
+template <class T>                  \
+void name(T v)                      \
 {   \
-    base_type::template set<spns::name>(v);   \
+    base_type::template set<spns::name>(unit_type<spns::name>(v));   \
 }   \
     \
 unit_type<spns::name> name() const   \

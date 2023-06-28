@@ -68,7 +68,7 @@ TEST_CASE("slots")
 
         REQUIRE(p.count() == -251);
 
-        percent1 = 64250;
+        percent1.root_count(64250);
         p = percent1;
 
         REQUIRE(p.count() == 250);
@@ -130,12 +130,12 @@ TEST_CASE("slots")
 
         REQUIRE(v.count() == -125);
 
-        v1 = 0x66;
+        v1.root_count(0x66);
         v = v1;
 
         REQUIRE(v.count() == -23);
 
-        v1 = 0x94;
+        v1.root_count(0x94);
         v = v1;
 
         REQUIRE(v.count() == 23);

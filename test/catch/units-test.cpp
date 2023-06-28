@@ -80,7 +80,7 @@ TEST_CASE("units")
         watts<uint16_t> w{1000};
 
         // EXPERIMENTAL, not ready
-        milliamps<uint16_t> ma = w / v;
+        //milliamps<uint16_t> ma = w / v;
 
         // FIX: We want to prohibit this
         //v = a;

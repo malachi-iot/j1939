@@ -35,9 +35,10 @@ struct data_field<pgns::vehicle_electrical_power_1, TContainer> :
 
     ESTD_CPP_FORWARDING_CTOR(data_field)
 
-    spn::traits<spns::battery_potential>::value_type battery_potential() const
+    unit_type<spns::battery_potential> battery_potential() const
     {
-        return base_type::template get_raw<spns::battery_potential>();
+        return unit_type<spns::battery_potential>(
+            base_type::template get_raw<spns::battery_potential>());
     }
 
     void battery_potential(uint16_t v)
