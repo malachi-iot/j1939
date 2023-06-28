@@ -122,6 +122,9 @@ struct ascii_type_traits
 
 
 template <slots slot>
+#if __cpp_concepts
+    requires SlotTraits<slot_traits<slot> >
+#endif
 struct slot_type_traits
 {
     using slot_traits = embr::j1939::slot_traits<slot>;

@@ -32,7 +32,7 @@ struct data_field_base :
         estd::fill(container_type::begin(), container_type::end(), 0xFF);
     }
 
-    data_field_base(const uint8_t* copy_from)
+    explicit data_field_base(const uint8_t* copy_from)
     {
         estd::copy_n(copy_from, 8, container_type::begin());
     }

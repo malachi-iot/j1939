@@ -64,6 +64,22 @@ constexpr descriptor get_descriptor();
 template <typename TInt>
 struct range_traits;
 
+#if __cpp_concepts
+template <class T>
+concept TypeTraits = requires
+{
+    typename T::int_type;
+    typename T::value_type;
+};
+
+template <class T>
+concept SlotTypeTraits = TypeTraits<T> &&
+requires
+{
+    typename T::slot_traits;
+};
+#endif
+
 // Indicates:
 // - int_type
 // - value_type
