@@ -81,9 +81,9 @@ requires
 #endif
 
 // Indicates:
-// - int_type
-// - value_type
-// - enum_type
+// - int_type = intrinsic integer associated with value_type
+// - value_type = can be an enum, complex type or intrinsic
+// - enum_type (optional)
 // - slot_traits (optional)
 // Frequently specializes
 template <spns spn>
