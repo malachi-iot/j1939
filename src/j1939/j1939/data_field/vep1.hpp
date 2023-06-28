@@ -46,7 +46,7 @@ struct data_field<pgns::vehicle_electrical_power_1, TContainer> :
         base_type::template set<spns::battery_potential>(v);
     }
 
-    void battery_potential(spn::traits<spns::battery_potential>::value_type v)
+    void battery_potential(const spn::traits<spns::battery_potential>::value_type& v)
     {
         battery_potential(v.count());
     }

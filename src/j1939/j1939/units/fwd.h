@@ -9,6 +9,8 @@ namespace embr { namespace units {
 // Copying the playbook from chrono
 namespace internal {
 
+struct unit_base_tag {};
+
 template <class T>
 struct passthrough
 {
@@ -17,12 +19,15 @@ struct passthrough
     constexpr T operator()(T v) const { return v; }
 };
 
-template <class Rep, class Period, class Tag,
+// DEBT: Move this elsewhere
 #if __cpp_concepts
-    Adder F = passthrough<Rep> >
+#define EMBR_J1939_CONCEPT(T) T
 #else
-    typename F = passthrough<Rep> >
+#define EMBR_J1939_CONCEPT(T) class
 #endif
+
+template <class Rep, class Period, class Tag,
+    EMBR_J1939_CONCEPT(Adder<Rep>) = passthrough<Rep> >
 class unit_base;
 
 template <class Rep, class Period>

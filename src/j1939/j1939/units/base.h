@@ -72,12 +72,10 @@ struct compound_unit_helper
 /// @tparam Tag differentiating tag so as to disallow one unit from automatically converting to another
 /// @tparam F final conversion.  defaults to passhtrough (noop)
 template <typename Rep, class Period, class Tag,
-#if __cpp_concepts
-    Adder F>
-#else
-    class F>
-#endif
-class unit_base : public Tag        // Deriving from tag not necessary, but might be useful for is_base_of query
+    EMBR_J1939_CONCEPT(Adder<Rep>) F>
+class unit_base :
+    public unit_base_tag,
+    public Tag        // Deriving from tag not necessary, but might be useful for is_base_of query
 {
 protected:
     Rep rep_;
@@ -86,7 +84,7 @@ protected:
     // It does work, but it is prone to overflow so be careful.  Also,
     // chrono one is supposed to offer compile time protection against overflow
     // and it doesn't, so that's debt/FIX too
-    template <class Rep2, class Period2, class F2>
+    template <class Rep2, class Period2, EMBR_J1939_CONCEPT(Adder<Rep2>) F2>
     static constexpr Rep convert_from(const unit_base<Rep2, Period2, Tag, F2>& s)
     {
         typedef estd::ratio_divide<Period2, Period> rd;
@@ -101,9 +99,25 @@ protected:
 public:
     explicit constexpr unit_base(const Rep& rep_) : rep_{rep_} {}
 
-    template <class Rep2, class Period2, class F2>
+    // Converting only precision or F modified
+    template <class Rep2, EMBR_J1939_CONCEPT(Adder<Rep2>) F2>
+    constexpr unit_base(const unit_base<Rep2, Period, Tag, F2>& s) : rep_{s.count()}
+    {
+    }
+
+    template <class Rep2, class Period2, EMBR_J1939_CONCEPT(Adder<Rep2>) F2>
     constexpr unit_base(const unit_base<Rep2, Period2, Tag, F2>& s) : rep_{convert_from(s)}
     {
+    }
+
+    // DEBT: Made this assignment operator because Clang-Tidy wants converting constructor
+    // marked as explicit.  However, implicit conversion between unit scaling and precision
+    // is immensely useful, so keeping it non-explicit for now
+    template <class Rep2, class Period2, class F2>
+    unit_base& operator=(const unit_base<Rep2, Period2, Tag, F2>& copy_from)
+    {
+        rep_ = convert_from(copy_from);
+        return *this;
     }
 
     typedef decltype(F{}(std::declval<Rep>())) rep;

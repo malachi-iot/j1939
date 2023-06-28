@@ -6,11 +6,16 @@
 #pragma once
 
 #include "fwd.h"
+#include "../units/fwd.h"
 
 #include <embr/bits/bits.hpp>
 #include "../spn.h"
 
 #include "../spn/traits.h"
+
+#if __cpp_concepts
+#include <concepts>
+#endif
 
 namespace embr { namespace j1939 {
 
@@ -113,11 +118,20 @@ struct data_field_base :
 
 }
 
+// DEBT: Move this elsewhere, but it does work
+#if __cpp_concepts
+template <class T>
+concept UnitsType = std::derived_from<T, embr::units::internal::unit_base_tag>;
+
+template <class T>
+concept PropertyType = UnitsType<T> || std::integral<T> || std::is_enum_v<T>;
+#endif
+
 // DEBT: Accepting all inputs for name temporarily as we reduce overall
 // unit_type implicit behaviors
 #define EMBR_J1939_PROPERTY(name)   \
-template <class T>                  \
-void name(T v)                      \
+template <EMBR_J1939_CONCEPT(PropertyType) T>                  \
+void name(const T& v)               \
 {   \
     base_type::template set<spns::name>(unit_type<spns::name>(v));   \
 }   \

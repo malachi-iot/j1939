@@ -5,12 +5,12 @@
 
 namespace embr::units::internal {
 
-template<class TAdder>
-concept Adder =
-requires(TAdder adder)
+// DEBT: Should name this something more like Adjuster
+template<class T, typename TInt = int>
+concept Adder = requires(T adder)
 {
-    typename TAdder::int_type;
-    { adder(int{}) } -> std::same_as<typename TAdder::int_type>;
+    typename T::int_type;
+    { adder(TInt{}) } -> std::same_as<typename T::int_type>;
 };
 
 }
