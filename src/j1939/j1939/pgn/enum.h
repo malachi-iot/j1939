@@ -76,6 +76,7 @@ enum class pgns : uint32_t
     wsmstr = 65037,                             ///< "Working Set Member Message" [10] 4.2.4.4
     vehicle_electrical_power_3 = 65103,         // [11]
     driver_identificationn = 65131,             // [11]
+    heater_information = 65133,                 // [11]
     vehicle_electrical_power_2 = 65165,         // [11]
     trip_fan_information = 65211,               // [12]
     fan_drive_1 = 65213,                        // [17]

@@ -5,6 +5,7 @@
 #include <j1939/data_field/cm1.hpp>
 #include <j1939/data_field/cm3.hpp>
 #include <j1939/data_field/fd.hpp>
+#include <j1939/data_field/htr.hpp>
 #include <j1939/data_field/oel.hpp>
 #include <j1939/data_field/network.hpp>
 
@@ -45,6 +46,15 @@ TEST_CASE("pdu")
         auto v = p.estimated_percent_fan_speed();
 
         REQUIRE(v.count() == 125);
+
+        p.fan_drive_state(0x7);
+
+        REQUIRE(p.fan_drive_state() ==
+            enum_type<spns::fan_drive_state>::default_operation);
+
+        unsigned v2 = p.data_[1];
+
+        REQUIRE(v2 == 0b11110111);
     }
     SECTION("oel")
     {
