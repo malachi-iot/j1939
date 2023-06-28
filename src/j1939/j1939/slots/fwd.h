@@ -4,6 +4,9 @@
 
 namespace embr { namespace j1939 {
 
+// Indicates:
+// - type = particular embr::units unit type associated with this slot
+// - h (informal) - slot type helper
 template <slots slot>
 struct slot_traits;
 

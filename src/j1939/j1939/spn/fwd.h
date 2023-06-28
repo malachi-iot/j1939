@@ -21,7 +21,8 @@ struct sub_byte
     uint8_t value;
 };
 
-/// Looks to be unofficial relative to ranges
+/// Looks to be unofficial relative to ranges - indicates more or less
+/// for a given bitness what the off, err, and noop values are
 /// @tparam bitness
 template <unsigned bitness>
 struct numeric_traits;
@@ -56,23 +57,37 @@ template <spns spn>
 constexpr descriptor get_descriptor();
 
 // Helper for ranges, as per [1] 5.1.4
+// Indicates whether a runtime int is:
+// - a valid signal
+// - error
+// - parameter specific (TBD document what that means)
 template <typename TInt>
 struct range_traits;
 
+// Indicates:
+// - int_type
+// - value_type
+// - enum_type
+// - slot_traits (optional)
 template <spns spn>
 struct type_traits;
 
 // Aggregator for all compile-time things we know about an SPN
+// Indicates:
+// - d = descriptor
+// - inherits things range_traits and type_traits
 template <spns spn>
 struct traits;
 
 namespace ranges {
 
 // As per [1] 5.1.4
+// Indicates min() and max() for a given integer precision
 template <typename TInt>
 struct valid_signal;
 
 // As per [1] 5.1.4
+// Indicates min() and max() for "parameter specific" (TBD)
 template <typename TInt>
 struct parameter_specific_indicator;
 
