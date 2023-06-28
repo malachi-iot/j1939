@@ -116,6 +116,9 @@ public:
 
     // DEBT: Clean up name here, and document difference between so-called 'root' and regular
     constexpr root_rep root_count() const { return rep_; }
+    // DEBT: Hopefully we can get rid of this mutator, brought in while transitioning unit_base
+    // to have less implicit behaviors
+    void root_count(root_rep v) { rep_ = v; }
 
     constexpr rep count() const { return F{}(rep_); }
 

@@ -63,7 +63,7 @@ TEST_CASE("units")
 
         REQUIRE(percent1.count() == 501);
 
-        percent1 = 507;
+        percent1.root_count(507);
         percent3 = percent1;
 
         REQUIRE(percent3.count() == 50.7);
