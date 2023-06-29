@@ -13,6 +13,9 @@ enum class pgns : uint32_t;
 
 namespace pgn {
 
+template <pgns>
+struct traits;
+
 struct descriptor
 {
     const unsigned length;

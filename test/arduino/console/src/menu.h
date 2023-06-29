@@ -18,13 +18,24 @@ protected:
     typedef estd::arduino_ostream ostream;
 
 public:
+    // Shows menu item entry/description for action
     virtual void render(ostream&) const = 0;
+
     virtual void action(ostream&) = 0;
+
+    enum match_result
+    {
+        None,
+        Partial,
+        Match
+    };
+
+    // EXPERIMENTAL, see if we can get more complex than just number selection
+    virtual match_result match(const char* input) { return None; }
 };
 
 
 class Menu;
-class SubMenuAction;
 
 class Navigator
 {

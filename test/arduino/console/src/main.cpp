@@ -8,11 +8,14 @@
 #include <vector>
 #include <estd/expected.h>
 
+#include <j1939/pgn.h>
+
 #include "menu.h"
 
 uint32_t start_ms;
 
 using namespace estd;
+using namespace embr::j1939;
 
 arduino_ostream cout(Serial);
 arduino_istream cin(Serial);
@@ -87,6 +90,24 @@ public:
 };
 
 
+template <pgns pgn>
+class CanPGNAction : public menu::Action
+{
+    using traits = pgn::traits<pgn>;
+
+    void render(ostream& out) const override
+    {
+        out << F("CAN (") << traits::abbrev();
+        out << F("): ") << traits::name();
+    }
+
+    void action(ostream& out) override
+    {
+
+    }
+};
+
+
 
 
 
@@ -129,7 +150,7 @@ void menu1(menu::Navigator* nav)
             if(selected == 0)
             {
                 if(!nav->up())
-                    cout << "Topmost menu, cannot go up further";
+                    cout << F("Topmost menu, cannot go up further");
                 else
                     nav->current()->render(cout);
             }
@@ -160,6 +181,8 @@ void menu1(menu::Navigator* nav)
 menu::Menu topLevel, submenu("submenu#1", &topLevel);
 SyntheticMenuAction item1{0}, item2{1};
 menu::Navigator nav(&topLevel);
+CanPGNAction<pgns::oel> item4;
+CanPGNAction<pgns::cab_message1> item5;
 menu::MenuAction subitem1(&nav, &submenu);
 
 void setup() 
@@ -167,6 +190,8 @@ void setup()
     topLevel.items.push_back(&item1);
     topLevel.items.push_back(&item2);
     topLevel.items.push_back(&subitem1);
+    topLevel.items.push_back(&item4);
+    topLevel.items.push_back(&item5);
 
     Serial.begin(115200);
 

@@ -67,6 +67,7 @@ enum class pgns : uint32_t
     evoi1 = 64617,                              ///<  EV Operator Indicators 1 [8]
     armswimc =  64745,                          ///<  Armrest Switch Matrix Commands [8]
     aiso = 64770,                               ///<  All implements stop operations switch state [8]
+    fan_drive_2 = 64817,                        // [11]
     wireless_communications_message_2 = 64936,  // [13]
     wireless_communications_message_1 = 64937,  // [13]
     signal_preemption = 64957,                  // [13]

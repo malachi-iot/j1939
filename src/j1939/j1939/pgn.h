@@ -17,6 +17,8 @@
 #include "enum.h"
 
 #include "pgn/fwd.h"
+#include "pgn/descriptors.h"
+#include "pgn/traits.h"
 #include "can_id.h"
 
 #include <estd/cstdint.h>
