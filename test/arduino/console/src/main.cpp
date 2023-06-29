@@ -25,7 +25,7 @@ States state = States::Entry;
 layer1::string<128> input;
 
 
-class MenuItem
+class MenuAction
 {
 protected:
     typedef arduino_ostream ostream;
@@ -37,14 +37,13 @@ public:
 
 
 class Menu;
-class SubMenuItem;
+class SubMenuAction;
 
 class MenuNavigator
 {
     friend class Menu;
-    friend class SubMenuItem;
 
-    Menu* top_;
+    Menu* const top_;
     Menu* current_;
 
 public:
@@ -54,6 +53,7 @@ public:
     {}
 
     Menu* current() const { return current_; }
+    void current(Menu* v) { current_ = v; }
     bool up();
 };
 
@@ -63,11 +63,17 @@ class Menu
 public:
     typedef arduino_ostream ostream;
 
-    Menu* parent_ = nullptr;
-    std::vector<MenuItem*> items;
+    std::vector<MenuAction*> items;
+    
+    Menu* const parent_ = nullptr;
+    const char* const name_ = nullptr;
 
     Menu() = default;
-    explicit Menu(Menu* parent) : parent_{parent} {}
+    
+    explicit Menu(const char* name, Menu* parent = nullptr) :
+        parent_{parent},
+        name_{name}
+    {}
 
     expected<void, errc> activate(int index)
     {
@@ -82,11 +88,11 @@ public:
         return {};
     }
 
-    void render(ostream& out)
+    void render(ostream& out) const
     {
         int i = 0;
 
-        for(const MenuItem* item : items)
+        for(const MenuAction* item : items)
         {
             out << ++i << ": ";
             item->render(out);
@@ -107,12 +113,12 @@ bool MenuNavigator::up()
 
 
 
-class SyntheticMenuItem : public MenuItem
+class SyntheticMenuAction : public MenuAction
 {
     const int delineator_;
 
 public:
-    constexpr SyntheticMenuItem(int delineator) :
+    constexpr SyntheticMenuAction(int delineator) :
         delineator_{delineator}
     {}
 
@@ -129,32 +135,54 @@ public:
 };
 
 
-class SubMenuItem :  public MenuItem
+class UpMenuAction : public MenuAction
 {
     MenuNavigator* navigator_;
-    const char* name_;
+
+public:
+    constexpr UpMenuAction(MenuNavigator* navigator) :
+        navigator_{navigator}
+    {}
+
+    void render(ostream& out) const override
+    {
+        out << "..";
+    }
+
+    void action() override
+    {
+        navigator_->up();
+        navigator_->current()->render(cout);
+    }
+};
+
+
+class SubMenuAction :  public MenuAction
+{
+    MenuNavigator* navigator_;
     Menu* menu_;
 
 public:
-    constexpr SubMenuItem(MenuNavigator* navigator, const char* name, Menu* menu = nullptr) :
+    constexpr SubMenuAction(MenuNavigator* navigator, Menu* menu) :
         navigator_{navigator},
-        name_{name},
         menu_{menu}
     {}
 
     void render(ostream& out) const override
     {
-        out << name_;
+        out << menu_->name_;
     }
 
     void action() override
     {
-        cout << name_ << ": " << endl << endl;
+        cout << menu_->name_ << ": " << endl << endl;
         cout << "0. upward" << endl;
 
-        navigator_->current_ = menu_;
+        navigator_->current(menu_);
         menu_->render(cout);
     }
+
+    Menu* menu() { return menu_; }
 };
 
 
@@ -225,10 +253,10 @@ void menu1(MenuNavigator* nav)
     }
 }
 
-Menu topLevel, submenu(&topLevel);
-SyntheticMenuItem item1{0}, item2{1};
+Menu topLevel, submenu("submenu#1", &topLevel);
+SyntheticMenuAction item1{0}, item2{1};
 MenuNavigator nav(&topLevel);
-SubMenuItem subitem1(&nav, "submenu#1", &submenu);
+SubMenuAction subitem1(&nav, &submenu);
 
 void setup() 
 {
