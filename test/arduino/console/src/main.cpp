@@ -8,6 +8,8 @@
 #include <vector>
 #include <estd/expected.h>
 
+#include "menu.h"
+
 uint32_t start_ms;
 
 using namespace estd;
@@ -25,85 +27,10 @@ States state = States::Entry;
 layer1::string<128> input;
 
 
-class MenuAction
-{
-protected:
-    typedef arduino_ostream ostream;
-
-public:
-    virtual void render(ostream&) const = 0;
-    virtual void action() = 0;
-};
+namespace menu {
 
 
-class Menu;
-class SubMenuAction;
-
-class MenuNavigator
-{
-    friend class Menu;
-
-    Menu* const top_;
-    Menu* current_;
-
-public:
-    MenuNavigator(Menu* top) :
-        top_{top},
-        current_{top}
-    {}
-
-    Menu* current() const { return current_; }
-    void current(Menu* v) { current_ = v; }
-    bool up();
-};
-
-
-class Menu
-{
-public:
-    typedef arduino_ostream ostream;
-
-    std::vector<MenuAction*> items;
-    
-    Menu* const parent_ = nullptr;
-    const char* const name_ = nullptr;
-
-    Menu() = default;
-    
-    explicit Menu(const char* name, Menu* parent = nullptr) :
-        parent_{parent},
-        name_{name}
-    {}
-
-    expected<void, errc> activate(int index)
-    {
-        // CTAD not a full option since we're c++11 mostly
-        if(index < 0) return unexpected<errc>(errc::invalid_argument);
-        // FIX: We expect this brace init list to work, but it doesn't
-        //if(index < 0) return { unexpect_t{}, errc::invalid_argument };
-        if((unsigned)index >= items.size()) return unexpected<errc>(errc::invalid_argument);
-
-        items[index]->action();
-
-        return {};
-    }
-
-    void render(ostream& out) const
-    {
-        int i = 0;
-
-        for(const MenuAction* item : items)
-        {
-            out << ++i << ": ";
-            item->render(out);
-            out << endl;
-        }
-    }
-};
-
-
-
-bool MenuNavigator::up()
+bool Navigator::up()
 {
     if(current_->parent_ == nullptr) return false;
 
@@ -111,9 +38,11 @@ bool MenuNavigator::up()
     return true;
 }
 
+}
 
 
-class SyntheticMenuAction : public MenuAction
+
+class SyntheticMenuAction : public menu::Action
 {
     const int delineator_;
 
@@ -127,20 +56,21 @@ public:
         out << "synthetic#" << delineator_;
     }
 
-    void action() override
+    void action(ostream& out) override
     {
-        cout << "activated ";
-        render(cout);
+        out << "activated ";
+        render(out);
     }
 };
 
 
-class UpMenuAction : public MenuAction
+// EXPERIMENTAL
+class UpMenuAction : public menu::Action
 {
-    MenuNavigator* navigator_;
+    menu::Navigator* navigator_;
 
 public:
-    constexpr UpMenuAction(MenuNavigator* navigator) :
+    constexpr UpMenuAction(menu::Navigator* navigator) :
         navigator_{navigator}
     {}
 
@@ -149,47 +79,21 @@ public:
         out << "..";
     }
 
-    void action() override
+    void action(ostream& out) override
     {
         navigator_->up();
-        navigator_->current()->render(cout);
+        navigator_->current()->render(out);
     }
 };
 
 
-class SubMenuAction :  public MenuAction
+
+
+
+
+void menu1(menu::Navigator* nav)
 {
-    MenuNavigator* navigator_;
-    Menu* menu_;
-
-public:
-    constexpr SubMenuAction(MenuNavigator* navigator, Menu* menu) :
-        navigator_{navigator},
-        menu_{menu}
-    {}
-
-    void render(ostream& out) const override
-    {
-        out << menu_->name_;
-    }
-
-    void action() override
-    {
-        cout << menu_->name_ << ": " << endl << endl;
-        cout << "0. upward" << endl;
-
-        navigator_->current(menu_);
-        menu_->render(cout);
-    }
-
-    Menu* menu() { return menu_; }
-};
-
-
-
-void menu1(MenuNavigator* nav)
-{
-    Menu* menu = nav->current();
+    menu::Menu* menu = nav->current();
 
     if(state == States::Entry)
     {
@@ -231,7 +135,7 @@ void menu1(MenuNavigator* nav)
             }
             else if(selected != -1)
             {
-                menu->activate(selected - 1);
+                menu->activate(selected - 1, cout);
 
                 /* FIX: something's wrong with copy constructor
                 expected<void, errc> r = menu->activate(selected - 1);
@@ -253,10 +157,10 @@ void menu1(MenuNavigator* nav)
     }
 }
 
-Menu topLevel, submenu("submenu#1", &topLevel);
+menu::Menu topLevel, submenu("submenu#1", &topLevel);
 SyntheticMenuAction item1{0}, item2{1};
-MenuNavigator nav(&topLevel);
-SubMenuAction subitem1(&nav, &submenu);
+menu::Navigator nav(&topLevel);
+menu::MenuAction subitem1(&nav, &submenu);
 
 void setup() 
 {
@@ -271,11 +175,11 @@ void setup()
 
 void loop() 
 {
+/*
     uint32_t now_ms = millis();
 
     long count = now_ms - start_ms;
 
-/*
     cout << F("Please input something: ");
 
     estd::layer1::string<128> buffer;
