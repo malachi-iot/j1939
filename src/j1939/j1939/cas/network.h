@@ -162,7 +162,7 @@ struct network_ca : impl::controller_application<TTransport>,
 
     void send_claim(transport_type& t, pdu<pgns::address_claimed>& p)
     {
-        p.can_id().source_address(given_address);
+        p.can_id().source_address(*given_address);
         _transport_traits::send(t, p);
 
         last_claim = scheduler.impl().now();
