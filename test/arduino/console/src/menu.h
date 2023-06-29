@@ -5,8 +5,12 @@
 #include <estd/istream.h>
 #include <estd/ostream.h>
 
-// DEBT: Not available on AVR
+#ifdef __AVR__
+#include <estd/vector.h>
+#else
 #include <vector>
+#endif
+
 #include <estd/expected.h>
 
 
@@ -66,7 +70,11 @@ public:
     typedef estd::arduino_ostream ostream;
     using errc = estd::errc;
 
+#ifdef __AVR__
+    estd::layer1::vector<Action*, 20> items;
+#else
     std::vector<Action*> items;
+#endif
     
     Menu* const parent_ = nullptr;
     const char* const name_ = nullptr;

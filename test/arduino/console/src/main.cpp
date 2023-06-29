@@ -4,10 +4,6 @@
 #include <estd/ostream.h>
 #include <estd/string.h>
 
-// DEBT: Not available on AVR
-#include <vector>
-#include <estd/expected.h>
-
 #include <j1939/pgn.h>
 
 #include "menu.h"
