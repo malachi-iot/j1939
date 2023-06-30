@@ -1,7 +1,9 @@
 #pragma once
 
 #include "base.hpp"
+
 #include "../slots/percent.hpp"
+#include "../slots/temperature.hpp"
 
 namespace embr { namespace j1939 {
 
@@ -13,7 +15,7 @@ struct type_traits<spns::requested_percent_fan_speed> :
 
 template <>
 struct type_traits<spns::cab_interior_temperature_command> :
-    internal::measured_type_traits {};
+    internal::slot_type_traits<slots::SAEtp02> {};
 
 template<>
 constexpr descriptor get_descriptor<spns::requested_percent_fan_speed>()
@@ -41,6 +43,7 @@ struct data_field<pgns::cab_message1, TContainer> :
     constexpr data_field(const uint8_t* copy_from) : base_type(copy_from) {}
 
     EMBR_J1939_PROPERTY(requested_percent_fan_speed);
+    EMBR_J1939_PROPERTY(cab_interior_temperature_command);
 };
 
 

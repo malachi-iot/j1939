@@ -2,6 +2,7 @@
 
 #include <embr/platform/guard-in.h>
 
+#include "amb.hpp"
 #include "ccvs.hpp"
 #include "cm1.hpp"
 #include "cm3.hpp"

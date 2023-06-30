@@ -24,4 +24,12 @@ constexpr amps<Rep, Period3> operator /(
     return 0;
 }
 
+template <typename Rep, class Period, class Tag, class F>
+constexpr unit_base<Rep, Period, Tag, F>& operator +(
+    unit_base<Rep, Period, Tag, F>& lhs,
+    unit_base<Rep, Period, Tag, F>& rhs)
+{
+    return { lhs.root_count() + rhs.root_count() };
+}
+
 }}

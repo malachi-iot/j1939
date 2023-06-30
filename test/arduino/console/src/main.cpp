@@ -32,7 +32,7 @@ static transport t;
 // DEBT: Can't alias directly frame_traits due to ambiguity
 // with one in embr::j1939
 using ft = embr::can::frame_traits<transport::frame>;
-
+static uint8_t source_address = 0x77;
 
 enum class States
 {
@@ -117,17 +117,37 @@ struct CanPGNActionImpl
 #if __cpp_concepts
 #endif
 
+template <class TStreambuf>
+detail::basic_ostream<TStreambuf>& operator<<(
+    detail::basic_ostream<TStreambuf>& out,
+    embr::units::centigrade<double> c)
+{
+    return out << c.count() << (char)176 << "c";
+}
+
 
 template <>
 struct CanPGNActionImpl<pgns::cab_message1>
 {
+    using centigrade = embr::units::centigrade<double>;
+    
+    centigrade c;
+
+    CanPGNActionImpl() : c(0) {}
+
     template <class TStreambuf>
-    static void action(detail::basic_ostream<TStreambuf>& out)
+    void action(detail::basic_ostream<TStreambuf>& out)
     {
+        c += centigrade(0.10);
+
+        out << "Increasing temp to " << c;
     }
 
-    static void prep(pdu<pgns::cab_message1>& p)
+    void prep(pdu<pgns::cab_message1>& p)
     {
+        p.destination_address(0x7);
+
+        p.cab_interior_temperature_command(c);
         p.requested_percent_fan_speed(50_pct);
     }
 };
@@ -137,6 +157,8 @@ template <pgns pgn>
 class CanPGNAction : public menu::Action
 {
     typedef CanPGNActionImpl<pgn> impl_type;
+
+    impl_type impl;
 
     using traits = pgn::traits<pgn>;
 
@@ -149,12 +171,15 @@ class CanPGNAction : public menu::Action
     void action(ostream& out) override
     {
         out << F("Emit CAN ") << traits::abbrev();
+        out << F(" - ");
 
-        impl_type::action(out);
+        impl.action(out);
 
         pdu<pgn> p;
 
-        impl_type::prep(p);
+        p.source_address(source_address);
+
+        impl.prep(p);
 
         auto frame = ft::create(p.can_id(), p.data(), p.size());
 

@@ -17,5 +17,13 @@ struct slot_traits<slots::SAEtp01>
     using type = embr::units::centigrade<uint8_t, h::period, h::offset>;
 };
 
+// Not yet tested
+template <>
+struct slot_traits<slots::SAEtp02>
+{
+    using h = slot_traits_helper<int16_t, -273, estd::ratio<3125, 100000>>;
+    using type = h::unit<uint16_t, units::centigrade>;
+};
+
 
 }}

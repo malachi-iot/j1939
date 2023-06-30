@@ -144,6 +144,12 @@ public:
     {
         return rep_ == compare_to.rep_;
     }
+
+    unit_base& operator +=(const unit_base& v)
+    {
+        rep_ += v.rep_;
+        return *this;
+    }
 };
 
 
