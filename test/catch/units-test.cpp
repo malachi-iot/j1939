@@ -1,5 +1,6 @@
 #include <catch2/catch.hpp>
 
+#include <estd/sstream.h>
 
 #include <j1939/units/amps.h>
 #include <j1939/units/celsius.h>
@@ -7,6 +8,7 @@
 #include <j1939/units/frequency.h>
 #include <j1939/units/fahrenheit.h>
 #include <j1939/units/kelvins.h>
+#include <j1939/units/ostream.h>
 #include <j1939/units/percent.h>
 #include <j1939/units/rpm.h>
 #include <j1939/units/si.h>
@@ -17,16 +19,24 @@
 
 using namespace embr::units;
 
+using ostringstream = estd::detail::basic_ostream<estd::layer1::stringbuf<128>>;
+
 TEST_CASE("units")
 {
-    SECTION("centigrade")
+    ostringstream out;
+
+    SECTION("celsius")
     {
         // lifted right from SPN 4420
-        centigrade<uint8_t, estd::ratio<1>, embr::units::internal::adder<int16_t, -40> > c1{0};
-        centigrade<int> c2{c1};
+        celsius<uint8_t, estd::ratio<1>, embr::units::internal::adder<int16_t, -40> > c1{0};
+        celsius<int> c2{c1};
 
         REQUIRE(c1.count() == -40);
         REQUIRE(c2.count() == -40);
+
+        write_abbrev(out, c1);
+
+        REQUIRE(out.rdbuf()->str() == "-40 deg C");
     }
     SECTION("amps")
     {
@@ -34,6 +44,10 @@ TEST_CASE("units")
         amps<uint8_t> a = ma;
 
         REQUIRE(a.count() == 3);
+
+        write(out, ma);
+
+        REQUIRE(out.rdbuf()->str() == "3600 milliamps");
     }
     SECTION("volts")
     {
@@ -43,6 +57,10 @@ TEST_CASE("units")
 
         REQUIRE(dv.count() == 36);
         REQUIRE(v.count() == 3);
+
+        write(out, dv);
+
+        REQUIRE(out.rdbuf()->str() == "36 decivolts");
     }
     SECTION("rpm")
     {
@@ -50,6 +68,10 @@ TEST_CASE("units")
         rpm<uint16_t, estd::ratio<1, 2> > rpm2{rpm1};
 
         REQUIRE(rpm2.count() == 10000);
+
+        write_abbrev(out, rpm1);
+
+        REQUIRE(out.rdbuf()->str() == "5000rpm");
     }
     SECTION("percent")
     {
@@ -77,6 +99,10 @@ TEST_CASE("units")
 
         // lhs precision is lower so dangling .7% falls away
         REQUIRE(50_pct == percent1);
+
+        write_abbrev(out, percent2);
+
+        REQUIRE(out.rdbuf()->str() == "50%");
     }
     SECTION("conversions")
     {

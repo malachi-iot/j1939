@@ -1,6 +1,7 @@
 #pragma once
 
 #include <estd/ratio.h>
+
 #include "base.h"
 
 namespace embr { namespace units {
@@ -33,7 +34,6 @@ constexpr unit_base<Rep, Period, Tag, F>& operator +(
 {
     return { lhs.root_count() + rhs.root_count() };
 }
-
 
 }
 

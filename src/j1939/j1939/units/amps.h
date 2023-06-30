@@ -40,4 +40,16 @@ template <class Rep, typename F = internal::passthrough<Rep> >
 using milliamp_hours = amp_seconds<Rep, estd::ratio<1000UL * 3600>, F>;
 // --- EXPERIMENTAL
 
+
+template <>
+struct traits<internal::amps_tag>
+{
+    static constexpr const char* name() { return "amps"; }
+
+    // DEBT: Feature flag in proper degree symbol if we can
+    static constexpr const char* abbrev() { return "A"; }
+
+    static constexpr si::quantities quanitiy = si::quantities::electric_current;
+};
+
 }}

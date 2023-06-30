@@ -32,6 +32,22 @@ struct traits<estd::giga>
 
 
 template <>
+struct traits<estd::deci>
+{
+    static constexpr const char* name() { return "deci"; }
+    static constexpr const char* abbrev() { return "d"; }
+};
+
+
+template <>
+struct traits<estd::deca>
+{
+    static constexpr const char* name() { return "deca"; }
+    static constexpr const char* abbrev() { return "da"; }
+};
+
+
+template <>
 struct traits<estd::milli>
 {
     static constexpr const char* name() { return "milli"; }

@@ -9,7 +9,7 @@ enum quantities
     time,
     length,
     mass,
-    current,
+    electric_current,
     temperature,
     amount_of_substance,
     luminous_intensity

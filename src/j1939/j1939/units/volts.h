@@ -33,5 +33,17 @@ template <class Rep, typename F = internal::passthrough<Rep> >
 using microvolts = volts<Rep, estd::micro, F>;
 
 
+template <>
+struct traits<internal::volts_tag>
+{
+    static constexpr const char* name() { return "volts"; }
+
+    // DEBT: Feature flag in proper degree symbol if we can
+    static constexpr const char* abbrev() { return "V"; }
+
+    static constexpr si::quantities quanitiy = si::quantities::electric_current;
+};
+
+
 
 }}

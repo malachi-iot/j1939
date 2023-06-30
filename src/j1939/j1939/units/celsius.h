@@ -15,10 +15,10 @@ using centigrade = celsius<Rep, Period, F>;
 template <>
 struct traits<internal::celsius_tag>
 {
-    static constexpr const char* name() { return "Celsius"; }
+    static constexpr const char* name() { return "degrees Celsius"; }
 
     // DEBT: Feature flag in proper degree symbol if we can
-    static constexpr const char* abbrev() { return "deg C"; }
+    static constexpr const char* abbrev() { return " deg C"; }
 
     static constexpr si::quantities quanitiy = si::quantities::temperature;
 };
