@@ -38,4 +38,11 @@ struct cast_helper;
 
 }
 
+namespace si {
+
+template <class>
+struct traits;
+
+}
+
 }}

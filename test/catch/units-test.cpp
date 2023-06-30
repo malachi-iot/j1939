@@ -4,9 +4,12 @@
 #include <j1939/units/amps.h>
 #include <j1939/units/celsius.h>
 #include <j1939/units/distance.h>
+#include <j1939/units/frequency.h>
 #include <j1939/units/fahrenheit.h>
+#include <j1939/units/kelvins.h>
 #include <j1939/units/percent.h>
 #include <j1939/units/rpm.h>
+#include <j1939/units/si.h>
 #include <j1939/units/volts.h>
 #include <j1939/units/watts.h>
 

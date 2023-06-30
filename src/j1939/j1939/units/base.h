@@ -1,6 +1,7 @@
 #pragma once
 
 #include "fwd.h"
+#include "enum.h"
 
 namespace embr { namespace units {
 
