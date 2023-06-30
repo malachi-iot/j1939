@@ -290,9 +290,9 @@ void setup()
     cout << F("MCP2515 mode") << endl;
     MCP2515& mcp2515 = t.mcp2515;
     mcp2515.reset();
-    mcp2515.setBitrate(CAN_125KBPS);
+    can_online = mcp2515.setBitrate(CAN_125KBPS) == MCP2515::ERROR_OK;
     //mcp2515.setNormalMode();
-    can_online = mcp2515.setListenOnlyMode() != MCP2515::ERROR_OK;
+    can_online &= mcp2515.setListenOnlyMode() == MCP2515::ERROR_OK;
 #else
     cout << F("SAME5x mode") << endl;
 
@@ -303,7 +303,8 @@ void setup()
     can_online = CAN.begin(125E3);
 #endif
 
-    if (!can_online)    cout << F("Starting CAN failed!") << endl;
+    cout << F("CAN ");
+    cout << (can_online ? F("online") : F("offline")) << endl;
 }
 
 void loop() 
