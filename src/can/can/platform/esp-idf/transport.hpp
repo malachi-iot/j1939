@@ -2,6 +2,7 @@
 
 #include <estd/algorithm.h>
 #include <estd/cstdint.h>
+#include <estd/span.h>
 
 #include "../../transport.h"
 
@@ -121,6 +122,12 @@ struct frame_traits<twai_message_t>
         estd::copy_n(payload, length, f.data);
 
         return f;
+    }
+
+    // EXPERIMENTAL
+    inline static frame create(uint32_t id, estd::span<uint8_t> payload)
+    {
+        return create(id, payload.data(), payload.length()); 
     }
 
     inline static const uint8_t* payload(const twai_message_t& message)

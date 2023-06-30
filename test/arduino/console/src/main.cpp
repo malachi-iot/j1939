@@ -4,7 +4,10 @@
 #include <estd/ostream.h>
 #include <estd/string.h>
 
+#include <j1939/pdu.h>
 #include <j1939/pgn.h>
+
+#include <j1939/data_field/cm1.hpp>
 
 #include "menu.h"
 #include "transport.h"
@@ -13,6 +16,7 @@ uint32_t start_ms;
 
 using namespace estd;
 using namespace embr::j1939;
+using namespace embr::units::literals;
 
 arduino_ostream cout(Serial);
 arduino_istream cin(Serial);
@@ -25,7 +29,9 @@ using transport = embr::can::adafruit_transport;
 static transport t;
 #endif
 
-using frame_traits = embr::can::frame_traits<transport::frame>;
+// DEBT: Can't alias directly frame_traits due to ambiguity
+// with one in embr::j1939
+using ft = embr::can::frame_traits<transport::frame>;
 
 
 enum class States
@@ -35,7 +41,7 @@ enum class States
 };
 
 States state = States::Entry;
-layer1::string<128> input;
+estd::layer1::string<128> input;
 
 
 namespace menu {
@@ -97,10 +103,41 @@ public:
     }
 };
 
+template <pgns>
+struct CanPGNActionImpl
+{
+    template <class TStreambuf>
+    static void action(detail::basic_ostream<TStreambuf>&) {}
+
+    template <class TPdu>
+    static void prep(TPdu&) {}
+};
+
+
+#if __cpp_concepts
+#endif
+
+
+template <>
+struct CanPGNActionImpl<pgns::cab_message1>
+{
+    template <class TStreambuf>
+    static void action(detail::basic_ostream<TStreambuf>& out)
+    {
+    }
+
+    static void prep(pdu<pgns::cab_message1>& p)
+    {
+        p.requested_percent_fan_speed(50_pct);
+    }
+};
+
 
 template <pgns pgn>
 class CanPGNAction : public menu::Action
 {
+    typedef CanPGNActionImpl<pgn> impl_type;
+
     using traits = pgn::traits<pgn>;
 
     void render(ostream& out) const override
@@ -111,7 +148,19 @@ class CanPGNAction : public menu::Action
 
     void action(ostream& out) override
     {
+        out << F("Emit CAN ") << traits::abbrev();
 
+        impl_type::action(out);
+
+        pdu<pgn> p;
+
+        impl_type::prep(p);
+
+        auto frame = ft::create(p.can_id(), p.data(), p.size());
+
+        t.send(frame);
+
+        out << endl;
     }
 };
 

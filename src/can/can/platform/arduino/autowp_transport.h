@@ -39,6 +39,13 @@ struct frame_traits<struct can_frame>
     {
         return can_frame{};
     }
+
+    // EXPERIMENTAL
+    inline static frame create(uint32_t id, estd::span<uint8_t> payload)
+    {
+        return create(id, payload.data(), payload.length()); 
+    }
+
 };
 
 
