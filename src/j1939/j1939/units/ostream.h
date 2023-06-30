@@ -5,17 +5,6 @@
 
 namespace embr { namespace units {
 
-namespace internal {
-
-template <class TUnit>
-struct unit_put
-{
-    const TUnit unit;
-    const bool abbrev;
-};
-
-}
-
 // DEBT: Slightly horrifying kludge for 'double' support in ostream
 template <class TStreambuf, class TBase>
 estd::detail::basic_ostream<TStreambuf, TBase>& operator <<(
@@ -81,15 +70,32 @@ void write_abbrev(estd::detail::basic_ostream<TStreambuf, TBase>& out,
     write_suffix_abbrev<Tag, Period>(out);
 }
 
-template <class TUnit, class TStreambuf, class TBase>
-void test(estd::detail::basic_ostream<TStreambuf, TBase>& out,
-    internal::unit_put<TUnit> v)
-{}
-
 namespace internal {
+
+template <class TUnit>
+struct unit_put : estd::internal::ostream_functor_tag
+{
+    const TUnit unit;
+    const bool abbrev;
+
+    constexpr unit_put(const TUnit& unit, bool abbrev) :
+        unit{unit},
+        abbrev{abbrev}
+    {}
+
+    template <class TStreambuf, class TBase>
+    void operator()(estd::detail::basic_ostream<TStreambuf, TBase>& out) const
+    {
+        if(abbrev)
+            write_abbrev(out, unit);
+        else
+            write(out, unit);
+    }
+};
 
 // For ADL to pick this up, it has to live in
 // same namespace as unit_put
+/*
 template <class TUnit, class TStreambuf, class TBase>
 estd::detail::basic_ostream<TStreambuf, TBase>& operator <<(
     estd::detail::basic_ostream<TStreambuf, TBase>& out,
@@ -101,10 +107,14 @@ estd::detail::basic_ostream<TStreambuf, TBase>& operator <<(
         write(out, v.unit);
 
     return out;
-}
+} */
 
 }
 
+template <class TUnit, class TStreambuf, class TBase>
+void test(estd::detail::basic_ostream<TStreambuf, TBase>& out,
+    internal::unit_put<TUnit> v)
+{}
 
 
 }

@@ -7,7 +7,7 @@
 #include <j1939/pdu.h>
 #include <j1939/pgn.h>
 
-#include <j1939/data_field/cm1.hpp>
+#include <j1939/data_field/all.hpp>
 
 // DEBT: Eventually we'd like to auto include this
 #include <j1939/units/ostream.h>
