@@ -194,6 +194,23 @@ struct ios
 };
 
 
+// This might be happier as a string_view
+// DEBT: Consider mildly reworking basic_string to utiize/and or resemble something like a
+// detail::basic_ostream - i.e. char, traits, allocator and maybe policy all tucked
+// awai in an impl
+// NOTE: Interesting discussion why this wasn't done in std
+// https://stackoverflow.com/questions/39169310/why-is-there-no-stdfrom-string.
+template <class TChar, class Traits, class Allocator, class Policy, class T>
+estd::from_chars_result from_string(
+    const estd::basic_string<TChar, Traits, Allocator, Policy>& s, T& v)
+{
+    const TChar* data = s.clock();
+    estd::from_chars_result r = from_chars(data, data + s.size(), v);
+    s.cunlock();
+    return r;
+}
+
+
 
 void menu1(menu::Navigator* nav, ios io)
 {
@@ -228,8 +245,7 @@ void menu1(menu::Navigator* nav, ios io)
 
             //cout << endl << F("Acting on: ") << input << endl;
 
-            // DEBT: Somewhere we have a string-optimized version of this...
-            from_chars(input.data(), input.data() + input.size(), selected);
+            estd::from_chars_result r1 = from_string(input, selected);
             if(selected == 0)
             {
                 if(!nav->up())
@@ -239,15 +255,15 @@ void menu1(menu::Navigator* nav, ios io)
             }
             else if(selected != -1)
             {
-                menu->activate(selected - 1, io.out);
+                expected<void, errc> r(menu->activate(selected - 1, io.out));
 
-                /* FIX: something's wrong with copy constructor
-                expected<void, errc> r = menu->activate(selected - 1);
+                /* FIX: something's wrong with copy constructo/assignment
+                expected<void, errc> r = menu->activate(selected - 1); */
 
-                if(r.has_error())
+                if(r.has_value() == false)
                 {
-
-                }   */
+                    cout << F("Invalid menu item: ") << selected << endl;
+                }
             }
 
             input.clear();
@@ -287,14 +303,14 @@ void setup()
     // https://registry.platformio.org/libraries/adafruit/CAN%20Adafruit%20Fork seems to be obsolete
 
 #ifdef AUTOWP_LIB
-    cout << F("MCP2515 mode") << endl;
+    cout << F("MCP2515 mode: ");
     MCP2515& mcp2515 = t.mcp2515;
     mcp2515.reset();
     can_online = mcp2515.setBitrate(CAN_125KBPS) == MCP2515::ERROR_OK;
     //mcp2515.setNormalMode();
     can_online &= mcp2515.setListenOnlyMode() == MCP2515::ERROR_OK;
 #else
-    cout << F("SAME5x mode") << endl;
+    cout << F("SAME5x mode: ");
 
     // start the CAN bus at 125 kbps.  Would go down to
     // 25 kbps where TWAI demo likes to be, but it seems
@@ -303,7 +319,6 @@ void setup()
     can_online = CAN.begin(125E3);
 #endif
 
-    cout << F("CAN ");
     cout << (can_online ? F("online") : F("offline")) << endl;
 }
 
