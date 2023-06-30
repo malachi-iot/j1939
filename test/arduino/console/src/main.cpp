@@ -134,7 +134,7 @@ struct CanPGNActionImpl<pgns::cab_message1>
     {
         c += celcius(0.10);
 
-        out << "Increasing temp to " << embr::put_unit(c);
+        out << F("Increasing temp to ") << embr::put_unit(c);
     }
 
     void prep(pdu<pgns::cab_message1>& p)
@@ -287,22 +287,23 @@ void setup()
     // https://registry.platformio.org/libraries/adafruit/CAN%20Adafruit%20Fork seems to be obsolete
 
 #ifdef AUTOWP_LIB
-    cout << "MCP2515 mode" << endl;
+    cout << F("MCP2515 mode") << endl;
     MCP2515& mcp2515 = t.mcp2515;
     mcp2515.reset();
     mcp2515.setBitrate(CAN_125KBPS);
     //mcp2515.setNormalMode();
-    mcp2515.setListenOnlyMode();
+    can_online = mcp2515.setListenOnlyMode() != MCP2515::ERROR_OK;
 #else
-    cout << "SAME5x mode" << endl;
+    cout << F("SAME5x mode") << endl;
 
     // start the CAN bus at 125 kbps.  Would go down to
     // 25 kbps where TWAI demo likes to be, but it seems
     // MPC2515 won't do it.  Also I suspect MPC2515 doesn't
     // want to go below 100kbit, but that's just speculation
     can_online = CAN.begin(125E3);
-    if (!can_online)    cout << F("Starting CAN failed!") << endl;
 #endif
+
+    if (!can_online)    cout << F("Starting CAN failed!") << endl;
 }
 
 void loop() 
