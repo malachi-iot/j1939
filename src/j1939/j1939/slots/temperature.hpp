@@ -1,7 +1,7 @@
 #pragma once
 
 #include "slots.h"
-#include "../units/centigrade.h"
+#include "../units/celsius.h"
 
 namespace embr { namespace j1939 {
 
@@ -14,7 +14,7 @@ struct slot_traits<slots::SAEtp01>
     static constexpr uint8_t max() { return 250; }
 
     using h = slot_traits_helper<int16_t, -40>;
-    using type = embr::units::centigrade<uint8_t, h::period, h::offset>;
+    using type = embr::units::celsius<uint8_t, h::period, h::offset>;
 };
 
 // Not yet tested
@@ -22,7 +22,7 @@ template <>
 struct slot_traits<slots::SAEtp02>
 {
     using h = slot_traits_helper<int16_t, -273, estd::ratio<3125, 100000>>;
-    using type = h::unit<uint16_t, units::centigrade>;
+    using type = h::unit<uint16_t, units::celsius>;
 };
 
 

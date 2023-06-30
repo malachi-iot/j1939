@@ -6,6 +6,9 @@
 
 namespace embr { namespace units {
 
+template <class>
+struct traits;
+
 // Copying the playbook from chrono
 namespace internal {
 

@@ -25,4 +25,11 @@ constexpr percent<double> operator ""_pct (long double v)
 }
 
 
+template <>
+struct traits<internal::percent_tag>
+{
+    static constexpr const char* name() { return "percent"; }
+};
+
+
 }}
