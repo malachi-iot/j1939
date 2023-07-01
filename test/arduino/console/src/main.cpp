@@ -9,6 +9,9 @@
 
 #include <j1939/data_field/cm1.hpp>
 
+// DEBT: Eventually we'd like to auto include this
+#include <j1939/units/ostream.h>
+
 #include "menu.h"
 #include "transport.h"
 
@@ -117,30 +120,22 @@ struct CanPGNActionImpl
 #if __cpp_concepts
 #endif
 
-template <class TStreambuf>
-detail::basic_ostream<TStreambuf>& operator<<(
-    detail::basic_ostream<TStreambuf>& out,
-    embr::units::centigrade<double> c)
-{
-    return out << c.count() << (char)176 << "c";
-}
-
-
 template <>
 struct CanPGNActionImpl<pgns::cab_message1>
 {
-    using centigrade = embr::units::centigrade<double>;
+    using celcius = embr::units::centigrade<double>;
     
-    centigrade c;
+    celcius c;
 
     CanPGNActionImpl() : c(0) {}
 
     template <class TStreambuf>
     void action(detail::basic_ostream<TStreambuf>& out)
     {
-        c += centigrade(0.10);
+        c += celcius(0.10);
 
-        out << "Increasing temp to " << c;
+        out << "Increasing temp to ";
+        embr::units::write_abbrev(out, c);
     }
 
     void prep(pdu<pgns::cab_message1>& p)
