@@ -134,11 +134,7 @@ struct CanPGNActionImpl<pgns::cab_message1>
     {
         c += celcius(0.10);
 
-        out << "Increasing temp to ";
-        auto v = embr::put_unit(c);
-        //out << v;
-        //out << embr::put_unit(c);
-        embr::units::write_abbrev(out, c);
+        out << "Increasing temp to " << embr::put_unit(c);
     }
 
     void prep(pdu<pgns::cab_message1>& p)

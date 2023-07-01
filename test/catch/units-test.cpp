@@ -24,6 +24,10 @@ using ostringstream = estd::detail::basic_ostream<estd::layer1::stringbuf<128>>;
 TEST_CASE("units")
 {
     ostringstream out;
+    // FIX: Should work, but doesn't
+    //estd::layer2::const_string out_s =
+    const auto& out_s =
+        out.rdbuf()->str();
 
     SECTION("celsius")
     {
@@ -113,7 +117,7 @@ TEST_CASE("units")
 
             write(out, percent3);
 
-            REQUIRE(out.rdbuf()->str() == "50.70 percent");
+            REQUIRE(out_s == "50.70 percent");
         }
     }
     SECTION("conversions")
@@ -135,6 +139,24 @@ TEST_CASE("units")
             meters_per_second<uint16_t> m_s{kph};
 
             REQUIRE(m_s.count() == 60000 / 3600);
+        }
+    }
+    SECTION("ostream")
+    {
+        //percent<double> p = 50_pct;   // FIX: It considers this narrowing, but wouldn't unsigned -> double be the opposite?
+        percent<double> p = 50.0_pct;
+
+        SECTION("regular")
+        {
+            out << embr::put_unit(p);
+
+            REQUIRE(out_s == "50.0%");
+        }
+        SECTION("non abbrev")
+        {
+            out << embr::put_unit(p, false);
+
+            REQUIRE(out_s == "50.0 percent");
         }
     }
 }

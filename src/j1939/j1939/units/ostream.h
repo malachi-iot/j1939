@@ -1,4 +1,5 @@
 #include <estd/iosfwd.h>
+#include <estd/locale.h>
 
 #include "fwd.h"
 
@@ -80,14 +81,28 @@ void write_abbrev(estd::detail::basic_ostream<TStreambuf, TBase>& out,
     write_suffix_abbrev<Tag, Period>(out);
 }
 
+template <class TUnit, class TStreambuf, class TBase>
+void test(estd::detail::basic_ostream<TStreambuf, TBase>& out,
+    internal::unit_put<TUnit> v)
+{}
 
+namespace internal {
+
+// For ADL to pick this up, it has to live in
+// same namespace as unit_put
 template <class TUnit, class TStreambuf, class TBase>
 estd::detail::basic_ostream<TStreambuf, TBase>& operator <<(
     estd::detail::basic_ostream<TStreambuf, TBase>& out,
-    internal::unit_put<TUnit> v)
+    unit_put<TUnit> v)
 {
-    write_abbrev(out, v.unit);
+    if(v.abbrev)
+        write_abbrev(out, v.unit);
+    else
+        write(out, v.unit);
+
     return out;
+}
+
 }
 
 
