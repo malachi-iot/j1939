@@ -4,6 +4,22 @@
 
 namespace embr { namespace units {
 
+// DEBT: Slightly horrifying kludge for 'double' support in ostream
+template <class TStreambuf, class TBase>
+estd::detail::basic_ostream<TStreambuf, TBase>& operator <<(
+    estd::detail::basic_ostream<TStreambuf, TBase>& out,
+    double v)
+{
+    auto v_ = (int64_t)v;
+    auto v_dec = (int64_t)(v * 100) % 100;
+
+    out << v_;
+    out << '.';
+    out << v_dec;
+
+    return out;
+}
+
 template <class Tag, class Period, class TStreambuf, class TBase,
     estd::enable_if_t<
         estd::is_same<Period, estd::ratio<1>>::value, bool> = true>

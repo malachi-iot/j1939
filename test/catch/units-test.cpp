@@ -100,9 +100,21 @@ TEST_CASE("units")
         // lhs precision is lower so dangling .7% falls away
         REQUIRE(50_pct == percent1);
 
-        write_abbrev(out, percent2);
+        SECTION("ostream percent2")
+        {
+            write_abbrev(out, percent2);
 
-        REQUIRE(out.rdbuf()->str() == "50%");
+            REQUIRE(out.rdbuf()->str() == "50%");
+        }
+        SECTION("ostream percent3")
+        {
+            // NOTE: Can't do this because rdbuf()->str() results in a const
+            //out.rdbuf()->str().clear();
+
+            write(out, percent3);
+
+            REQUIRE(out.rdbuf()->str() == "50.70 percent");
+        }
     }
     SECTION("conversions")
     {

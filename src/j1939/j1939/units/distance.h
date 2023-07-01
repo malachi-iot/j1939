@@ -54,5 +54,13 @@ using kilometers_per_hour = meters_per_second<Rep,
         estd::chrono::hours::period::num>,
     F>;
 
+// NOTE: These compound types don't seem to be a great fit for these traits so far
+template <>
+struct traits<internal::meters_second_tag>
+{
+    static constexpr const char* name() { return "meters per second"; }
+    static constexpr const char* abbrev() { return "m/s"; }
+};
+
 
 }}
