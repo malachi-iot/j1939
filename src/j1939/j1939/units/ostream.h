@@ -4,6 +4,17 @@
 
 namespace embr { namespace units {
 
+namespace internal {
+
+template <class TUnit>
+struct unit_put
+{
+    const TUnit unit;
+    const bool abbrev;
+};
+
+}
+
 // DEBT: Slightly horrifying kludge for 'double' support in ostream
 template <class TStreambuf, class TBase>
 estd::detail::basic_ostream<TStreambuf, TBase>& operator <<(
@@ -70,4 +81,25 @@ void write_abbrev(estd::detail::basic_ostream<TStreambuf, TBase>& out,
 }
 
 
-}}
+template <class TUnit, class TStreambuf, class TBase>
+estd::detail::basic_ostream<TStreambuf, TBase>& operator <<(
+    estd::detail::basic_ostream<TStreambuf, TBase>& out,
+    internal::unit_put<TUnit> v)
+{
+    write_abbrev(out, v.unit);
+    return out;
+}
+
+
+
+}
+
+template <class Rep, class Period, class Tag, class F>
+units::internal::unit_put<
+    units::internal::unit_base<Rep, Period, Tag, F> > put_unit(
+    const units::internal::unit_base<Rep, Period, Tag, F>& unit, bool abbrev = true)
+{
+    return { unit, abbrev };
+}
+
+}
