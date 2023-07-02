@@ -4,7 +4,9 @@
 
 #include <estd/istream.h>
 #include <estd/ostream.h>
+#include <estd/variant.h>
 
+//#if FEATURE_STD_VECTOR
 #ifdef __AVR__
 #include <estd/vector.h>
 #else
@@ -13,8 +15,69 @@
 
 #include <estd/expected.h>
 
+// TODO: Once featureset/API signature settles a bit, move to embr
 
 namespace menu {
+
+namespace layer1 {
+
+
+#if __cpp_concepts
+#endif
+
+template <class Impl>
+class Action;
+
+struct render_tag {};
+
+
+// NOTE: Not sure which way we're swinging yet, tuple, variant or raw
+// type -- though tuple feels most correct
+template <class ...Actions>
+class Menu
+{
+    estd::tuple<Actions...> actions_tuple;
+    estd::variant<Actions...> action;
+    typedef estd::variadic::types<Actions...> actions;
+
+    struct RenderFunctor
+    {
+        template <class T, class TStreambuf, class TBase>
+        bool operator()(
+            estd::in_place_type_t<T>,
+            estd::detail::basic_ostream<TStreambuf, TBase>& out)
+        {
+            T{}.render(out);
+            out << estd::endl;
+            return false;
+        }
+    };
+
+public:
+    template <class TStreambuf, class TBase>
+    void render(estd::detail::basic_ostream<TStreambuf, TBase>& out);
+};
+
+namespace impl {
+
+
+}
+
+
+template <class Impl>
+class Action : public Impl
+{
+    using impl_type = Impl;
+
+public:
+    template <class TStreambuf, class TBase>
+    void render(estd::detail::basic_ostream<TStreambuf, TBase>& out)
+    {
+        impl_type::render(out);
+    }
+};
+
+}
 
 class Action
 {

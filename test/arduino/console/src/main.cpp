@@ -13,7 +13,7 @@
 #include <j1939/units/ostream.h>
 
 #include "main.h"
-#include "menu.h"
+#include "menu.hpp"
 #include "transport.h"
 
 uint32_t start_ms;
@@ -276,6 +276,30 @@ void menu1(menu::Navigator* nav, ios io)
     }
 }
 
+namespace layer1 {
+
+struct exp_action1
+{
+    void render(arduino_ostream& out)
+    {
+        out << F("action1");
+    }
+};
+
+struct exp_action2
+{
+    void render(arduino_ostream& out)
+    {
+        out << F("action2");
+    }
+};
+
+using menu_type = menu::layer1::Menu<
+    exp_action1,
+    exp_action2>;
+
+}
+
 menu::Menu topLevel, submenu("submenu#1", &topLevel);
 SyntheticMenuAction item1{0}, item2{1};
 menu::Navigator nav(&topLevel);
@@ -296,6 +320,8 @@ void setup()
     while(!Serial);
 
     init_can(t);
+
+    ::layer1::menu_type{}.render(cout);
 }
 
 void loop() 
