@@ -20,7 +20,8 @@ struct autowp_transport
 
     bool send(const frame& f)
     {
-        return false;
+        MCP2515::ERROR e = mcp2515.sendMessage(&f);
+        return e == MCP2515::ERROR_OK;
     }
 
     bool receive(frame* f)

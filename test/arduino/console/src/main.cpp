@@ -176,7 +176,11 @@ class CanPGNAction : public menu::Action
 
         auto frame = ft::create(p.can_id(), p.data(), p.size());
 
-        t.send(frame);
+        if(t.send(frame) == false)
+        {
+            out << endl;
+            out << "Problem sending frame";
+        }
 
         out << endl;
     }
