@@ -9,6 +9,8 @@ using namespace estd;
 
 bool can_online = false;
 
+extern uint8_t source_address;
+
 extern arduino_ostream cout;
 extern arduino_istream cin;
 
@@ -23,8 +25,14 @@ void init_can(transport& t)
     MCP2515& mcp2515 = t.mcp2515;
     mcp2515.reset();
     can_online = mcp2515.setBitrate(CAN_125KBPS) == MCP2515::ERROR_OK;
-    can_online = mcp2515.setNormalMode();
+    
+    if(!can_online) cout << F("Issue setting bit rate") << endl;
+
+    can_online &= mcp2515.setNormalMode() == MCP2515::ERROR_OK;
+
     //can_online &= mcp2515.setListenOnlyMode() == MCP2515::ERROR_OK;
+
+    source_address = 0x7;
 #else
     cout << F("SAME5x mode: ");
 

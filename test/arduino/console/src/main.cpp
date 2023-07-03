@@ -34,7 +34,7 @@ static transport t;
 // DEBT: Can't alias directly frame_traits due to ambiguity
 // with one in embr::j1939
 using ft = embr::can::frame_traits<transport::frame>;
-static uint8_t source_address = 0x77;
+uint8_t source_address = 0x77;
 
 enum class States
 {
@@ -223,7 +223,7 @@ void menu1(menu::Navigator* nav, ios io)
 
     if(state == States::Entry)
     {
-        cout << F("Top level: ") << endl << endl;
+        cout << F("Top level: source_address=") << source_address << endl << endl;
         state = States::Running;
 
         menu->render(cout);
