@@ -336,7 +336,7 @@ void loop()
 
     if (e == MCP2515::ERROR_OK)
     {
-        cout << hex << canMsg.can_id << ' ' << canMsg.can_dlc << ' ';
+        cout << F("id: ") << hex << canMsg.can_id << ' ' << canMsg.can_dlc << ' ';
 
         for (int i = 0; i<canMsg.can_dlc; i++)
         {  // print the data

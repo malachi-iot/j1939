@@ -38,7 +38,13 @@ struct frame_traits<struct can_frame>
 {
     static struct can_frame create(uint32_t id, const uint8_t* payload, unsigned dlc)
     {
-        return can_frame{};
+        can_frame f;
+
+        f.can_id = id;
+        f.can_dlc = dlc;
+        memcpy(f.data, payload, dlc);
+
+        return f;
     }
 
     // EXPERIMENTAL

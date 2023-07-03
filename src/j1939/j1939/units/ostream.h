@@ -14,7 +14,8 @@ estd::detail::basic_ostream<TStreambuf, TBase>& operator <<(
     auto v_ = (int64_t)v;
     auto v_dec = (int64_t)(v * 100) % 100;
 
-    out << v_;
+    // DEBT: I think ostream is supposed to auto reset to dec, but isn't
+    out << estd::dec << v_;
     out << '.';
     out << v_dec;
 

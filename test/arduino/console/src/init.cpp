@@ -23,14 +23,15 @@ void init_can(transport& t)
 #ifdef AUTOWP_LIB
     cout << F("MCP2515 mode: ");
     MCP2515& mcp2515 = t.mcp2515;
-    mcp2515.reset();
-    can_online = mcp2515.setBitrate(CAN_125KBPS) == MCP2515::ERROR_OK;
+    can_online = mcp2515.reset() == MCP2515::ERROR_OK;
+    can_online &= mcp2515.setBitrate(CAN_125KBPS) == MCP2515::ERROR_OK;
     
     if(!can_online) cout << F("Issue setting bit rate") << endl;
 
     can_online &= mcp2515.setNormalMode() == MCP2515::ERROR_OK;
 
     //can_online &= mcp2515.setListenOnlyMode() == MCP2515::ERROR_OK;
+    //mcp2515.setLoopbackMode();
 
     source_address = 0x7;
 #else
