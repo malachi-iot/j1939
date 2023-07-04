@@ -21,7 +21,7 @@ void init_can(transport& t)
     // https://registry.platformio.org/libraries/adafruit/CAN%20Adafruit%20Fork seems to be obsolete
 
 #ifdef AUTOWP_LIB
-    cout << F("MCP2515 mode: ");
+    cout << F("AUTOWP/MCP2515 mode: ");
     MCP2515& mcp2515 = t.mcp2515;
     can_online = mcp2515.reset() == MCP2515::ERROR_OK;
     can_online &= mcp2515.setBitrate(CAN_125KBPS) == MCP2515::ERROR_OK;
@@ -46,8 +46,10 @@ void init_can(transport& t)
     digitalWrite(PIN_CAN_STANDBY, false); // turn off STANDBY
     pinMode(4, OUTPUT); // BOOST_ENABLE
     digitalWrite(4, true); // turn on booster
+#elif defined(MCP2515_DEFAULT_CS_PIN)
+    cout << F("Adafruit/MCP2515 mode (pin=") << MCP2515_DEFAULT_CS_PIN << F("): ");
 #else
-    cout << F("ESP32 mode: ");
+    cout << F("Adafruit mode: ");
 #endif
 
     // start the CAN bus at 125 kbps.  Would go down to

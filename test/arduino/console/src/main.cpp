@@ -39,7 +39,7 @@ static transport t;
 // DEBT: Can't alias directly frame_traits due to ambiguity
 // with one in embr::j1939
 using ft = embr::can::frame_traits<transport::frame>;
-#ifdef AUTOWP_LIB
+#ifdef __AVR__
 uint8_t source_address = 0x7;
 #else
 #if ADAFRUIT_FEATHER_M4_CAN
