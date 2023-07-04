@@ -12,12 +12,16 @@
 
 #include <estd/cstdint.h>
 
+// Arduino compensators
+// DEBT: Consolidate with estd/embr variety
 #ifdef FEATURE_PRAGMA_PUSH_MACRO
 #pragma push_macro("abs")
+#pragma push_macro("_abs")  // ESP32
 #pragma push_macro("max")
 #pragma push_macro("min")
 #pragma push_macro("word")
 #undef abs
+#undef _abs
 #undef max
 #undef min
 #undef word
@@ -192,5 +196,6 @@ struct type_traits :
 #pragma pop_macro("min")
 #pragma pop_macro("max")
 #pragma pop_macro("abs")
+#pragma pop_macro("_abs")
 #pragma pop_macro("word")
 #endif

@@ -9,7 +9,7 @@ using namespace estd;
 
 bool can_online = false;
 
-extern uint8_t source_address;
+//extern uint8_t source_address;
 
 extern arduino_ostream cout;
 extern arduino_istream cin;
@@ -33,18 +33,22 @@ void init_can(transport& t)
     //can_online &= mcp2515.setListenOnlyMode() == MCP2515::ERROR_OK;
     //mcp2515.setLoopbackMode();
 
-    source_address = 0x7;
+    //source_address = 0x7;
 
     // comes back '0' which seems to map to 'no status'
     //cout << F ("status=") << mcp2515.getStatus();
 
 #else
+#if ADAFRUIT_FEATHER_M4_CAN
     cout << F("SAME5x mode: ");
 
     pinMode(PIN_CAN_STANDBY, OUTPUT);
     digitalWrite(PIN_CAN_STANDBY, false); // turn off STANDBY
     pinMode(4, OUTPUT); // BOOST_ENABLE
     digitalWrite(4, true); // turn on booster
+#else
+    cout << F("ESP32 mode: ");
+#endif
 
     // start the CAN bus at 125 kbps.  Would go down to
     // 25 kbps where TWAI demo likes to be, but it seems

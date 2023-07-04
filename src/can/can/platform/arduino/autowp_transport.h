@@ -47,7 +47,9 @@ struct frame_traits<struct can_frame>
     {
         can_frame f;
 
-        f.can_id = id;
+        // DEBT: Hard wired to extended id for j1939
+        
+        f.can_id = id | CAN_EFF_FLAG;
         f.can_dlc = dlc;
         memcpy(f.data, payload, dlc);
 

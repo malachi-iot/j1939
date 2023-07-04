@@ -1,5 +1,7 @@
 #include <Arduino.h>
 
+#undef _abs     // ESP32 specifically has this additional annoying macro set
+
 #include <estd/chrono.h>
 #include <estd/istream.h>
 #include <estd/ostream.h>
@@ -37,7 +39,16 @@ static transport t;
 // DEBT: Can't alias directly frame_traits due to ambiguity
 // with one in embr::j1939
 using ft = embr::can::frame_traits<transport::frame>;
+#ifdef AUTOWP_LIB
+uint8_t source_address = 0x7;
+#else
+#if ADAFRUIT_FEATHER_M4_CAN
 uint8_t source_address = 0x77;
+#else
+// Assuming ESP32
+uint8_t source_address = 0x70;
+#endif
+#endif
 
 enum class States
 {
@@ -141,7 +152,7 @@ struct CanPGNActionImpl<pgns::cab_message1>
 
     void prep(pdu<pgns::cab_message1>& p)
     {
-        p.destination_address(0x7);
+        p.destination_address(source_address == 7 ? 0x77 : 0x7);
 
         p.cab_interior_temperature_command(c);
         p.requested_percent_fan_speed(50_pct);
