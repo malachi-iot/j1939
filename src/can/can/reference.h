@@ -21,6 +21,10 @@ struct transport
 
         frame() = default;
 
+        frame(uint32_t id) :
+            dlc(0)
+        {}
+
         frame(uint32_t id, uint8_t dlc, const uint8_t* p) :
             id{id}, dlc{dlc}
         {
@@ -46,6 +50,11 @@ template <>
 struct frame_traits<reference::transport::frame>
 {
     using frame = reference::transport::frame;
+
+    inline static frame create(uint32_t id)
+    {
+        return frame(id);
+    }
 
     inline static frame create(uint32_t id, const uint8_t* payload, uint8_t length)
     {

@@ -14,11 +14,11 @@ struct adafruit_transport : embr::can::reference::transport
     {
         // DEBT: Since this is all j1939 centric, we always send out
         // extended packet.
-        CAN.beginExtendedPacket(f.id, f.dlc);
+        bool r = CAN.beginExtendedPacket(f.id, f.dlc);
         //CAN.write(f.payload.data(), f.payload.length());
         for(int i = 0; i < f.dlc; i++)
-            CAN.write(f.payload[i]);
-        return CAN.endPacket();
+            r &= CAN.write(f.payload[i]);
+        return r &= CAN.endPacket();
     }
 
     bool receive(frame* f)

@@ -178,6 +178,16 @@ void testOut()
     pdu<pgns::time_date> p;
 
     send(p);
+
+    //auto frame2 = ft::create(0x123);
+
+    //t.send(frame2);
+
+#ifndef AUTOWP_LIB
+    CAN.beginPacket(0x123);
+    CAN.endPacket();
+#endif
+
 }
 
 
@@ -209,7 +219,7 @@ class CanPGNAction : public menu::Action
 
         impl.prep(p);
 
-        send(p, *out);
+        send(p, &out);
     }
 };
 
