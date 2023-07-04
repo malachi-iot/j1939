@@ -383,6 +383,8 @@ void setup()
 
 void loop() 
 {
+    bool r = false;
+
 #ifdef AUTOWP_LIB
     struct can_frame canMsg;
     MCP2515::ERROR e = t.mcp2515.readMessage(&canMsg);
@@ -397,7 +399,7 @@ void loop()
             Serial.print(" ");
         }
 
-        //process_incoming(dca, t, canMsg);
+        r = process_incoming(dca, t, canMsg);
 
         cout << endl;
     }
@@ -410,11 +412,18 @@ void loop()
         cout << F("Received packet with id 0x") << hex << frame.id;
         cout << ' ' << frame.dlc;
         cout << endl;
+
+        r = process_incoming(dca, t, canMsg);
     }
 
     //testOut();
     //estd::this_thread::sleep_for(100ms);
 #endif
+
+    if(r)
+    {
+        cout << F("CA registered ") << dca.name();
+    }
 
 /*
     uint32_t now_ms = millis();

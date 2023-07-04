@@ -43,12 +43,14 @@ struct autowp_transport
 template <>
 struct frame_traits<struct can_frame>
 {
+    using frame = struct can_frame;
+
     static struct can_frame create(uint32_t id, const uint8_t* payload, unsigned dlc)
     {
         can_frame f;
 
         // DEBT: Hard wired to extended id for j1939
-        
+
         f.can_id = id | CAN_EFF_FLAG;
         f.can_dlc = dlc;
         memcpy(f.data, payload, dlc);
@@ -62,6 +64,15 @@ struct frame_traits<struct can_frame>
         return create(id, payload.data(), payload.size()); 
     }
 
+    static constexpr uint32_t id(const frame& f)
+    {
+        return f.can_id & ~CAN_EFF_FLAG;
+    }
+
+    static constexpr const uint8_t* payload(const frame& f)
+    {
+        return f.data;
+    }
 };
 
 
