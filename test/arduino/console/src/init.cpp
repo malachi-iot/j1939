@@ -34,6 +34,10 @@ void init_can(transport& t)
     //mcp2515.setLoopbackMode();
 
     source_address = 0x7;
+
+    // comes back '0' which seems to map to 'no status'
+    //cout << F ("status=") << mcp2515.getStatus();
+
 #else
     cout << F("SAME5x mode: ");
 

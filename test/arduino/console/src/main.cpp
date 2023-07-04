@@ -179,7 +179,15 @@ class CanPGNAction : public menu::Action
         if(t.send(frame) == false)
         {
             out << endl;
-            out << "Problem sending frame";
+            out << F("Problem sending frame");
+
+#ifdef AUTOWP_LIB
+            // Coming back 'ERROR_ALLTXBUSY' which indicates 3 internal buffers
+            // got filled for output, but output never happened
+            // DEBT: casting to int is obnoxious, but we're still defaulting
+            // to 'char' cast somehow
+            out << F(": ERROR=") << (int)t.last_error;
+#endif
         }
 
         out << endl;

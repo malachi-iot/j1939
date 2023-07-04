@@ -15,18 +15,25 @@ struct autowp_transport
     typedef struct can_frame frame;
 
     MCP2515 mcp2515;
+    // DEBT: Artifact of not-really-HAL CAN layer
+    MCP2515::ERROR last_error;
 
     autowp_transport(int cs) : mcp2515(cs) {}
 
     bool send(const frame& f)
     {
         MCP2515::ERROR e = mcp2515.sendMessage(&f);
+
+        last_error = e;
+
         return e == MCP2515::ERROR_OK;
     }
 
     bool receive(frame* f)
     {
         MCP2515::ERROR e = mcp2515.readMessage(f);
+
+        last_error = e;
 
         return e == MCP2515::ERROR_OK;
     }
