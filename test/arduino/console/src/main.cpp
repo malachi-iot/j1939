@@ -413,7 +413,7 @@ void loop()
         cout << ' ' << frame.dlc;
         cout << endl;
 
-        r = process_incoming(dca, t, canMsg);
+        r = process_incoming(dca, t, frame);
     }
 
     //testOut();
@@ -423,6 +423,7 @@ void loop()
     if(r)
     {
         cout << F("CA registered ") << dca.name();
+        cout << endl;
     }
 
 /*
