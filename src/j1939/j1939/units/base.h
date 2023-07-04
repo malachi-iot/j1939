@@ -94,7 +94,19 @@ protected:
         // one higher precision for that)
         using ct = estd::common_type_t<Rep, Rep2>;
 
-        return static_cast<ct>(s.count()) * rd::num / rd::den;
+        // DEBT: offset logic was designed to shift "native" j1939 type output
+        // to human-friendly form.  In this case though we sometimes go from
+        // human-friendly back to "native" so we have to reverse it all.
+        // I just brute forced this and definitely needs more attention
+        // DEBT: It's likely we hit some narrowing conversion situations here,
+        // we prefer not to implicitly ignore that as a compiler feature, but rather
+        // explicitly ignore it with some kind of indication elsewhere that narrowing happened
+#if __cpp_constexpr >= 201304L   // "relaxed constexpr" (just to make debugging easier)
+        auto intermediate = static_cast<ct>(s.count());
+        return -F{}(intermediate * -rd::num / rd::den);
+#else
+        return -F{}(static_cast<ct>(s.count()) * -rd::num / rd::den);
+#endif
     }
 
 public:
@@ -117,20 +129,12 @@ public:
     template <class Rep2, class Period2, class F2>
     unit_base& operator=(const unit_base<Rep2, Period2, Tag, F2>& copy_from)
     {
-        // DEBT: offset logic was designed to shift "native" j1939 type output
-        // to human-friendly form.  In this case though we sometimes go from
-        // human-friendly back to "native" so we have to reverse it all.
-        // I just brute forced this and definitely needs more attention
-        // DEBT: intermediate ends up being unsigned when signed negatives are
-        // coming in.  through the magic of unsigned/signed innate convertibility
-        // things still work, but this is a problem waiting to happen
-        auto intermediate = convert_from(copy_from);
-        auto r1 = -F{}(-intermediate);
-        rep_ = r1;
+        rep_ = convert_from(copy_from);
         return *this;
     }
 
-    typedef decltype(F{}(std::declval<Rep>())) rep;
+    typedef decltype(F{}(std::declval<Rep>())) f_rep;
+    using rep = f_rep;
     typedef Rep root_rep;
     //typedef Rep rep;
 
@@ -143,7 +147,7 @@ public:
     // to have less implicit behaviors
     void root_count(root_rep v) { rep_ = v; }
 
-    constexpr rep count() const { return F{}(rep_); }
+    constexpr f_rep count() const { return F{}(rep_); }
 
     // EXPERIMENTAL
     template <class TCompountUnit>
