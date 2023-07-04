@@ -10,6 +10,7 @@
 
 #include <j1939/pdu.h>
 #include <j1939/pgn.h>
+#include <j1939/ca.hpp>
 
 #include <j1939/data_field/all.hpp>
 
@@ -19,6 +20,8 @@
 #include "main.h"
 #include "menu.hpp"
 #include "transport.h"
+
+#include "ca.hpp"
 
 uint32_t start_ms;
 
@@ -49,6 +52,8 @@ uint8_t source_address = 0x77;
 uint8_t source_address = 0x70;
 #endif
 #endif
+
+diagnostic_ca<transport> dca;
 
 enum class States
 {
@@ -392,6 +397,8 @@ void loop()
             Serial.print(" ");
         }
 
+        //process_incoming(dca, t, canMsg);
+
         cout << endl;
     }
 #else
@@ -405,8 +412,8 @@ void loop()
         cout << endl;
     }
 
-    testOut();
-    estd::this_thread::sleep_for(100ms);
+    //testOut();
+    //estd::this_thread::sleep_for(100ms);
 #endif
 
 /*

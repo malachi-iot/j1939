@@ -1,5 +1,7 @@
 #include <Arduino.h>
 
+#include <SPI.h>
+
 #include <estd/istream.h>
 #include <estd/ostream.h>
 
@@ -22,9 +24,17 @@ void init_can(transport& t)
 
 #ifdef AUTOWP_LIB
     cout << F("AUTOWP/MCP2515 mode: ");
+    
+    //SPI.begin();
+
     MCP2515& mcp2515 = t.mcp2515;
     can_online = mcp2515.reset() == MCP2515::ERROR_OK;
-    can_online &= mcp2515.setBitrate(CAN_125KBPS) == MCP2515::ERROR_OK;
+
+    // Oh my god, I spent 3+ hours diagnosing problems here only to find out
+    // we need MCP_8MHZ here.  Thanks to stumbling on this from 
+    // https://how2electronics.com/interfacing-mcp2515-can-bus-module-with-arduino/
+    //can_online &= mcp2515.setBitrate(CAN_125KBPS) == MCP2515::ERROR_OK;
+    can_online &= mcp2515.setBitrate(CAN_125KBPS, MCP_8MHZ) == MCP2515::ERROR_OK;
     
     if(!can_online) cout << F("Issue setting bit rate") << endl;
 
