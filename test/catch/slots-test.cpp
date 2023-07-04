@@ -102,15 +102,38 @@ TEST_CASE("slots")
 
         REQUIRE(h.count() == 6425);
     }
-    SECTION("SAEtm14")
+    SECTION("SAEtp01")
     {
         typedef slot_traits<slots::SAEtp01> traits;
         traits::type temp1{traits::max()};
-        embr::units::centigrade<int> c{0};
+        embr::units::celsius<int> c{0};
 
         c = temp1;
 
         REQUIRE(c.count() == 210);
+    }
+    SECTION("SAEtp02")
+    {
+        typedef slot_traits<slots::SAEtp02> traits;
+        //traits::type temp1{traits::max()};
+        traits::type temp1{0}, temp2{0};
+        embr::units::celsius<int> c{0}, c2{10}, c3(-100);
+
+        temp2 = c;
+
+        c = temp1;
+
+        REQUIRE(c.count() == -273);
+
+        REQUIRE(temp2.root_count() == 8736);
+
+        temp2 = c2;
+
+        REQUIRE(temp2.root_count() == 9056);
+
+        temp2 = c3;
+
+        REQUIRE(temp2.root_count() == 8736);
     }
     SECTION("SAEev01")
     {

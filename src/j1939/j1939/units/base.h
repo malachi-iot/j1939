@@ -117,7 +117,16 @@ public:
     template <class Rep2, class Period2, class F2>
     unit_base& operator=(const unit_base<Rep2, Period2, Tag, F2>& copy_from)
     {
-        rep_ = convert_from(copy_from);
+        // DEBT: offset logic was designed to shift "native" j1939 type output
+        // to human-friendly form.  In this case though we sometimes go from
+        // human-friendly back to "native" so we have to reverse it all.
+        // I just brute forced this and definitely needs more attention
+        // DEBT: intermediate ends up being unsigned when signed negatives are
+        // coming in.  through the magic of unsigned/signed innate convertibility
+        // things still work, but this is a problem waiting to happen
+        auto intermediate = convert_from(copy_from);
+        auto r1 = -F{}(-intermediate);
+        rep_ = r1;
         return *this;
     }
 
