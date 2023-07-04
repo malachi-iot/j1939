@@ -390,6 +390,7 @@ void loop()
     if (can_online && t.receive(&frame))
     {
         cout << F("Received packet with id 0x") << hex << frame.id;
+        cout << ' ' << frame.dlc;
         cout << endl;
     }
 
