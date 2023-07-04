@@ -133,7 +133,7 @@ TEST_CASE("slots")
 
         temp2 = c3;
 
-        REQUIRE(temp2.root_count() == 8736);
+        REQUIRE(temp2.root_count() == 5536);
     }
     SECTION("SAEev01")
     {
