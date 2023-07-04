@@ -1,8 +1,10 @@
 #include <Arduino.h>
 
+#include <estd/chrono.h>
 #include <estd/istream.h>
 #include <estd/ostream.h>
 #include <estd/string.h>
+#include <estd/thread.h>
 
 #include <j1939/pdu.h>
 #include <j1939/pgn.h>
@@ -19,6 +21,7 @@
 uint32_t start_ms;
 
 using namespace estd;
+using namespace estd::chrono_literals;
 using namespace embr::j1939;
 using namespace embr::units::literals;
 
@@ -145,6 +148,38 @@ struct CanPGNActionImpl<pgns::cab_message1>
     }
 };
 
+template <pgns pgn>
+void send(pdu<pgn>& p, arduino_ostream* out = nullptr)
+{
+    p.source_address(source_address);
+
+    auto frame = ft::create(p.can_id(), p.data(), p.size());
+
+    if(t.send(frame) == false && out != nullptr)
+    {
+        *out << F("Problem sending frame");
+
+#ifdef AUTOWP_LIB
+        // Coming back 'ERROR_ALLTXBUSY' which indicates 3 internal buffers
+        // got filled for output, but output never happened
+        // DEBT: casting to int is obnoxious, but we're still defaulting
+        // to 'char' cast somehow
+        *out << F(": ERROR=") << (int)t.last_error;
+#endif
+
+        *out << endl;
+    }
+}
+
+
+void testOut()
+{
+    // TODO: Document difference between time_date and time_and_date
+    pdu<pgns::time_date> p;
+
+    send(p);
+}
+
 
 template <pgns pgn>
 class CanPGNAction : public menu::Action
@@ -168,29 +203,13 @@ class CanPGNAction : public menu::Action
 
         impl.action(out);
 
-        pdu<pgn> p;
+        out << endl;
 
-        p.source_address(source_address);
+        pdu<pgn> p;
 
         impl.prep(p);
 
-        auto frame = ft::create(p.can_id(), p.data(), p.size());
-
-        if(t.send(frame) == false)
-        {
-            out << endl;
-            out << F("Problem sending frame");
-
-#ifdef AUTOWP_LIB
-            // Coming back 'ERROR_ALLTXBUSY' which indicates 3 internal buffers
-            // got filled for output, but output never happened
-            // DEBT: casting to int is obnoxious, but we're still defaulting
-            // to 'char' cast somehow
-            out << F(": ERROR=") << (int)t.last_error;
-#endif
-        }
-
-        out << endl;
+        send(p, *out);
     }
 };
 
@@ -363,6 +382,9 @@ void loop()
         cout << F("Received packet with id 0x") << hex << frame.id;
         cout << endl;
     }
+
+    testOut();
+    estd::this_thread::sleep_for(100ms);
 #endif
 
 /*
