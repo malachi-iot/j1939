@@ -103,7 +103,9 @@ protected:
         // explicitly ignore it with some kind of indication elsewhere that narrowing happened
 #if __cpp_constexpr >= 201304L   // "relaxed constexpr" (just to make debugging easier)
         auto intermediate = static_cast<ct>(s.count());
-        return -F{}(intermediate * -rd::num / rd::den);
+        intermediate *= -rd::num;
+        intermediate /= rd::den;
+        return -F{}(intermediate);
 #else
         return -F{}(static_cast<ct>(s.count()) * -rd::num / rd::den);
 #endif

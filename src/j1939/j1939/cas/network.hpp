@@ -71,6 +71,10 @@ bool network_ca<TTransport, TScheduler>::process_incoming(transport_type& t, con
             if(is_contender(p))
                 evaluate_contender(t, p);
             break;
+
+        case states::unstarted:
+        case states::claim_failed:
+            break;
     }
 
     if(sa == given_address)
