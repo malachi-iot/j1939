@@ -31,8 +31,7 @@ struct passthrough
     constexpr T operator()(T v) const { return v; }
 
 #if __cpp_constexpr >= 201304L   // "relaxed constexpr" (just to make debugging easier)
-    // Just for diagnostic, prefer above so that value conversions
-    // happen sooner and more visibly
+    // Just for diagnostic for more visibility
     template <class T2>
     constexpr T operator()(const T2& v) const
     {

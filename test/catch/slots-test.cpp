@@ -173,4 +173,18 @@ TEST_CASE("slots")
 
         REQUIRE(v.count() == 250);
     }
+    SECTION("internal")
+    {
+        using type = internal::offset_resolver<int, -5000>::offset<>;
+        constexpr unsigned offset = type::value;
+
+        // This proves we flipped it to a subtract unsigned operation
+        REQUIRE(offset == 5000);
+
+        int v = 5;
+
+        v = type{}(v);
+
+        REQUIRE(v == -4995);
+    }
 }
