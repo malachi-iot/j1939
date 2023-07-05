@@ -53,6 +53,8 @@ enum class pgns : uint32_t
     tp_dt = 0xEB,                               ///< Transport Protocol - Data Transfer [12]
     tp_cm = 0xEC,                               ///< Transport Protocol - Connection Management [12]
     address_claimed = 0xEE,                   // [7]
+    mf0 = 0xEF,                                 ///< Manufacturer Specific [2]
+    mf1 = 0x1EF,                                ///< Manufacturer Specific [2]
     electronic_brake_system1 = 0x200,           // [14]
     external_brake_request = 0x400,             // [14]
     CANopen_app_message1 = 0x500,               // [14]
@@ -74,6 +76,8 @@ enum class pgns : uint32_t
     wireless_communications_message_1 = 64937,  // [13]
     signal_preemption = 64957,                  // [13]
     oel = 64972,                                ///<  Operator External Light Controls Message [8]
+    fms_identity = 64977,                       // [13]
+    ecu_performance = 64978,                    // [13]
     cab_message_3 = 64980,                      // [8]
     basic_joystick_message_1 = 64982,           // [13]
     wsmem = 65036,                              ///< "Working Set Master Message" [10] 4.2.4.2
@@ -111,7 +115,11 @@ enum class pgns : uint32_t
     brakes = 0xFEFA,                            // [17]
     dash_display = 0xFEFC,                      // [17]
 
+    mf2_start = 0xFF00,                         // [2]
+    mf2_end = 0xFFFF,                           // [2]
+
     // NOTE: Following not necessarily j1939, may be NMEA 2000 only
+    // +++ NMEA 2000 soft boundary
     nmea_field_group_function = 126208,         // [15]
     nmea_pgn_group_function = 126464,           // [15]
 
@@ -138,6 +146,10 @@ enum class pgns : uint32_t
 
     environmental_parameters = 130311,          // [18]
     temperature = 130312,                       // [18]
+    // --- NMEA 2000 soft boundary
+
+    mf3_start = 0x1FF00,                        // [2]
+    mf3_end = 0x1FFFF                           // [2]
 };
 
 

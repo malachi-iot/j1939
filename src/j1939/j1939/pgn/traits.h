@@ -15,14 +15,19 @@ namespace internal {
 template <spns ...Values>
 using spns_list = estd::variadic::values<spns, Values...>;
 
+struct traits_base
+{
+    using s = embr::j1939::spns;
+
+    static constexpr unsigned priority = 6;
+};
+
 }
 
 
 template <>
-struct traits<pgns::oel>
+struct traits<pgns::oel> : internal::traits_base
 {
-    using s = embr::j1939::spns;
-    
     using spns = internal::spns_list<
         s::turn_signal_switch,
         s::high_low_beam_switch,
@@ -53,13 +58,18 @@ struct traits<pgns::fan_drive_1>
 
 
 template <>
-struct traits<pgns::cab_message1>
+struct traits<pgns::cab_message1> : internal::traits_base
 {
-    using s = embr::j1939::spns;
-
     using spns = internal::spns_list<
         s::requested_percent_fan_speed,
-        s::cab_interior_temperature_command>;
+        s::cab_interior_temperature_command,
+        s::battery_main_switch_hold_request,
+        s::operator_seat_direction_switch,
+        s::seat_belt_switch,
+        s::park_brake_command,
+        s::engine_automatic_start_enable_switch,
+        s::auxiliary_heater_mode_request,
+        s::request_cab_zone_heating>;
 
     static constexpr const char* name()
     {
@@ -76,7 +86,44 @@ struct traits<pgns::cab_message1>
 
 
 template <>
-struct traits<pgns::cab_message_3>
+struct traits<pgns::fms_identity> : internal::traits_base
+{
+    static constexpr unsigned priority = 7;
+
+    using spns = internal::spns_list<
+        s::fms_sw_supported>;
+
+    static constexpr const char* abbrev() { return "FMS"; }
+};
+
+
+
+template <>
+struct traits<pgns::ecu_performance> : internal::traits_base
+{
+    using spns = internal::spns_list<
+        s::keep_alive_battery_consumption,
+        s::data_memory_usage>;
+
+    static constexpr const char* name()
+    {
+        return "ECU Performance";
+    }
+
+    static constexpr const char* description()
+    {
+        return name();
+    }
+
+    static constexpr const char* abbrev()
+    {
+        return "EP";
+    }
+};
+
+
+template <>
+struct traits<pgns::cab_message_3> : internal::traits_base
 {
     static constexpr const char* name()
     {

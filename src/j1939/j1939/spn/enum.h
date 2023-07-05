@@ -185,6 +185,10 @@ enum class spns
     joystick1_button12_pressed_status = 2696,       // [13]
     joystick2_x_axis_position = 2697,               // [13]
     joystick2_y_axis_position = 2698,               // [13]
+    data_memory_usage = 2802,                       // [13]
+    keep_alive_battery_consumption = 2803,          // [13]
+    fms_diagnostic_supported = 2804,                // [13]
+    fms_requests_supported = 2805,                  // [13]
     fms_sw_supported = 2806,                        // [11]
     NAME_of_working_set_member = 2845,              ///<  [12] 4.2.4.5
     address_assignment = 2847,                      ///<  "new source address" [5], [12] Section 4.2.3.3
