@@ -3,6 +3,7 @@
 #include <embr/platform/guard-in.h>
 
 #include "amb.hpp"
+#include "bjm1.hpp"
 #include "bm.hpp"
 #include "bt1.hpp"
 #include "ccc.hpp"

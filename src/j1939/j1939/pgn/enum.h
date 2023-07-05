@@ -75,6 +75,7 @@ enum class pgns : uint32_t
     signal_preemption = 64957,                  // [13]
     oel = 64972,                                ///<  Operator External Light Controls Message [8]
     cab_message_3 = 64980,                      // [8]
+    basic_joystick_message_1 = 64982,           // [13]
     wsmem = 65036,                              ///< "Working Set Master Message" [10] 4.2.4.2
     wsmstr = 65037,                             ///< "Working Set Member Message" [10] 4.2.4.4
     vehicle_electrical_power_3 = 65103,         // [11]
