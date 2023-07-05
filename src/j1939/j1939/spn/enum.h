@@ -34,6 +34,7 @@ enum class spns
     alternator_potential = 167,                     // [11]
     battery_potential = 168,                        // [5]
     power_input_1 = 168,                            // [5]
+    cargo_ambient_temperature = 169,                // [13]
     cab_interior_temperature = 170,                 // [13]
     ambient_air_temperature = 171,                  // [13]
     fuel_temperature = 174,
@@ -119,10 +120,13 @@ enum class spns
     alternator_current_highres = 1795,              // [7]
     battery1_temperature = 1800,                    // [7]
     battery2_temperature = 1801,                    // [7]
+    led_display_mode_control = 1805,                // [13]
+    led_display_deadband_control = 1806,            // [13]
     steering_wheel_turn_angle = 1807,               // [7]
     vdc_information_signal = 1813,                  // [11]
     vdc_fully_operational = 1814,                   // [11]
     vdc_brake_light_request = 1815,                 // [13]
+    position_of_doors = 1821,                       // [13]
     total_average_fuel_rate = 1834,                 // [11]
     total_average_fuel_economy = 1835,              // [11]
     seat_belt_switch = 1856,                        // [11]
@@ -158,9 +162,11 @@ enum class spns
     engine_demand_percent_torque = 2432,            // [5]
     parameter_group_number_rqst = 2540,             // [5]
     controller_application_identity = 2554,         // [5]
+    short_name_of_device = 2554,                    // [14] Section D.1
     rqst2 = 2574,                                   // [14] Section D.1
     use_transfer_mode = 2575,                       // [14] Section D.1
-    short_name_of_device = 2554,                    // [14] Section D.1
+    net_battery_current_highres = 2579,             // [13]
+    power_relay = 2634,                             // [13]
     joystick1_x_lever_left_neg_pos_status = 2670,   // [7]
     fms_sw_supported = 2806,                        // [11]
     NAME_of_working_set_member = 2845,              ///<  [12] 4.2.4.5
@@ -186,6 +192,11 @@ enum class spns
     aftertreatment_1_air_system_relay = 3492,       // [13]
     aftertreatment_2_air_system_relay = 3506,       // [13]
     sensor_supply_voltage_1 = 3509,                 // [13]
+    sensor_supply_voltage_2 = 3510,                 // [13]
+    sensor_supply_voltage_3 = 3511,                 // [13]
+    sensor_supply_voltage_4 = 3512,                 // [13]
+    sensor_supply_voltage_5 = 3513,                 // [13]
+    sensor_supply_voltage_6 = 3514,                 // [13]
     auxiliary_io_112 = 3935,                        // [13]
     actual_engine_percent_torque_fractional = 4154, // [5]
     auxiliary_io_channel_3 = 4158,                  // [13]

@@ -14,6 +14,19 @@ namespace embr { namespace j1939 {
 
 namespace spn {
 
+
+template <>
+constexpr descriptor get_descriptor<spns::net_battery_current>()
+{
+    return descriptor{1, 1, 8};
+}
+
+template <>
+constexpr descriptor get_descriptor<spns::alternator_current>()
+{
+    return descriptor{2, 1, 8};
+}
+
 template <>
 constexpr descriptor get_descriptor<spns::battery_potential>()
 {
