@@ -208,6 +208,8 @@ enum class spns
     aftertreatment_1_atomization_air_actuator = 3491, // [13]
     aftertreatment_1_air_system_relay = 3492,       // [13]
     aftertreatment_2_air_system_relay = 3506,       // [13]
+    tecu_ecu_pwr_relay = 3507,                      // [13]
+    tecu_pwr_relay = 3508,                          // [13]
     sensor_supply_voltage_1 = 3509,                 // [13]
     sensor_supply_voltage_2 = 3510,                 // [13]
     sensor_supply_voltage_3 = 3511,                 // [13]
