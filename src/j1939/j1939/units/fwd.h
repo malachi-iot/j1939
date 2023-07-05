@@ -12,12 +12,21 @@ struct traits;
 // Copying the playbook from chrono
 namespace internal {
 
+template <typename TInt, TInt add>
+struct subtractor;
+
+template <typename TInt, TInt add>
+struct adder;
+
 struct unit_base_tag {};
 
 template <class T>
 struct passthrough
 {
     typedef T int_type;
+
+    // DEBT: Sloppy, but less sloppy than slapping negative signs everywhere
+    using reversal = passthrough<T>;
 
     constexpr T operator()(T v) const { return v; }
 

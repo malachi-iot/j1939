@@ -10,16 +10,31 @@ namespace internal {
 
 // DEBT: Pretty sure there's a std/estd flavor of this we can use
 template <typename TInt, TInt add>
-struct adder
+struct subtractor : estd::integral_constant<TInt, add>
 {
-    typedef TInt int_type;
-    static constexpr TInt value() { return add; }
+    template <typename TInt2>
+    constexpr TInt operator()(TInt2 v) const
+    {
+        return v - add;
+    }
 
+    // DEBT: Sloppy, but less sloppy than slapping negative signs everywhere
+    // else.
+    using reversal = adder<TInt, add>;
+};
+
+template <typename TInt, TInt add>
+struct adder : estd::integral_constant<TInt, add>
+{
     template <typename TInt2>
     constexpr TInt operator()(TInt2 v) const
     {
         return v + add;
     }
+
+    // DEBT: Sloppy, but less sloppy than slapping negative signs everywhere
+    // else.
+    using reversal = subtractor<TInt, add>;
 };
 
 
@@ -94,20 +109,22 @@ protected:
         // one higher precision for that)
         using ct = estd::common_type_t<Rep, Rep2>;
 
-        // DEBT: offset logic was designed to shift "native" j1939 type output
+        // Offset logic was designed to shift "native" j1939 type output
         // to human-friendly form.  In this case though we sometimes go from
         // human-friendly back to "native" so we have to reverse it all.
-        // I just brute forced this and definitely needs more attention
+
         // DEBT: It's likely we hit some narrowing conversion situations here,
         // we prefer not to implicitly ignore that as a compiler feature, but rather
         // explicitly ignore it with some kind of indication elsewhere that narrowing happened
 #if __cpp_constexpr >= 201304L   // "relaxed constexpr" (just to make debugging easier)
         auto intermediate = static_cast<ct>(s.count());
-        intermediate *= -rd::num;
+        constexpr typename F::reversal f;
+        intermediate *= rd::num;
         intermediate /= rd::den;
-        return -F{}(intermediate);
+        return f(intermediate);
 #else
-        return -F{}(static_cast<ct>(s.count()) * -rd::num / rd::den);
+        return typename F::reversal{}(
+            static_cast<ct>(s.count()) * rd::num / rd::den);
 #endif
     }
 
