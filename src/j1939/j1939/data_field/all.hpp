@@ -3,6 +3,9 @@
 #include <embr/platform/guard-in.h>
 
 #include "amb.hpp"
+#include "bm.hpp"
+#include "bt1.hpp"
+#include "ccc.hpp"
 #include "ccvs.hpp"
 #include "cm1.hpp"
 #include "cm3.hpp"
@@ -19,6 +22,8 @@
 #include "time.hpp"
 #include "transport_protocol.hpp"
 #include "vep1.hpp"
+#include "vep2.hpp"
+#include "vep3.hpp"
 #include "virtual_terminal.hpp"
 
 #include <embr/platform/guard-out.h>

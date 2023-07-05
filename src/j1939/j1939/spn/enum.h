@@ -184,7 +184,7 @@ enum class spns
     auxiliary_io_17 = 3840,                         // [13]
     aftertreatment_1_atomization_air_actuator = 3491, // [13]
     aftertreatment_1_air_system_relay = 3492,       // [13]
-    aftertreatment_1_air_system_relay = 3506,       // [13]
+    aftertreatment_2_air_system_relay = 3506,       // [13]
     sensor_supply_voltage_1 = 3509,                 // [13]
     auxiliary_io_112 = 3935,                        // [13]
     actual_engine_percent_torque_fractional = 4154, // [5]

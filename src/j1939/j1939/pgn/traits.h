@@ -92,4 +92,54 @@ struct traits<pgns::cab_message_3>
 };
 
 
+
+template <>
+struct traits<pgns::lighting_data>
+{
+    static constexpr const char* name()
+    {
+        return "Lighting Data";
+    }
+
+    static constexpr const char* description()
+    {
+        return "A response to the request for lighting data in the lighting command message.";
+    }
+
+    static constexpr const char* abbrev() { return "LD"; }
+};
+
+
+template <>
+struct traits<pgns::lighting_command>
+{
+    using s = embr::j1939::spns;
+
+    using spns = internal::spns_list<
+        s::alternate_headlights_cmd,
+        s::low_beam_headlight_cmd,
+        s::high_beam_headlight_cmd,
+        s::right_turn_signal_lights_cmd,
+        s::left_turn_signal_lights_cmd,
+        s::backup_lights_and_alarm_horn_cmd,
+        s::center_stop_lights_cmd,
+        s::right_stop_lights_cmd,
+        s::left_stop_lights_cmd,
+        s::rear_fog_lights_cmd
+    >;
+
+    static constexpr const char* name()
+    {
+        return "Lighting Command";
+    }
+
+    static constexpr const char* description()
+    {
+        return "Message from the tractor to all lighting controllers on the tractor and attached implements";
+    }
+
+    static constexpr const char* abbrev() { return "LCMD"; }
+};
+
+
 }}}
