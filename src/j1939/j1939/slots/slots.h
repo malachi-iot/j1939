@@ -21,9 +21,10 @@ template <class TInt, TInt offset_>
 struct offset_resolver<TInt, offset_,
     estd::internal::Range<(offset_ >= 0)> >
 {
-#if __AVR__
+#if __AVR__ || __cplusplus < 201304L
     using uint_type = TInt;
 #else
+    // DEBT: Add a version.in.h to ESTD
     // DEBT: Add this to estd so that we can use this in AVR
     using uint_type = std::make_unsigned_t<TInt>;
 #endif
@@ -38,10 +39,9 @@ template <class TInt, TInt offset_>
 struct offset_resolver<TInt, offset_,
     estd::internal::Range<(offset_ < 0)> >
 {
-#if __AVR__
+#if __AVR__ || __cplusplus < 201304L
     using uint_type = TInt;
 #else
-    // DEBT: Add this to estd so that we can use this in AVR
     using uint_type = std::make_unsigned_t<TInt>;
 #endif
 
