@@ -23,7 +23,7 @@ struct unit_base_tag {};
 template <class T>
 struct passthrough
 {
-    typedef T int_type;
+    using value_type = T;
 
     // DEBT: Sloppy, but less sloppy than slapping negative signs everywhere
     using reversal = passthrough<T>;

@@ -8,7 +8,9 @@ namespace embr { namespace units {
 // Copying the playbook from chrono
 namespace internal {
 
-// DEBT: Pretty sure there's a std/estd flavor of this we can use
+// DEBT: Pretty sure there's a std/estd flavor of this we can use,
+// though our flavor provides extra value in that reflected 'type'
+// is important for consumer to use for precision/signing
 template <typename TInt, TInt add>
 struct subtractor : estd::integral_constant<TInt, add>
 {
@@ -152,7 +154,7 @@ public:
         return *this;
     }
 
-    typedef decltype(F{}(std::declval<Rep>())) f_rep;
+    using f_rep = typename F::value_type;
     using rep = f_rep;
     typedef Rep root_rep;
     //typedef Rep rep;

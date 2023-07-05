@@ -12,7 +12,8 @@ namespace internal {
 
 // NOTE: offset_resolver itself works, but consuming convert_from isn't smart
 // enough to untangle signed vs unsigned requirements yet, so this remains
-// dormant
+// dormant.  Furthermore, convert_from needs a clue as to what offset type
+// should be, since initiator may be lower precision/unsigned
 template <class TInt, TInt offset_, typename = estd::internal::Range<true> >
 struct offset_resolver;
 
