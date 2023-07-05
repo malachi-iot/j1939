@@ -17,6 +17,8 @@
  * 13. sae_j_1939_spreadsheet_supported_by_TwidoExtreme.xls
  * 14. https://www.csselectronics.com/pages/j1939-pgn-conversion-tool
  * 15. https://www.nmea.org/Assets/july%202010%20nmea2000_v1-301_app_b_pgn_field_list.pdf
+       https://www.cruisersforum.com/forums/attachment.php?attachmentid=110405&d=1443889836 
+       NMEA2000_v1-301_App_B_PGN_Field_List.pdf
  * 16. J1939-21 (DEC2006)
  * 17. J1939-71 (MAR2011)
  * 18. J1939 (2007)
@@ -46,8 +48,8 @@ enum class pgns : uint32_t
     cab_message1 = 0xE0,                        ///< [11] - "Message containing parameters originating from the vehicle cab."
     vt12 = 0xE6,                                ///< Virtual Terminal-to-Node (ISO 11783-6) [8]
     vt21 = 0xE7,                                ///< Virtual Node-to-Terminal (ISO 11783-6) [8]
-    acknowledgement = 0xE8,                   // [7]
-    request = 0xEA,                           // [7]
+    acknowledgement = 0xE8,                     // [7], [15]
+    request = 0xEA,                             // [7]
     tp_dt = 0xEB,                               ///< Transport Protocol - Data Transfer [12]
     tp_cm = 0xEC,                               ///< Transport Protocol - Connection Management [12]
     address_claimed = 0xEE,                   // [7]
@@ -109,8 +111,11 @@ enum class pgns : uint32_t
     dash_display = 0xFEFC,                      // [17]
 
     // NOTE: Following not necessarily j1939, may be NMEA 2000 only
-    nmea_group_function = 126208,               // [15]
+    nmea_field_group_function = 126208,         // [15]
+    nmea_pgn_group_function = 126464,           // [15]
+
     system_time = 126992,                       // [15]
+    product_information = 126996,               // [15]
     switch_bank_status = 127501,                // [15]
     switch_bank_control = 127502,               // [8]
 
