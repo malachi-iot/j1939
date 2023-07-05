@@ -13,7 +13,7 @@
 namespace embr { namespace j1939 {
 
 template <class TContainer>
-struct data_field<pgns::nmea_group_function, TContainer> : internal::data_field_base<TContainer>
+struct data_field<pgns::nmea_field_group_function, TContainer> : internal::data_field_base<TContainer>
 {
     typedef internal::data_field_base<TContainer> base_type;
 
