@@ -55,9 +55,6 @@ bool network_ca<TTransport, TScheduler>::process_incoming(transport_type& t, con
 {
     pdu<pgns::address_claimed> p_resp;
 
-    p_resp.destination_address(address_traits::global);
-    p_resp.payload() = name;
-
     uint8_t sa = p.can_id().source_address();
     // we expect all address_claimed messages to be BAM
     //uint8_t da = p.can_id().destination_address();
@@ -79,9 +76,9 @@ bool network_ca<TTransport, TScheduler>::process_incoming(transport_type& t, con
             break;
     }
 
+    // [1] 4.4.3.3
     if(sa == given_address)
     {
-        // 4.4.3.3
         const embr::j1939::layer1::NAME& incoming_name = p.payload();
 
         // DEBT: a C#-style compare returning an int would be useful here,
@@ -90,7 +87,7 @@ bool network_ca<TTransport, TScheduler>::process_incoming(transport_type& t, con
         {
             // we have the higher priority name
             // transmit our own address, basically re-announce our claim
-            send_claim(t, p_resp);
+            send_claim(t);
         }
         else if(name > incoming_name)
         {
@@ -98,7 +95,20 @@ bool network_ca<TTransport, TScheduler>::process_incoming(transport_type& t, con
 
             // [1] 4.4.4
             // emit a 'cannot claim' or attempt to claim a new address
-            send_cannot_claim(t, p_resp);
+            optional_address_type new_address = find_new_address();
+
+            // DEBT: At the moment, find_new_address always finds nothing
+            if(new_address.has_value())
+            {
+                pdu<pgns::address_claimed> p;
+
+                send_claim(t, p, *new_address);
+
+                // TODO: Still need to turn this into 'given_address'
+                // if we receive no contention.
+            }
+            else
+                send_cannot_claim(t);
         }
         else
         {

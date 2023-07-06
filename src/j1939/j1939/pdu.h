@@ -175,6 +175,7 @@ struct frame_traits
 
     using can_frame_traits = embr::can::frame_traits<frame_type>;
 
+    // Create "plain old" CAN frame from pdu
     template <pgns pgn>
     static inline frame_type create(const pdu<pgn> p)
     {

@@ -77,4 +77,12 @@ TEST_CASE("transport (can)")
             REQUIRE(result == false);
         }
     }
+    SECTION("traits")
+    {
+        using namespace embr::j1939;
+
+        using frame_type = loopback_transport::frame;
+        using frame_traits = embr::j1939::frame_traits<frame_type>;
+        using address_traits = spn::internal::address_type_traits_base;
+    }
 }

@@ -120,11 +120,12 @@ struct network_ca : impl::controller_application<TTransport>,
     using address_traits = spn::internal::address_type_traits_base;
 
     typedef transport_traits<transport_type> _transport_traits;
+    using optional_address_type = estd::layer1::optional<uint8_t, address_traits::null>;
 
     // TODO: Change to non-optional (since state machine handles that)
     // TODO: Change name to 'address' as it may be claimed, claiming or cannot claim depending on
     // state machine
-    estd::layer1::optional<uint8_t, address_traits::null> given_address;
+    optional_address_type given_address;
 
     typedef TScheduler scheduler_type;
 
@@ -147,6 +148,8 @@ struct network_ca : impl::controller_application<TTransport>,
     time_point last_claim;
     transport_type* t;
 
+    optional_address_type find_new_address() const { return {}; }
+
     void send_cannot_claim(transport_type& t, pdu<pgns::address_claimed>& p)
     {
         p.can_id().source_address(address_traits::null);
@@ -164,9 +167,12 @@ struct network_ca : impl::controller_application<TTransport>,
         send_cannot_claim(t, p);
     }
 
-    void send_claim(transport_type& t, pdu<pgns::address_claimed>& p)
+    void send_claim(transport_type& t, pdu<pgns::address_claimed>& p, uint8_t sa)
     {
-        p.can_id().source_address(*given_address);
+        // DEBT: Not sure if claim ALWAYS is a BAM but I think so
+        p.can_id().destination_address(address_traits::global);
+        p.payload() = name;
+        p.can_id().source_address(sa);
         _transport_traits::send(t, p);
 
         last_claim = scheduler.impl().now();
@@ -176,10 +182,7 @@ struct network_ca : impl::controller_application<TTransport>,
     {
         pdu<pgns::address_claimed> p;
 
-        p.payload() = name;
-        p.can_id().destination_address(address_traits::global);
-
-        send_claim(t, p);
+        send_claim(t, p, *given_address);
     }
 
     // [1] Figure D1
