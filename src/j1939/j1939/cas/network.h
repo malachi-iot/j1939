@@ -134,21 +134,24 @@ struct network_ca : impl::controller_application<TTransport>,
     // DEBT: Instead, expose impl_type directly from sechduler_type
     typedef estd::remove_reference_t<decltype(scheduler.impl())> scheduler_impl_type;
     typedef typename scheduler_impl_type::time_point time_point;
+    typedef typename scheduler_impl_type::function_type fn_test;
     // DEBT: Using dynamic allocated function, we strongly frown on this.  Being
     // that we do not expect to free it, this is not a FIX
-    typedef estd::experimental::function<void(time_point*, time_point)> function_type;
+    //typedef estd::experimental::function<void(time_point*, time_point)> old_function_type;
+
+    using function_type = typename scheduler_impl_type::function_type;
     //typedef impl::experimental::ca_time_helper<scheduler_impl_type> helper;
 
     // DEBT: Not all time_point will be chrono-compatible
     //static constexpr time_point timeout() { return helper::milliseconds(250); }
     static constexpr time_point timeout() { return estd::chrono::milliseconds(250); }
 
-    function_type f;
+    //function_type f;
 
     time_point last_claim;
     transport_type* t;
 
-    optional_address_type find_new_address() const { return {}; }
+    optional_address_type find_new_address() const { return {}; }   // NOLINT
 
     void send_cannot_claim(transport_type& t, pdu<pgns::address_claimed>& p)
     {
@@ -230,9 +233,21 @@ struct network_ca : impl::controller_application<TTransport>,
         }
     }
 
+    struct wake_functor
+    {
+        network_ca& this_;
 
-    network_ca(scheduler_type& scheduler) : scheduler{scheduler},
-                                            f([&](time_point* wake, time_point current) { scheduled(wake, current); })
+        void operator()(time_point* wake, time_point current)
+        {
+            this_.scheduled(wake, current);
+        }
+    };
+
+    function_type::template model<wake_functor> wake_model{wake_functor{*this}};
+
+
+    explicit network_ca(scheduler_type& scheduler) : scheduler{scheduler}
+        //f([&](time_point* wake, time_point current) { scheduled(wake, current); })
     {
 
     }
@@ -244,6 +259,8 @@ struct network_ca : impl::controller_application<TTransport>,
         this->t = &t;
 
         send_claim(t);
+
+        function_type f{&wake_model};
 
         scheduler.schedule(last_claim + timeout(), f);
     }
