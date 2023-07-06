@@ -9,8 +9,8 @@ namespace embr::units::internal {
 template<class T, typename TInt = int>
 concept Adder = requires(T adder)
 {
-    typename T::int_type;
-    { adder(TInt{}) } -> std::same_as<typename T::int_type>;
+    typename T::value_type;
+    { adder(TInt{}) } -> std::same_as<typename T::value_type>;
 };
 
 }
