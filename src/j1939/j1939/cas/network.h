@@ -8,6 +8,7 @@
 #pragma once
 #include <bitset>       // DEBT, make an estd one and use it
 
+#include <estd/chrono.h>
 #include <estd/functional.h>
 #include <estd/optional.h>
 
@@ -116,13 +117,14 @@ struct network_ca : impl::controller_application<TTransport>,
     using typename base_type::transport_type;
     using typename base_type::frame_type;
     using typename base_type::frame_traits;
+    using address_traits = spn::internal::address_type_traits_base;
 
     typedef transport_traits<transport_type> _transport_traits;
 
     // TODO: Change to non-optional (since state machine handles that)
     // TODO: Change name to 'address' as it may be claimed, claiming or cannot claim depending on
     // state machine
-    estd::layer1::optional<uint8_t, spn::internal::address_type_traits_base::null> given_address;
+    estd::layer1::optional<uint8_t, address_traits::null> given_address;
 
     typedef TScheduler scheduler_type;
 
@@ -131,6 +133,8 @@ struct network_ca : impl::controller_application<TTransport>,
     // DEBT: Instead, expose impl_type directly from sechduler_type
     typedef estd::remove_reference_t<decltype(scheduler.impl())> scheduler_impl_type;
     typedef typename scheduler_impl_type::time_point time_point;
+    // DEBT: Using dynamic allocated function, we strongly frown on this.  Being
+    // that we do not expect to free it, this is not a FIX
     typedef estd::experimental::function<void(time_point*, time_point)> function_type;
     //typedef impl::experimental::ca_time_helper<scheduler_impl_type> helper;
 
@@ -145,7 +149,7 @@ struct network_ca : impl::controller_application<TTransport>,
 
     void send_cannot_claim(transport_type& t, pdu<pgns::address_claimed>& p)
     {
-        p.can_id().source_address(spn::internal::address_type_traits_base::null);
+        p.can_id().source_address(address_traits::null);
         _transport_traits::send(t, p);
 
     }
@@ -154,7 +158,7 @@ struct network_ca : impl::controller_application<TTransport>,
     {
         pdu<pgns::address_claimed> p;
 
-        p.can_id().destination_address(spn::internal::address_type_traits_base::global);
+        p.can_id().destination_address(address_traits::global);
         p.payload() = name;
 
         send_cannot_claim(t, p);
@@ -173,7 +177,7 @@ struct network_ca : impl::controller_application<TTransport>,
         pdu<pgns::address_claimed> p;
 
         p.payload() = name;
-        p.can_id().destination_address(spn::internal::address_type_traits_base::global);
+        p.can_id().destination_address(address_traits::global);
 
         send_claim(t, p);
     }
@@ -241,7 +245,7 @@ struct network_ca : impl::controller_application<TTransport>,
         scheduler.schedule(last_claim + timeout(), f);
     }
 
-    inline bool is_contender(const pdu<pgns::address_claimed>& p)
+    constexpr bool is_contender(const pdu<pgns::address_claimed>& p) const
     {
         return p.source_address() == given_address;
     }

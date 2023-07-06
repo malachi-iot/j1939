@@ -7,9 +7,9 @@
  */
 #pragma once
 
-#include <estd/chrono.h>
-
 #include "network.h"
+
+#include "../data_field/request.hpp"
 
 namespace embr { namespace j1939 {
 
@@ -55,7 +55,7 @@ bool network_ca<TTransport, TScheduler>::process_incoming(transport_type& t, con
 {
     pdu<pgns::address_claimed> p_resp;
 
-    p_resp.destination_address(spn::internal::address_type_traits_base::global);
+    p_resp.destination_address(address_traits::global);
     p_resp.payload() = name;
 
     uint8_t sa = p.can_id().source_address();
@@ -117,7 +117,7 @@ bool network_ca<TTransport, TScheduler>::process_request_for_address_claimed(tra
 
     uint8_t da = p.can_id().destination_address();
 
-    if (!(da == spn::internal::address_type_traits_base::global ||
+    if (!(da == address_traits::global ||
           da == given_address))
         return false;
 
@@ -160,7 +160,7 @@ bool network_ca<TTransport, TScheduler>::process_incoming(transport_type& t, con
                 uint8_t sa = p.can_id().source_address();
                 uint8_t da = p.can_id().destination_address();
 
-                if (da == spn::internal::address_type_traits_base::global ||
+                if (da == address_traits::global ||
                     da == given_address)
                 {
                     // TODO: Return 'address_claimed' to requester to let them know indeed someone has this
@@ -185,7 +185,7 @@ bool network_ca<TTransport, TScheduler>::process_incoming(transport_type& t, con
 
                             pdu<pgns::address_claimed> p_resp;
 
-                            p_resp.can_id().destination_address(spn::internal::address_type_traits_base::global);
+                            p_resp.can_id().destination_address(address_traits::global);
                             p_resp.payload() = name;
                             p_resp.can_id().source_address(sa_to_claim);
 
