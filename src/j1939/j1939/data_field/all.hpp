@@ -18,6 +18,7 @@
 #include "network.hpp"
 #include "nmea.hpp"
 #include "oel.hpp"
+#include "request.hpp"
 #include "software.hpp"
 #include "switch_bank.hpp"
 #include "time.hpp"

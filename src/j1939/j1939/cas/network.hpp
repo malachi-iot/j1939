@@ -7,6 +7,8 @@
  */
 #pragma once
 
+#include <estd/chrono.h>
+
 #include "network.h"
 
 namespace embr { namespace j1939 {

@@ -48,6 +48,9 @@ struct passthrough
 #define EMBR_J1939_CONCEPT(T) class
 #endif
 
+#if __cpp_concepts
+#endif
+
 template <class Rep, class Period, class Tag,
     EMBR_J1939_CONCEPT(Adder<Rep>) = passthrough<Rep> >
 class unit_base;
