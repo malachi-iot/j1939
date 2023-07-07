@@ -127,7 +127,7 @@ struct frame_traits<twai_message_t>
     // EXPERIMENTAL
     inline static frame create(uint32_t id, estd::span<uint8_t> payload)
     {
-        return create(id, payload.data(), payload.length()); 
+        return create(id, payload.data(), payload.size()); 
     }
 
     inline static const uint8_t* payload(const twai_message_t& message)
