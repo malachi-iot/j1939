@@ -243,7 +243,7 @@ struct network_ca : impl::controller_application<TTransport>,
         }
     };
 
-    function_type::template model<wake_functor> wake_model{wake_functor{*this}};
+    typename function_type::template model<wake_functor> wake_model{wake_functor{*this}};
 
 
     explicit network_ca(scheduler_type& scheduler) : scheduler{scheduler}
