@@ -5,6 +5,8 @@
 #include "fwd.h"
 #include "enum.h"
 
+#include "../macros/progmem.h"
+
 namespace embr { namespace j1939 { namespace pgn {
 
 #if __cpp_concepts

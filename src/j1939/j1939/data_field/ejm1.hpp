@@ -15,8 +15,7 @@ namespace pgn {
 template <>
 struct traits<pgns::extended_joystick_message_1> : internal::traits_base
 {
-    static constexpr const char* name = "Extended Joystick Message 1";
-    static constexpr const char* abbrev = "EJM1";
+    EMBR_J1939_PGN_TRAIT("EJM1", "Extended Joystick Message 1")
 
     using spns = internal::spns_list<
         s::joystick1_theta_axis_clockwise_positive_position_status,

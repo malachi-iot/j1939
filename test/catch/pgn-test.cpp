@@ -131,4 +131,22 @@ TEST_CASE("pgn")
         //layer2::data_field<pgns::lighting_command> data(buf);
 
     }
+    SECTION("traits")
+    {
+        std::string s;
+        const char* s_;
+
+        SECTION("joystick")
+        {
+            // No bueno, due to
+            // https://stackoverflow.com/questions/8016780/undefined-reference-to-static-constexpr-char
+            /*
+            using traits = pgn::traits<pgns::basic_joystick_message_1>;
+
+            const char* const s2_ = traits::abbrev;
+            s = s_;
+
+            REQUIRE(s == "BJM1"); */
+        }
+    }
 }
