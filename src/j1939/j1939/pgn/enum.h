@@ -43,6 +43,7 @@ enum class pgns : uint32_t
     text_display = 0xA8,                        // [13]
     request2 = 0xC9,                            // [16]
     transfer_experimental = 0xCA,               // Unknown, I believe this goes here
+    cab_illumination_message = 0xD0,            // [13]
     time_date_adjust = 0xD5,                    // [11] aka TDA
     anti_theft_status = 0xDC,                   // [13]
     cab_message1 = 0xE0,                        ///< [11] - "Message containing parameters originating from the vehicle cab."
@@ -80,6 +81,7 @@ enum class pgns : uint32_t
     ecu_performance = 64978,                    // [13]
     cab_message_3 = 64980,                      // [8]
     basic_joystick_message_1 = 64982,           // [13]
+    extended_joystick_message_1 = 64983,        // [13]
     wsmem = 65036,                              ///< "Working Set Master Message" [10] 4.2.4.2
     wsmstr = 65037,                             ///< "Working Set Member Message" [10] 4.2.4.4
     vehicle_electrical_power_3 = 65103,         // [11]

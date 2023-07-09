@@ -109,7 +109,42 @@ struct type_traits<spns::local_hour_offset> : internal::slot_type_traits<slots::
     };
 };
 
+}
 
+namespace pgn {
+
+template <>
+struct traits<pgns::time_date> : internal::traits_base
+{
+    static constexpr const char* name = "Time/Date";
+    static constexpr const char* abbrev = "TD";
+
+    using spns = internal::spns_list<
+        s::seconds,
+        s::minutes,
+        s::hours,
+        s::month,
+        s::day,
+        s::year,
+        s::local_minute_offset,
+        s::local_hour_offset>;
+};
+
+
+template <>
+struct traits<pgns::time_date_adjust> : internal::traits_base
+{
+    static constexpr const char* abbrev = "TDA";
+
+    using spns = internal::spns_list<
+        s::adjust_seconds,
+        s::adjust_minutes,
+        s::adjust_hours,
+        s::adjust_month,
+        s::adjust_year,
+        s::adjust_local_minute_offset,
+        s::adjust_local_hour_offset>;
+};
 
 }
 

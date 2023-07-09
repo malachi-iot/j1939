@@ -86,6 +86,7 @@ enum class spns
     anti_theft_password_representation = 1202,      // [11] ASCII
     engine_synchronization_switch = 1377,           // [13]
     source_address_of_controlling_device_for_engine_control = 1483, //[5]
+    illumination_brightness_percent = 1487,         ///< "For all cab displays" [13]
     background_illumination_level_cmd = 1487,       // [5]
     instrument_panel_1_backlighting_driver = 1491,  // [6]
     instrument_panel_2_backlighting_driver = 1492,  // [6]
@@ -169,6 +170,8 @@ enum class spns
     power_relay = 2634,                             // [13]
     joystick1_x_axis_position = 2660,               // [13]
     joystick1_y_axis_position = 2661,               // [13]
+    joystick1_theta_axis_position = 2664,           // [13]
+    joystick1_theta_axis_clockwise_positive_position_status = 2669, // [13]
     joystick1_x_lever_left_neg_pos_status = 2670,   // [7]
     joystick1_x_axis_neutral_position_status = 2675, // [13]
     joystick1_button1_pressed_status = 2685,        // [13]
@@ -236,6 +239,7 @@ enum class spns
     armrest_1_switch_2 = 5492,                      // [5]
     armrest_2_switch_1 = 5493,                      // [5]
     armrest_2_switch_2 = 5494,                      // [5]
+    switch_backlight_brightness_percent = 5532,     // [13]
     park_brake_command = 5630,                      ///< [13] - "Request by a secondary device"
     industry_group_qualifier_flag = 5664,           // [5]
     arbitrary_address_capable_flag = 5665,          // [5]
