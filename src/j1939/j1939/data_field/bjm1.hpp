@@ -3,9 +3,52 @@
 
 #include "base.hpp"
 
+#include "../slots.hpp"
+
 namespace embr { namespace j1939 {
 
 namespace spn {
+
+template <>
+struct type_traits<spns::joystick1_x_axis_position> :
+    internal::slot_type_traits<slots::SAEpc02> {};
+
+template <>
+struct type_traits<spns::joystick1_y_axis_position> :
+    internal::slot_type_traits<slots::SAEpc02> {};
+
+template <>
+struct type_traits<spns::joystick1_button1_pressed_status> :
+    internal::measured_type_traits {};
+
+template <>
+struct type_traits<spns::joystick1_button2_pressed_status> :
+    internal::measured_type_traits {};
+
+
+template<>
+constexpr descriptor get_descriptor<spns::joystick1_x_axis_position>()
+{
+    return { 1, 7, 10 };
+}
+
+template<>
+constexpr descriptor get_descriptor<spns::joystick1_y_axis_position>()
+{
+    return { 3, 7, 10 };
+}
+
+template<>
+constexpr descriptor get_descriptor<spns::joystick1_button1_pressed_status>()
+{
+    return { 6, 7, 2 };
+}
+
+template<>
+constexpr descriptor get_descriptor<spns::joystick1_button2_pressed_status>()
+{
+    return { 6, 5, 2 };
+}
 
 }
 
@@ -40,5 +83,22 @@ struct traits<pgns::basic_joystick_message_1> : internal::traits_base
 };
 
 }
+
+
+template<class TContainer>
+struct data_field<pgns::basic_joystick_message_1, TContainer> :
+    internal::data_field_base<TContainer>
+{
+    typedef internal::data_field_base<TContainer> base_type;
+
+    data_field() = default;
+
+    constexpr data_field(const uint8_t* copy_from) : base_type(copy_from) {}
+
+    EMBR_J1939_PROPERTY(joystick1_x_axis_position)
+    EMBR_J1939_PROPERTY(joystick1_y_axis_position)
+    EMBR_J1939_PROPERTY(joystick1_button1_pressed_status)
+    EMBR_J1939_PROPERTY(joystick1_button2_pressed_status)
+};
 
 }}

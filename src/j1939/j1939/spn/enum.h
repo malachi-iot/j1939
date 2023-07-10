@@ -265,7 +265,9 @@ namespace spn {
 enum class discrete_parameters
 {
     disabled = 0,
+    off = 0,
     enabled,
+    on = enabled,
     error,
     not_available,
     // My own name...

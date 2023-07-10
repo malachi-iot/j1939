@@ -10,11 +10,37 @@
 #include "test-data.h"
 
 using namespace embr::j1939;
+using namespace embr::units::literals;
 
 TEST_CASE("pgn")
 {
     SECTION("data_field")
     {
+        SECTION("bjm1")
+        {
+            data_field<pgns::basic_joystick_message_1> data;
+            const auto& raw = data.data_;
+
+            // 35 = 0x23
+            data.joystick1_x_axis_position(35);
+            data.joystick1_y_axis_position(35);
+            data.joystick1_button1_pressed_status(spn::measured::on);
+
+            // FIX: *Almost* works, but bit setter clobbers one byte past where it's supposed to
+            // go (so bytes 0 and 1 look right for x axis, but 2 gets set to 0x00 when it should be
+            // untouched)
+
+            auto v = data.joystick1_x_axis_position();
+
+            REQUIRE(v == 3.5_pct);
+
+            v = data.joystick1_y_axis_position();
+
+            REQUIRE(v == 3.5_pct);
+
+            REQUIRE(data.joystick1_button1_pressed_status() == spn::measured::on);
+            REQUIRE(data.joystick1_button2_pressed_status() == spn::measured::noop);
+        }
         SECTION("oel")
         {
             data_field<pgns::oel> data;
