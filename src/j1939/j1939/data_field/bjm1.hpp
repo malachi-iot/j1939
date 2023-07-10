@@ -25,6 +25,14 @@ template <>
 struct type_traits<spns::joystick1_button2_pressed_status> :
     internal::measured_type_traits {};
 
+template <>
+struct type_traits<spns::joystick1_button3_pressed_status> :
+    internal::measured_type_traits {};
+
+template <>
+struct type_traits<spns::joystick1_button4_pressed_status> :
+    internal::measured_type_traits {};
+
 
 template<>
 constexpr descriptor get_descriptor<spns::joystick1_x_axis_position>()
@@ -48,6 +56,18 @@ template<>
 constexpr descriptor get_descriptor<spns::joystick1_button2_pressed_status>()
 {
     return { 6, 5, 2 };
+}
+
+template<>
+constexpr descriptor get_descriptor<spns::joystick1_button3_pressed_status>()
+{
+    return { 6, 3, 2 };
+}
+
+template<>
+constexpr descriptor get_descriptor<spns::joystick1_button4_pressed_status>()
+{
+    return { 6, 1, 2 };
 }
 
 }
@@ -97,8 +117,11 @@ struct data_field<pgns::basic_joystick_message_1, TContainer> :
 
     EMBR_J1939_PROPERTY(joystick1_x_axis_position)
     EMBR_J1939_PROPERTY(joystick1_y_axis_position)
-    EMBR_J1939_PROPERTY_ALIAS(joystick1_button1_pressed_status, joystick1_button1_pressed)
-    EMBR_J1939_PROPERTY_ALIAS(joystick1_button2_pressed_status, joystick1_button2_pressed)
+
+    EMBR_J1939_PROPERTY_ALIAS(joystick1_button1_pressed_status, button1_pressed)
+    EMBR_J1939_PROPERTY_ALIAS(joystick1_button2_pressed_status, button2_pressed)
+    EMBR_J1939_PROPERTY_ALIAS(joystick1_button1_pressed_status, button3_pressed)
+    EMBR_J1939_PROPERTY_ALIAS(joystick1_button2_pressed_status, button4_pressed)
 };
 
 }}

@@ -24,7 +24,7 @@ TEST_CASE("pgn")
             // 35 = 0x23
             data.joystick1_x_axis_position(35);
             data.joystick1_y_axis_position(995);
-            data.joystick1_button1_pressed(spn::measured::on);
+            data.button1_pressed(spn::measured::on);
 
             REQUIRE(raw[2] == 0xFF);
             REQUIRE(raw[4] == 0xFF);
@@ -37,8 +37,8 @@ TEST_CASE("pgn")
 
             REQUIRE(v == 99.5_pct);
 
-            REQUIRE(data.joystick1_button1_pressed() == spn::measured::on);
-            REQUIRE(data.joystick1_button2_pressed() == spn::measured::not_available);
+            REQUIRE(data.button1_pressed() == spn::measured::on);
+            REQUIRE(data.button2_pressed() == spn::measured::not_available);
         }
         SECTION("oel")
         {
