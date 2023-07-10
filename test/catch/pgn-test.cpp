@@ -23,12 +23,11 @@ TEST_CASE("pgn")
 
             // 35 = 0x23
             data.joystick1_x_axis_position(35);
-            data.joystick1_y_axis_position(35);
-            data.joystick1_button1_pressed_status(spn::measured::on);
+            data.joystick1_y_axis_position(995);
+            data.joystick1_button1_pressed(spn::measured::on);
 
-            // FIX: *Almost* works, but bit setter clobbers one byte past where it's supposed to
-            // go (so bytes 0 and 1 look right for x axis, but 2 gets set to 0x00 when it should be
-            // untouched)
+            REQUIRE(raw[2] == 0xFF);
+            REQUIRE(raw[4] == 0xFF);
 
             auto v = data.joystick1_x_axis_position();
 
@@ -36,10 +35,10 @@ TEST_CASE("pgn")
 
             v = data.joystick1_y_axis_position();
 
-            REQUIRE(v == 3.5_pct);
+            REQUIRE(v == 99.5_pct);
 
-            REQUIRE(data.joystick1_button1_pressed_status() == spn::measured::on);
-            REQUIRE(data.joystick1_button2_pressed_status() == spn::measured::noop);
+            REQUIRE(data.joystick1_button1_pressed() == spn::measured::on);
+            REQUIRE(data.joystick1_button2_pressed() == spn::measured::not_available);
         }
         SECTION("oel")
         {

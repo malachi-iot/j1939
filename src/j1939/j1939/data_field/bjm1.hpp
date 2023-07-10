@@ -97,8 +97,8 @@ struct data_field<pgns::basic_joystick_message_1, TContainer> :
 
     EMBR_J1939_PROPERTY(joystick1_x_axis_position)
     EMBR_J1939_PROPERTY(joystick1_y_axis_position)
-    EMBR_J1939_PROPERTY(joystick1_button1_pressed_status)
-    EMBR_J1939_PROPERTY(joystick1_button2_pressed_status)
+    EMBR_J1939_PROPERTY_ALIAS(joystick1_button1_pressed_status, joystick1_button1_pressed)
+    EMBR_J1939_PROPERTY_ALIAS(joystick1_button2_pressed_status, joystick1_button2_pressed)
 };
 
 }}
