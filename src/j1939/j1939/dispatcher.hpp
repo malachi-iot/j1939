@@ -58,6 +58,7 @@ void dispatch(pdu1_header id, const uint8_t* payload, TSubject& subject, TContex
 }
 
 // NOTE: We might be able to somehow combine our estd dev/exp/type-id dispatch techniques for use here
+// DEBT: Consolidate this, if possible, with ::process_incoming flavor
 template <class TSubject, class TContext>
 void dispatch(pdu2_header id, const uint8_t* payload, TSubject& subject, TContext& context)
 {

@@ -37,8 +37,7 @@ namespace pgn {
 template <>
 struct traits<pgns::cab_illumination_message> : internal::traits_base
 {
-    static constexpr const char* name() { return "Cab Illumination Message"; }
-    static constexpr const char* abbrev() { return "CL"; }
+    EMBR_J1939_PGN_TRAIT("CL", "Cab Illumination Message 1")
 
     using spns = internal::spns_list<
         s::illumination_brightness_percent,
@@ -47,5 +46,16 @@ struct traits<pgns::cab_illumination_message> : internal::traits_base
 
 
 }
+
+
+template <class TContainer>
+struct data_field<pgns::cab_illumination_message, TContainer> :
+    internal::data_field_base<TContainer>
+{
+    typedef internal::data_field_base<TContainer> base_type;
+
+    ESTD_CPP_FORWARDING_CTOR(data_field)
+};
+
 
 }}
