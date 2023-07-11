@@ -122,6 +122,9 @@ bool process_incoming(internal::app_state<TTransport, TImpl, TContext> state, co
         case pgns::oel:
             return state.template invoker<pgns::oel>(id, payload);
 
+        case pgns::request:
+            return state.template invoker<pgns::request>(id, payload);
+
         case pgns::switch_bank_control:
             return state.template invoker<pgns::switch_bank_control>(id, payload);
 

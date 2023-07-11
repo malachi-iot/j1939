@@ -215,6 +215,21 @@ TEST_CASE("Controller Applications")
 
             t.receive(&f);
         }
+        SECTION("CA has no internal SA, requests address claimed")
+        {
+            // DEBT
+            impl.given_address.reset();
+
+            impl.start(t);
+
+            REQUIRE(!t.queue.empty());
+
+            frame_type f;
+
+            t.receive(&f);
+
+            process_incoming(impl, t, f);
+        }
     }
     SECTION("transport protocol")
     {

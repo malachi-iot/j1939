@@ -12,6 +12,8 @@
 #include <estd/functional.h>
 #include <estd/optional.h>
 
+#include <embr/service.h>
+
 #include "../ca.h"
 #include "../data_field/network.hpp"
 #include "../data_field/transport_protocol.hpp"
@@ -70,12 +72,14 @@ struct ca_base
     using pdu = pdu<pgn>;
 };
 
-struct network_ca_base : ca_base
+struct network_ca_base : ca_base,
+    embr::Service   // Ready and waiting, premature to start migrating to this atm
 {
-    // DEBT: Merge this with 'service' architecture
+    // DEBT: Upgrade this to embr 'service' architecture
     enum class states
     {
         unstarted,
+        requesting,         ///< Request for address_claimed
         claiming,
         claimed,
         claim_failed
@@ -86,6 +90,9 @@ struct network_ca_base : ca_base
     enum class substates
     {
         unstarted,
+
+        // requesting state
+        request_waiting,
 
         // claiming state
         waiting,            ///< Waiting period after we emit a claim address
@@ -102,7 +109,7 @@ struct network_ca_base : ca_base
 
     layer1::NAME name;
 
-    inline bool arbitrary_address_capable() const
+    constexpr bool arbitrary_address_capable() const
     {
         return name.arbitrary_address_capable();
     }
@@ -152,6 +159,15 @@ struct network_ca : impl::controller_application<TTransport>,
     transport_type* t;
 
     optional_address_type find_new_address() const { return {}; }   // NOLINT
+    constexpr bool has_address() const
+    {
+        return given_address.has_value();
+    }
+
+    // [1] 4.2.1
+    void send_request_for_address_claimed(
+            transport_type&,
+            uint8_t dest = address_traits::global);
 
     void send_cannot_claim(transport_type& t, pdu<pgns::address_claimed>& p)
     {
@@ -254,16 +270,7 @@ struct network_ca : impl::controller_application<TTransport>,
 
     // DEBT: I think we'd prefer to do this at constructor, but for now is easier
     // to do a manual start call
-    void start(transport_type& t)
-    {
-        this->t = &t;
-
-        send_claim(t);
-
-        function_type f{&wake_model};
-
-        scheduler.schedule(last_claim + timeout(), f);
-    }
+    void start(transport_type& t);
 
     constexpr bool is_contender(const pdu<pgns::address_claimed>& p) const
     {

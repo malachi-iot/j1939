@@ -5,6 +5,8 @@
  */
 #pragma once
 
+#include <cstdint>
+
 namespace embr { namespace j1939 {
 
 enum class industry_groups : uint8_t

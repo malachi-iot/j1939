@@ -53,7 +53,7 @@ enum class pgns : uint32_t
     request = 0xEA,                             // [7]
     tp_dt = 0xEB,                               ///< Transport Protocol - Data Transfer [12]
     tp_cm = 0xEC,                               ///< Transport Protocol - Connection Management [12]
-    address_claimed = 0xEE,                   // [7]
+    address_claimed = 0xEE,                     // [7]
     mf0 = 0xEF,                                 ///< Manufacturer Specific [2]
     mf1 = 0x1EF,                                ///< Manufacturer Specific [2]
     electronic_brake_system1 = 0x200,           // [14]

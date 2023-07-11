@@ -148,6 +148,7 @@ constexpr typename slot_type_traits<slot>::value_type::rep get_offset()
 
 
 // Maybe relates to SAEsa01
+// See J1939-81 (2003) 4.1.2
 struct address_type_traits_base : internal::type_traits_base<uint8_t>
 {
     static constexpr uint8_t global = 255;

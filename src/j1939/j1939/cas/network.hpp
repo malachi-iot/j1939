@@ -16,6 +16,21 @@ namespace embr { namespace j1939 {
 namespace impl {
 
 template <class TTransport, class TScheduler>
+void network_ca<TTransport, TScheduler>::send_request_for_address_claimed(
+    transport_type& t, uint8_t dest)
+{
+    pdu<pgns::request> p;
+
+    // DEBT: make this pgn param take enum
+    p.payload().pgn((uint32_t)pgns::address_claimed);
+    p.can_id().source_address(address_traits::null);
+    p.can_id().destination_address(dest);
+
+    _transport_traits::send(t, p);
+}
+
+
+template <class TTransport, class TScheduler>
 void network_ca<TTransport, TScheduler>::scheduled_claiming(time_point* wake, time_point current)
 {
     switch(substate)
@@ -133,10 +148,6 @@ bool network_ca<TTransport, TScheduler>::process_request_for_address_claimed(tra
 
     switch(state)
     {
-        case states::unstarted:
-            return false;
-            break;
-
         case states::claiming:
             send_claim(t);
             break;
@@ -149,6 +160,11 @@ bool network_ca<TTransport, TScheduler>::process_request_for_address_claimed(tra
             // [1] 4.4.3.1
             // emit a 'cannot claim'
             send_cannot_claim(t);
+            break;
+
+        case states::requesting:
+        case states::unstarted:
+            return false;
             break;
     }
 
@@ -163,6 +179,8 @@ bool network_ca<TTransport, TScheduler>::process_incoming(transport_type& t, con
         // [1] 4.2.1, 4.4.3 - request for address claimed
         case pgns::address_claimed:
         {
+            // FIX: Looks like we may have a functional overlap with this
+            // and below logic
             process_request_for_address_claimed(t, p);
 
             //if(given_address.has_value())
@@ -217,6 +235,32 @@ bool network_ca<TTransport, TScheduler>::process_incoming(transport_type& t, con
             return false;
     }
 }
+
+
+template <class TTransport, class TScheduler>
+void network_ca<TTransport, TScheduler>::start(transport_type& t)
+{
+    this->t = &t;
+
+    // DEBT: Not 100% right, more like we have an alleged address and
+    // the send_claim is to ensure there's no contention
+    if(has_address())
+    {
+        state = states::claiming;
+        send_claim(t);
+    }
+    else
+    {
+        state = states::requesting;
+        substate = substates::request_waiting;
+        send_request_for_address_claimed(t);
+    }
+
+    function_type f{&wake_model};
+
+    scheduler.schedule(last_claim + timeout(), f);
+}
+
 
 }
 
