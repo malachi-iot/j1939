@@ -1,6 +1,5 @@
 #include <j1939/data_field/all.hpp>
 
-
 #include <j1939/pgn.h>
 #include <j1939/spn.h>
 #include <j1939/dispatcher.hpp>

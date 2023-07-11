@@ -1,5 +1,7 @@
 #include <catch2/catch.hpp>
 
+#include <estd/sstream.h>
+
 #include <j1939/pdu.h>
 
 #include <j1939/data_field/cm1.hpp>
@@ -11,8 +13,15 @@
 
 using namespace embr::j1939;
 
+#include <j1939/pgn/ostream.h>
+
+using ostringstream = estd::detail::basic_ostream<estd::layer1::stringbuf<128>>;
+
+
 TEST_CASE("pdu")
 {
+    ostringstream out;
+    const auto& out_s = out.rdbuf()->str();
     uint32_t can_id;
 
     SECTION("headers")
@@ -35,6 +44,10 @@ TEST_CASE("pdu")
         auto v = p.requested_percent_fan_speed();
 
         REQUIRE(v.count() == 125);
+
+        out << embr::put_pdu(p);
+
+        REQUIRE(out_s.starts_with("CM1 SA:0 7d"));
     }
     SECTION("fd")
     {
