@@ -80,8 +80,10 @@ struct traits<pgns::basic_joystick_message_1> : internal::traits_base
     // DEBT Fix up discrepancy between this and return method flavor.  Take
     // into account which, if either, is more friendly with ROM-based strings
     // (i.e. Arduino's F() macro)
-    static constexpr const char name[] = "Basic Joystick Message 1";
-    static constexpr const char abbrev[] = "BJM1";
+    //static constexpr const char name[] = "Basic Joystick Message 1";
+    //static constexpr const char abbrev[] = "BJM1";
+    static constexpr const char* name() { return "Basic Joystick Message 1"; }
+    static constexpr const char* abbrev() { return "BJM1"; }
 
     using spns = internal::spns_list<
         s::joystick1_x_axis_neutral_position_status,

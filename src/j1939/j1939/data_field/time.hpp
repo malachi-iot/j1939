@@ -116,8 +116,7 @@ namespace pgn {
 template <>
 struct traits<pgns::time_date> : internal::traits_base
 {
-    static constexpr const char* name = "Time/Date";
-    static constexpr const char* abbrev = "TD";
+    EMBR_J1939_PGN_TRAIT("TD", "Time/Date");
 
     using spns = internal::spns_list<
         s::seconds,
@@ -134,7 +133,7 @@ struct traits<pgns::time_date> : internal::traits_base
 template <>
 struct traits<pgns::time_date_adjust> : internal::traits_base
 {
-    static constexpr const char* abbrev = "TDA";
+    EMBR_J1939_PGN_TRAIT("TDA", "Time/Date Adjust");
 
     using spns = internal::spns_list<
         s::adjust_seconds,
