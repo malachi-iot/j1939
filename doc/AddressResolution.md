@@ -2,7 +2,7 @@
 
 This document describes network address resolution across J1939 Controlling Applications
 
-Conforms to (Policy)[Policy.md] v0.1
+Conforms to [Policy](Policy.md) v0.1
 
 Document v0.1
 
@@ -35,6 +35,7 @@ A 250ms timeout is observed in which time other CAs may contend this claim with 
 own `Address Claim` message.
 
 DA field MUST be `global` [1.5] 4.4.2
+Payload MUST contain [NAME](#13-name)
 
 #### 1.1.1. Contention Rules
 
@@ -57,12 +58,12 @@ Operates in either BAM mode or specific DA mode:
 
 ##### 1.2.1.1. BAM mode
 
-Indicates all CAs MUST issue an immediate [Address Claim](#1-1-pgn-address-claim) or [Cannot Claim](#1-5-pgn-cannot-claim-address)
+Indicates all CAs MUST issue an immediate [Address Claim](#11-pgn-address-claim) or [Cannot Claim](#15-pgn-cannot-claim-address)
 as per [1.5] 4.4.3.1
 
 ##### 1.2.1.2. Specific DA mode
 
-Indicates specific CA MUST issue an immediate `Address Claim` [0] 1.1 sent to `global` DA (BAM)
+Indicates specific CA MUST issue an immediate [Address Claim](#11-pgn-address-claim) sent to `global` DA (BAM)
 as per [1.5] 4.4.3.2
 
 #### 1.2.2. Contention Rules
@@ -71,7 +72,7 @@ as per [1.5] 4.4.3.2
 
 ### 1.3. NAME
 
-Designates a unique 8-byte value appearing in payload for `Address Claim` [0] 1.1.
+Designates a unique 8-byte value appearing in payload for [Address Claim](#11-pgn-address-claim)`
 
 A "higher value" indicates a lower priority [1.5] 4.4.1
 
@@ -99,7 +100,7 @@ These modes are implicitly mutually inclusive.
 
 In particular refers to [1.5] 3.3.1.
 A read only or preset address may be altered by means external to J1939.
-Initiates process via either `Address Claim` [0] 1.1. or `Request (Address Claim)` [0] 1.2.
+Initiates process via either [Address Claim](#11-pgn-address-claim). or `Request (Address Claim)` [0] 1.2.
 
 MUST clear `Arbitrary Capable Address` field in NAME
 
