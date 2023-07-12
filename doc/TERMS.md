@@ -1,7 +1,6 @@
---------------- | ------ | -----
 Term            | Abbrev | Description
 --------------- | ------ | -----
 Source Address  | SA     |
 Destination Address | DA |
- | BAM |
+Broadcast Address Message | BAM |
  | PDU |
