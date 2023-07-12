@@ -9,6 +9,7 @@
 
 namespace embr { namespace j1939 {
 
+// [1] Table B1
 enum class industry_groups : uint8_t
 {
     global = 0,
@@ -18,7 +19,9 @@ enum class industry_groups : uint8_t
     marine,
     industrial = 5,
     process_control = 5,
-    stationary = 5
+    stationary = 5,
+    reserved1 = 6,
+    reserved2 = 7
 };
 
 }}

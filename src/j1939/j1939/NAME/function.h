@@ -19,7 +19,11 @@ enum class function_fields
     transmission,
     battery_pack_monitor,
     brakes_system_controller = 9,
+    instrument_cluster = 19,
+    cab_climate_control = 21,
+    vehicle_navigation = 23,
     network_interconnect_ecu = 25,
+    body_controller,
     virtual_terminal_in_cab = 29,       ///< "J1939-72 or ISO 11783-6" [1]
     system_monitor = 33,
     cab_controller = 37,
@@ -55,6 +59,9 @@ enum class function_fields
 
     // IG=2, VehSys=4
     section_on_off_control = 129,
+
+    // IG=3, VehSys=0
+    joystick_control = 141,
 
     // IG=4, VehSys=80 (instrumentation/general)
     time_date_systems = 130,
