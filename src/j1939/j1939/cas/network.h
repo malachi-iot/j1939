@@ -92,10 +92,10 @@ struct network_ca_base : ca_base,
         unstarted,
 
         // requesting state
-        request_waiting,    ///< Waiting period after we emit a request for address claim
+        request_waiting,    ///< Waiting period (1250ms) after we emit a request for address claim
 
         // claiming state
-        waiting,            ///< Waiting period after we emit a claim address
+        waiting,            ///< Waiting period (250ms) after we emit a claim address
         contending,         ///< Evaluation period after we receive a contending address
         bus_off,
         bus_off_recover,
