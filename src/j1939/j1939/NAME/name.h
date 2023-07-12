@@ -14,6 +14,8 @@
 
 #include "../data_field/base.hpp"
 
+#include "layer0.h"
+
 namespace embr { namespace j1939 {
 
 // [1], [2]

@@ -20,7 +20,11 @@ enum class manufacturer_codes
     motorola = 41,
     bosch_usa = 50,
     bosch_gmbh,
+    driver_tech = 126,
+    diagnostic_systems_associates = 177,
     qualcomm = 189,
+    mgm_brakes = 200,
+    the_money_corporation = 204,
     trimble = 1856,
 };
 
