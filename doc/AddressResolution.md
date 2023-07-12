@@ -1,10 +1,10 @@
 # Overview
 
+This document describes network address resolution across J1939 Controlling Applications
+
+Conforms to (Policy)[Policy.md] v0.1
+
 Document v0.1
-
-Uses RFC 2119, RFC 8174 terminology
-
-All references found in REFERENCES.md
 
 # Detail
 
@@ -57,7 +57,7 @@ Operates in either BAM mode or specific DA mode:
 
 ##### 1.2.1.1. BAM mode
 
-Indicates all CAs MUST issue an immediate `Address Claim` [0] 1.1 or `Cannot Claim` [0] 1.4
+Indicates all CAs MUST issue an immediate [Address Claim](#1-1-pgn-address-claim) or [Cannot Claim](#1-5-pgn-cannot-claim-address)
 as per [1.5] 4.4.3.1
 
 ##### 1.2.1.2. Specific DA mode
