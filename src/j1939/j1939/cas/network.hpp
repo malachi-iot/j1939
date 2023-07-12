@@ -15,6 +15,7 @@ namespace embr { namespace j1939 {
 
 namespace impl {
 
+// See [1] Figure A5, A6, A7
 template <class TTransport, class TScheduler>
 void network_ca<TTransport, TScheduler>::send_request_for_address_claimed(
     transport_type& t, uint8_t dest)
@@ -46,12 +47,26 @@ void network_ca<TTransport, TScheduler>::scheduled_claiming(time_point* wake, ti
         case substates::bus_off_recover:
             send_claim(*t);
             substate = substates::waiting;
-            if(!schedule_timeout(wake))
+            if(!schedule_timeout(wake)) // set up 250ms timeout
                 // don't wait for scheduling, immediately go to 'waiting' finish portion
                 scheduled_claiming(wake, current);
             break;
 
         case substates::contending:
+            break;
+
+        case substates::request_waiting:
+            // got to 1.25s timeout for request for address claim
+            // [1] Figure A5, A6, A7
+            // 1.TODO: For A5, if noone contends, send out claim for X.  Then, wait 250ms for contention
+            // 2.TODO: For A5, if someone contends, flow to A6
+            // 3.TODO: For A6, use some algorithm to aggregate incoming claimed and
+            //       select W and send out claim for W.  Then, wait 250ms for contention
+            // 4.TODO: For A7, emit cannot claim address (single address CA)
+
+            // Handles 1 and partial 3
+            send_claim(*t);
+            substate = substates::waiting;
             break;
 
         case substates::waiting:

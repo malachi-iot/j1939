@@ -79,8 +79,8 @@ struct network_ca_base : ca_base,
     enum class states
     {
         unstarted,
-        requesting,         ///< Request for address_claimed
-        claiming,
+        requesting,         ///< Request for address_claimed [2] A5, A6, A7 Initialize
+        claiming,           ///< Address Claim after 1.25s [2] A5, A6
         claimed,
         claim_failed
     };
@@ -92,7 +92,7 @@ struct network_ca_base : ca_base,
         unstarted,
 
         // requesting state
-        request_waiting,
+        request_waiting,    ///< Waiting period after we emit a request for address claim
 
         // claiming state
         waiting,            ///< Waiting period after we emit a claim address
