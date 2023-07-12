@@ -28,6 +28,16 @@ const static embr::j1939::pdu2_header oel_id(0, embr::j1939::pgns::oel);
 
 namespace test {
 
+template <bool arbitrary_address,
+    embr::j1939::manufacturer_codes mc = embr::j1939::manufacturer_codes::not_applicable,
+    int32_t id = -1>
+using NAME_trailer_brake = embr::j1939::layer0::NAME<
+    arbitrary_address,
+    embr::j1939::industry_groups::on_highway,
+    embr::j1939::vehicle_systems::trailer,
+    embr::j1939::function_fields::brakes_system_controller,
+    id, mc>;
+
 // setup NAME as per [4] C.1.2
 template <class TContainer>
 void setup_trailer_brake(embr::j1939::NAME<TContainer>& n)

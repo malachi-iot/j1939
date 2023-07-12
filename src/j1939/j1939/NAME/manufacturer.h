@@ -13,6 +13,8 @@ namespace embr { namespace j1939 {
 // As per [2] Table B10
 enum class manufacturer_codes
 {
+    not_applicable = -1,    // Custom one for our own layer0 NAME shenanigans
+
     reserved = 0,
     allied_signal,
     caterpillar = 8,

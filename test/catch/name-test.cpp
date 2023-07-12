@@ -68,6 +68,17 @@ TEST_CASE("j1939-81 NAME")
 
             REQUIRE(n.get_enum<j1939::function_fields>() == j1939::function_fields::brakes_system_controller);
             REQUIRE(n.get_enum<j1939::manufacturer_codes>() == j1939::manufacturer_codes::chrysler);
+
+            bool v = test::NAME_trailer_brake<false>::match(n);
+
+            REQUIRE(v);
+
+            NAME n2;
+
+            // TODO: Needs a fair bit more work, but getting there
+            test::NAME_trailer_brake<false>::populate(n2, {1});
+
+            //REQUIRE(n == n2);
         }
         SECTION("C.1.3 Agricultural Planter")
         {

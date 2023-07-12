@@ -73,9 +73,10 @@ struct NAME : internal::data_field_base<TContainer>
         base_type::set(d::arbitrary_address_capable(), v);
     }
 
-    inline word<7> vehicle_system() const
+    inline const vehicle_systems
+    vehicle_system() const
     {
-        return base_type::template get<uint8_t>(spn::descriptor{7, 2, 7});
+        return (vehicle_systems) base_type::template get<uint8_t>(spn::descriptor{7, 2, 7});
     }
 
     inline void vehicle_system(word<7> v)
@@ -181,9 +182,10 @@ template <>
 struct get_helper<vehicle_systems> : get_helper_tag
 {
     template <class TContainer>
-    static vehicle_systems get(const NAME<TContainer>& n)
+    constexpr static vehicle_systems get(const NAME<TContainer>& n)
     {
-        return (vehicle_systems) n.vehicle_system().cvalue();
+        //return (vehicle_systems) n.vehicle_system().cvalue();
+        return (vehicle_systems) n.vehicle_system();
     }
 };
 
