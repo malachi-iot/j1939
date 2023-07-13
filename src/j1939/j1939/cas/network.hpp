@@ -22,8 +22,8 @@ namespace impl {
 
 
 // DEBT: Right now this only is choosing from the narrow arbitrary address range
-template <class TTransport, class TScheduler>
-uint8_t network_ca<TTransport, TScheduler>::generate_preferred_sa()
+template <class TTransport, class TScheduler, class TAddressManager>
+uint8_t network_ca<TTransport, TScheduler, TAddressManager>::generate_preferred_sa()
 {
     int v = 128 + (rand() % (248 - 127));
     address = (uint8_t)v;
@@ -31,8 +31,8 @@ uint8_t network_ca<TTransport, TScheduler>::generate_preferred_sa()
 }
 
 // See [1] Figure A5, A6, A7
-template <class TTransport, class TScheduler>
-void network_ca<TTransport, TScheduler>::send_request_for_address_claimed(
+template <class TTransport, class TScheduler, class TAddressManager>
+void network_ca<TTransport, TScheduler, TAddressManager>::send_request_for_address_claimed(
     transport_type& t, uint8_t dest)
 {
     pdu<pgns::request> p;
@@ -46,8 +46,8 @@ void network_ca<TTransport, TScheduler>::send_request_for_address_claimed(
 }
 
 
-template <class TTransport, class TScheduler>
-void network_ca<TTransport, TScheduler>::scheduled_claiming(time_point* wake, time_point current)
+template <class TTransport, class TScheduler, class TAddressManager>
+void network_ca<TTransport, TScheduler, TAddressManager>::scheduled_claiming(time_point* wake, time_point current)
 {
     switch(substate)
     {
@@ -98,8 +98,8 @@ void network_ca<TTransport, TScheduler>::scheduled_claiming(time_point* wake, ti
     }
 }
 
-template <class TTransport, class TScheduler>
-bool network_ca<TTransport, TScheduler>::process_incoming(transport_type& t, const pdu<pgns::address_claimed>& p)
+template <class TTransport, class TScheduler, class TAddressManager>
+bool network_ca<TTransport, TScheduler, TAddressManager>::process_incoming(transport_type& t, const pdu<pgns::address_claimed>& p)
 {
     pdu<pgns::address_claimed> p_resp;
 
@@ -185,8 +185,8 @@ bool network_ca<TTransport, TScheduler>::process_incoming(transport_type& t, con
     return false;
 }
 
-template <class TTransport, class TScheduler>
-bool network_ca<TTransport, TScheduler>::process_request_for_address_claimed(transport_type& t, const pdu<pgns::request>& p)
+template <class TTransport, class TScheduler, class TAddressManager>
+bool network_ca<TTransport, TScheduler, TAddressManager>::process_request_for_address_claimed(transport_type& t, const pdu<pgns::request>& p)
 {
     // TODO: Verify source address is null and log if it isn't
     const address_type sa = p.can_id().source_address();
@@ -226,8 +226,8 @@ bool network_ca<TTransport, TScheduler>::process_request_for_address_claimed(tra
     return true;
 }
 
-template <class TTransport, class TScheduler>
-bool network_ca<TTransport, TScheduler>::process_incoming(transport_type& t, const pdu<pgns::request>& p)
+template <class TTransport, class TScheduler, class TAddressManager>
+bool network_ca<TTransport, TScheduler, TAddressManager>::process_incoming(transport_type& t, const pdu<pgns::request>& p)
 {
     switch((pgns)p.payload().pgn())
     {
@@ -242,8 +242,8 @@ bool network_ca<TTransport, TScheduler>::process_incoming(transport_type& t, con
 }
 
 
-template <class TTransport, class TScheduler>
-void network_ca<TTransport, TScheduler>::start(transport_type& t)
+template <class TTransport, class TScheduler, class TAddressManager>
+void network_ca<TTransport, TScheduler, TAddressManager>::start(transport_type& t)
 {
     this->t = &t;
 

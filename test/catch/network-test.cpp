@@ -12,6 +12,24 @@ using namespace estd::chrono_literals;
 using namespace embr;
 using namespace embr::j1939;
 
+struct SyntheticAddressManager
+{
+    unsigned seed = 0;
+
+    void rotate()
+    {
+        seed <<= 3;
+        seed ^= 123456789;
+    }
+
+    uint8_t get_candidate()
+    {
+        rotate();
+        unsigned v = seed % 120;
+        return (uint8_t)v + 128;
+    }
+};
+
 TEST_CASE("Controller Applications (network)")
 {
     using namespace j1939;
@@ -21,12 +39,29 @@ TEST_CASE("Controller Applications (network)")
 
     can::loopback_transport t;
 
+    SECTION("address manager impl")
+    {
+        SECTION("synthetic")
+        {
+            SyntheticAddressManager am;
+            unsigned v;
+
+            v = am.get_candidate();
+            REQUIRE(v == 197);
+            v = am.get_candidate();
+            REQUIRE(v == 181);
+            v = am.get_candidate();
+            REQUIRE(v == 133);
+            v = am.get_candidate();
+            REQUIRE(v == 221);
+        }
+    }
     SECTION("network")
     {
         using address_traits = spn::internal::address_type_traits_base;
 
         embr::internal::layer1::Scheduler<5, FunctorImpl> scheduler;
-        impl::network_ca<decltype(t), decltype(scheduler)> impl(scheduler);
+        impl::network_ca<decltype(t), decltype(scheduler), SyntheticAddressManager> impl(scheduler);
 
         // DEBT
         impl.address = 77;

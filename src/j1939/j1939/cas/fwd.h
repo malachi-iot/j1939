@@ -12,7 +12,7 @@ namespace embr { namespace j1939 {
 namespace impl {
 
 // Pertains to [1] 5.10
-template <class TTransport, class TScheduler>
+template <class TTransport, class TScheduler, class TAddressManager = void>
 struct network_ca;
 
 // Pertains to [2] 5.10

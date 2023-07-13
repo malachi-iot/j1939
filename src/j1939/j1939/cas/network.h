@@ -132,7 +132,7 @@ struct network_ca_base : ca_base,
 };
 
 // Pertains to [1] 5.10
-template <class TTransport, class TScheduler>
+template <class TTransport, class TScheduler, class TAddressManager>
 struct network_ca : impl::controller_application<TTransport>,
                     network_ca_base
 {
@@ -144,8 +144,10 @@ struct network_ca : impl::controller_application<TTransport>,
     typedef transport_traits<transport_type> _transport_traits;
 
     typedef TScheduler scheduler_type;
+    typedef TAddressManager address_manager_type;
 
     scheduler_type& scheduler;
+    address_manager_type address_manager;
 
     // DEBT: Instead, expose impl_type directly from sechduler_type
     typedef estd::remove_reference_t<decltype(scheduler.impl())> scheduler_impl_type;
@@ -270,8 +272,17 @@ struct network_ca : impl::controller_application<TTransport>,
     typename function_type::template model<wake_functor> wake_model{wake_functor{*this}};
 
 
-    explicit network_ca(scheduler_type& scheduler) : scheduler{scheduler}
+    explicit constexpr network_ca(scheduler_type& scheduler) : scheduler{scheduler}
         //f([&](time_point* wake, time_point current) { scheduled(wake, current); })
+    {
+
+    }
+
+    explicit constexpr network_ca(
+        scheduler_type& scheduler,
+        address_manager_type& am) :
+        scheduler{scheduler},
+        address_manager{am}
     {
 
     }
