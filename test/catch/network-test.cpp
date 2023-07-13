@@ -23,6 +23,7 @@ struct SyntheticAddressManager
         seed = 0;
     }
 
+    // The most pseudo of psuedo random!
     void rotate()
     {
         seed <<= 3;
@@ -48,6 +49,24 @@ struct SyntheticAddressManager
     }
 };
 
+
+struct PduDecomposer
+{
+    using frame = can::loopback_transport::frame;
+    using frame_type = frame;
+    using frame_traits = j1939::frame_traits<frame>;
+
+    pdu1_header id;
+    pdu2_header _id;
+
+    pgns pgn = (pgns) (id.is_pdu1() ? id.range() : _id.range());
+
+    PduDecomposer(unsigned can_id) :
+        id{can_id}, _id{can_id}
+    {}
+};
+
+
 TEST_CASE("Controller Applications (network)")
 {
     using namespace j1939;
@@ -67,6 +86,8 @@ TEST_CASE("Controller Applications (network)")
             SyntheticAddressManager am;
             unsigned v;
 
+            // Semi arbitrary pseudo random test just for
+            // sanity check
             v = am.get_candidate();
             REQUIRE(v == 197);
             v = am.get_candidate();
@@ -80,7 +101,7 @@ TEST_CASE("Controller Applications (network)")
     SECTION("network")
     {
         impl::network_ca<decltype(t), decltype(scheduler), SyntheticAddressManager> impl(scheduler);
-        const uint8_t addr = impl.address_manager.peek_candidate();
+        const unsigned addr = impl.address_manager.peek_candidate();
 
         // FIX: Can't quite find the get_helper it needs
         //test::setup_agricultural_planter(impl.name, 1, 0, 0);
@@ -135,6 +156,11 @@ TEST_CASE("Controller Applications (network)")
             REQUIRE(compare_to_frame.id == frame.id);
             REQUIRE(compare_to_frame.dlc == frame.dlc);
 
+            PduDecomposer pd{frame.id};
+
+            REQUIRE(pd.pgn == pgns::address_claimed);
+            REQUIRE(pd.id.source_address() == addr);
+
             // DEBT: NAME won't match yet
         }
         SECTION("CA contends claim")
@@ -154,6 +180,21 @@ TEST_CASE("Controller Applications (network)")
             frame_type f;
 
             t.receive(&f);
+
+            PduDecomposer pd{f.id};
+
+            REQUIRE(pd.pgn == pgns::address_claimed);
+            REQUIRE(pd.id.source_address() == addr);
+
+            t.receive(&f);
+
+            pd = f.id;
+
+            REQUIRE(pd.pgn == pgns::address_claimed);
+            // TODO: Not quite ready yet
+            //REQUIRE((unsigned)pd.id.source_address() == addr);
+
+            REQUIRE(!t.receive(&f));
         }
         SECTION("CA has no internal SA, requests address claimed")
         {

@@ -58,6 +58,10 @@ bool process_incoming(internal::app_state<TTransport, TImpl, TContext> state, co
     typedef typename TTransport::frame frame_type;
     typedef can::frame_traits<frame_type> frame_traits;
 
+    // DEBT: Something seems off that 'id' is passed in to every case
+    // statement.  Feels wrong - too permissive of a conversion? Feels
+    // like invoker got a touch too fancy and perhaps should just take a raw
+    // uint for the can id?
     // DEBT: Optimize
     pdu1_header id{frame_traits::id(f)};
     pdu2_header _id{frame_traits::id(f)};
