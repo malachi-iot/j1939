@@ -62,7 +62,8 @@ struct NAME
         n.ecu_instance(ecu_instance);
     }
 
-    struct sparse : NAME
+    template <bool aac>
+    struct sparse_base : NAME<aac, ig_, vs_, f_, identity_number_, mc_>
     {
         uint16_t vehicle_system_instance_ : 4;
         uint16_t function_instance_ : 5;
@@ -70,7 +71,7 @@ struct NAME
 
         // DEBT: Pretty sure I'd prefer a undefined/uninitialized
         // default constructor
-        constexpr sparse() :
+        constexpr sparse_base() :
             vehicle_system_instance_{0},
             function_instance_{0},
             ecu_instance_{0}
@@ -78,7 +79,7 @@ struct NAME
 
         word<4> vehicle_system_instance() const
         {
-            return { vehicle_system_instance_ };
+            return word<4>(vehicle_system_instance_);
         }
 
         template <class TContainer>
@@ -90,6 +91,10 @@ struct NAME
                 ecu_instance_);
         }
     };
+
+    // NOTE: Pulling this stunt so that we don't DIRECTLY derive from NAME
+    // which some compilers complain isn't yet fully defined (true statement)
+    using sparse = sparse_base<arbitrary_address_capable_>;
 };
 
 }}}

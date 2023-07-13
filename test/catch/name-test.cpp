@@ -23,7 +23,7 @@ TEST_CASE("j1939-81 NAME")
 {
     using NAME = j1939::NAME<estd::array<uint8_t, 8> >;
 
-    uint32_t identity_number = 0x12345; // synthetic ID number for our own testing only
+    constexpr uint32_t identity_number = 0x12345; // synthetic ID number for our own testing only
 
     // DEBT: Since NAME comes from data_field, it auto initializes to 0xFF.
     // We may want to deviate from that default for NAME specifically
@@ -69,16 +69,19 @@ TEST_CASE("j1939-81 NAME")
             REQUIRE(n.get_enum<j1939::function_fields>() == j1939::function_fields::brakes_system_controller);
             REQUIRE(n.get_enum<j1939::manufacturer_codes>() == j1939::manufacturer_codes::chrysler);
 
+            // NOTE: Does not compare instances, and in this case does not compare identity number
+            // or manufacturer either
             bool v = test::NAME_trailer_brake<false>::match(n);
 
             REQUIRE(v);
 
             NAME n2;
 
-            // TODO: Needs a fair bit more work, but getting there
-            test::NAME_trailer_brake<false>::populate(n2, {1});
+            test::NAME_trailer_brake<false,
+                j1939::manufacturer_codes::chrysler,
+                identity_number>::populate(n2, {1});
 
-            //REQUIRE(n == n2);
+            REQUIRE(n == n2);
         }
         SECTION("C.1.3 Agricultural Planter")
         {
