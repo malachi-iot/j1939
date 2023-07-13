@@ -152,6 +152,8 @@ bool network_ca<TTransport, TScheduler>::process_incoming(transport_type& t, con
             // we have the higher priority name
             // transmit our own address, basically re-announce our claim
             send_claim(t);
+
+            // DEBT: Do we need to schedule a followup here?
         }
         else if(name > incoming_name)
         {
@@ -187,9 +189,9 @@ template <class TTransport, class TScheduler>
 bool network_ca<TTransport, TScheduler>::process_request_for_address_claimed(transport_type& t, const pdu<pgns::request>& p)
 {
     // TODO: Verify source address is null and log if it isn't
-    uint8_t sa = p.can_id().source_address();
+    const address_type sa = p.can_id().source_address();
 
-    uint8_t da = p.can_id().destination_address();
+    const uint8_t da = p.can_id().destination_address();
 
     if (!(da == address_traits::global ||
           da == address))
@@ -198,10 +200,13 @@ bool network_ca<TTransport, TScheduler>::process_request_for_address_claimed(tra
     switch(state)
     {
         case states::claiming:
-            send_claim(t);
+            // Ignore request if we haven't completed our claim address process yet
+            //send_claim(t);
             break;
 
         case states::claimed:
+            // Send as basically an ACK, so no followup scheduling for this particular
+            // send_claim
             send_claim(t);
             break;
 
@@ -211,10 +216,11 @@ bool network_ca<TTransport, TScheduler>::process_request_for_address_claimed(tra
             send_cannot_claim(t);
             break;
 
+        // If we ourselves are waiting on a response to our own request for claim,
+        // or we just haven't started/initialized yet, ignore the request for claimed address
         case states::requesting:
         case states::unstarted:
             return false;
-            break;
     }
 
     return true;
@@ -227,58 +233,8 @@ bool network_ca<TTransport, TScheduler>::process_incoming(transport_type& t, con
     {
         // [1] 4.2.1, 4.4.3 - request for address claimed
         case pgns::address_claimed:
-        {
-            // FIX: Looks like we may have a functional overlap with this
-            // and below logic
             process_request_for_address_claimed(t, p);
-
-            //if(given_address.has_value())
-            {
-                uint8_t sa = p.can_id().source_address();
-                uint8_t da = p.can_id().destination_address();
-
-                if (da == address_traits::global ||
-                    da == address)
-                {
-                    // TODO: Return 'address_claimed' to requester to let them know indeed someone has this
-                    // address
-
-                    // DEBT: This 'optional' approach was nifty, but state machine is better so
-                    // stop interrogating has_value
-                    if(!address.has_value())
-                    {
-                        if(state == states::claim_failed)
-                        {
-                            // [1] 4.4.3.1
-                            // emit a 'cannot claim'
-                            send_cannot_claim(t);
-                        }
-                        else
-                        {
-                            // [1] 4.2.1 - "should not send...until an Address Claim has been attempted"
-
-                            // instead, we emit a claim address message of our own
-                            uint8_t sa_to_claim = 100;  // FIX: Just an arbitrary number right now
-
-                            pdu<pgns::address_claimed> p_resp;
-
-                            p_resp.can_id().destination_address(address_traits::global);
-                            p_resp.payload() = name;
-                            p_resp.can_id().source_address(sa_to_claim);
-
-                            _transport_traits::send(t, p_resp);
-                        }
-                    }
-                    else
-                    {
-                        // [1] 4.4.3.1, 4.4.3.2
-                        send_claim(t);
-                    }
-                }
-
-            }
             return false;
-        }
 
         default:
             return false;

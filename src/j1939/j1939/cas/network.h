@@ -163,7 +163,10 @@ struct network_ca : impl::controller_application<TTransport>,
     time_point last_claim;
     transport_type* t;
 
+    uint8_t generate_preferred_sa();
+
     address_type find_new_address() const { return {}; }   // NOLINT
+
     constexpr bool has_address() const
     {
         return address.has_value();
@@ -276,8 +279,6 @@ struct network_ca : impl::controller_application<TTransport>,
     // DEBT: I think we'd prefer to do this at constructor, but for now is easier
     // to do a manual start call
     void start(transport_type& t);
-
-    uint8_t generate_preferred_sa();
 
     void track(const pdu<pgns::address_claimed>&)
     {
