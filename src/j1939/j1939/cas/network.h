@@ -80,8 +80,8 @@ struct network_ca_base : ca_base,
     {
         unstarted,
         requesting,         ///< Request for address_claimed [2] A5, A6, A7 Initialize
-        claiming,           ///< Address Claim after 1.25s [2] A5, A6
-        claimed,
+        claiming,           ///< Address Claim - emit and wait
+        claimed,            ///< Address Claim success without contention
         claim_failed
     };
 
@@ -148,10 +148,11 @@ struct network_ca : impl::controller_application<TTransport>,
 
     using function_type = typename scheduler_impl_type::function_type;
     //typedef impl::experimental::ca_time_helper<scheduler_impl_type> helper;
+    using milliseconds = estd::chrono::milliseconds;
 
     // DEBT: Not all time_point will be chrono-compatible
     //static constexpr time_point timeout() { return helper::milliseconds(250); }
-    static constexpr time_point timeout() { return estd::chrono::milliseconds(250); }
+    static constexpr milliseconds address_claim_timeout() { return milliseconds(250); }
 
     //function_type f;
 
@@ -205,17 +206,17 @@ struct network_ca : impl::controller_application<TTransport>,
     }
 
     // [1] Figure D1
-    inline bool skip_timeout()
+    constexpr bool skip_timeout() const
     {
         return (given_address >= 0 && given_address <= 127) ||
                (given_address >= 248 && given_address <= 253);
     }
 
-    inline bool schedule_timeout(time_point* wake)
+    bool schedule_address_claim_timeout(time_point* wake)
     {
         if(skip_timeout()) return false;
 
-        *wake += timeout();
+        *wake += address_claim_timeout();
         return true;
     }
 
@@ -272,13 +273,19 @@ struct network_ca : impl::controller_application<TTransport>,
     // to do a manual start call
     void start(transport_type& t);
 
+    /// Is the address in this claimed message the same as the one we intend to use?
     constexpr bool is_contender(const pdu<pgns::address_claimed>& p) const
     {
         return p.source_address() == given_address;
     }
 
+    /// In response to a contending incoming address claim, initiate process of
+    /// coming up with a new candidate SA
     void evaluate_contender(transport_type& t, const pdu<pgns::address_claimed>& p)
     {
+        // TODO: We'll need to emit our own address claimed, cannot claim and
+        // perhaps do some requests to see what address we should try for
+
         state = states::claiming;
         substate = substates::contending;
     }

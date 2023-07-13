@@ -47,7 +47,7 @@ void network_ca<TTransport, TScheduler>::scheduled_claiming(time_point* wake, ti
         case substates::bus_off_recover:
             send_claim(*t);
             substate = substates::waiting;
-            if(!schedule_timeout(wake)) // set up 250ms timeout
+            if(!schedule_address_claim_timeout(wake)) // set up 250ms timeout
                 // don't wait for scheduling, immediately go to 'waiting' finish portion
                 scheduled_claiming(wake, current);
             break;
@@ -67,6 +67,9 @@ void network_ca<TTransport, TScheduler>::scheduled_claiming(time_point* wake, ti
             // Handles 1 and partial 3
             send_claim(*t);
             substate = substates::waiting;
+            // DEBT: Getting here we sorta presume we're arbitrary capable, meaning
+            // we always do 250ms wait
+            schedule_address_claim_timeout(wake);
             break;
 
         case substates::waiting:
@@ -91,16 +94,32 @@ bool network_ca<TTransport, TScheduler>::process_incoming(transport_type& t, con
 
     switch(state)
     {
+        // Incoming address claim after we've settled on our SA.  Evaluate whether
+        // we can/should give it up
         case states::claimed:
             if(is_contender(p))
                 evaluate_contender(t, p);
             break;
 
+        // Incoming address claim while we're trying to claim SA.  Could be someone
+        // specifically contending with our claim
         case states::claiming:
             if(is_contender(p))
                 evaluate_contender(t, p);
             break;
 
+        // Incoming address claims after we do a request for address claim is expected.
+        // Contention possibility is still present.
+        case states::requesting:
+            if(is_contender(p))
+                evaluate_contender(t, p);
+
+            // TODO: Map incoming CA/SA/NAMEs
+
+            break;
+
+        // If unstarted, we must ignore things until we DO start/init
+        // If claim_failed, we've given up trying to get on network
         case states::unstarted:
         case states::claim_failed:
             break;
@@ -262,6 +281,7 @@ void network_ca<TTransport, TScheduler>::start(transport_type& t)
     if(has_address())
     {
         state = states::claiming;
+        substate = substates::waiting;
         send_claim(t);
     }
     else
@@ -273,7 +293,7 @@ void network_ca<TTransport, TScheduler>::start(transport_type& t)
 
     function_type f{&wake_model};
 
-    scheduler.schedule(last_claim + timeout(), f);
+    scheduler.schedule(last_claim + address_claim_timeout(), f);
 }
 
 
