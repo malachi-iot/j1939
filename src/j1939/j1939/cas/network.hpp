@@ -26,7 +26,7 @@ template <class TTransport, class TScheduler>
 uint8_t network_ca<TTransport, TScheduler>::generate_preferred_sa()
 {
     int v = 128 + (rand() % (248 - 127));
-    given_address = (uint8_t)v;
+    address = (uint8_t)v;
     return (uint8_t)v;
 }
 
@@ -129,7 +129,7 @@ bool network_ca<TTransport, TScheduler>::process_incoming(transport_type& t, con
             if(is_contender(p))
                 evaluate_contender(t, p);
 
-            // TODO: Map incoming CA/SA/NAMEs
+            track(p);
 
             break;
 
@@ -141,7 +141,7 @@ bool network_ca<TTransport, TScheduler>::process_incoming(transport_type& t, con
     }
 
     // [1] 4.4.3.3
-    if(sa == given_address)
+    if(sa == address)
     {
         const embr::j1939::layer1::NAME& incoming_name = p.payload();
 
@@ -159,7 +159,7 @@ bool network_ca<TTransport, TScheduler>::process_incoming(transport_type& t, con
 
             // [1] 4.4.4
             // emit a 'cannot claim' or attempt to claim a new address
-            optional_address_type new_address = find_new_address();
+            address_type new_address = find_new_address();
 
             // DEBT: At the moment, find_new_address always finds nothing
             if(new_address.has_value())
@@ -192,7 +192,7 @@ bool network_ca<TTransport, TScheduler>::process_request_for_address_claimed(tra
     uint8_t da = p.can_id().destination_address();
 
     if (!(da == address_traits::global ||
-          da == given_address))
+          da == address))
         return false;
 
     switch(state)
@@ -238,14 +238,14 @@ bool network_ca<TTransport, TScheduler>::process_incoming(transport_type& t, con
                 uint8_t da = p.can_id().destination_address();
 
                 if (da == address_traits::global ||
-                    da == given_address)
+                    da == address)
                 {
                     // TODO: Return 'address_claimed' to requester to let them know indeed someone has this
                     // address
 
                     // DEBT: This 'optional' approach was nifty, but state machine is better so
                     // stop interrogating has_value
-                    if(!given_address.has_value())
+                    if(!address.has_value())
                     {
                         if(state == states::claim_failed)
                         {

@@ -127,12 +127,12 @@ struct network_ca : impl::controller_application<TTransport>,
     using address_traits = spn::internal::address_type_traits_base;
 
     typedef transport_traits<transport_type> _transport_traits;
-    using optional_address_type = estd::layer1::optional<uint8_t, address_traits::null>;
+    using address_type = estd::layer1::optional<uint8_t, address_traits::null>;
 
     // TODO: Change to non-optional (since state machine handles that)
-    // TODO: Change name to 'address' as it may be claimed, claiming or cannot claim depending on
+    // May be claimed, claiming or cannot claim depending on
     // state machine
-    optional_address_type given_address;
+    address_type address;
 
     typedef TScheduler scheduler_type;
 
@@ -159,10 +159,10 @@ struct network_ca : impl::controller_application<TTransport>,
     time_point last_claim;
     transport_type* t;
 
-    optional_address_type find_new_address() const { return {}; }   // NOLINT
+    address_type find_new_address() const { return {}; }   // NOLINT
     constexpr bool has_address() const
     {
-        return given_address.has_value();
+        return address.has_value();
     }
 
     // [1] 4.2.1
@@ -202,14 +202,14 @@ struct network_ca : impl::controller_application<TTransport>,
     {
         pdu<pgns::address_claimed> p;
 
-        send_claim(t, p, *given_address);
+        send_claim(t, p, *address);
     }
 
     // [1] Figure D1
     constexpr bool skip_timeout() const
     {
-        return (given_address >= 0 && given_address <= 127) ||
-               (given_address >= 248 && given_address <= 253);
+        return (address >= 0 && address <= 127) ||
+               (address >= 248 && address <= 253);
     }
 
     bool schedule_address_claim_timeout(time_point* wake)
@@ -275,10 +275,16 @@ struct network_ca : impl::controller_application<TTransport>,
 
     uint8_t generate_preferred_sa();
 
+    void track(const pdu<pgns::address_claimed>&)
+    {
+        // TODO: Map incoming CA/SA/NAMEs, probably via some kind of impl associated with
+        // SA generation
+    }
+
     /// Is the address in this claimed message the same as the one we intend to use?
     constexpr bool is_contender(const pdu<pgns::address_claimed>& p) const
     {
-        return p.source_address() == given_address;
+        return p.source_address() == address;
     }
 
     /// In response to a contending incoming address claim, initiate process of

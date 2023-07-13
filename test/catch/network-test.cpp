@@ -29,7 +29,7 @@ TEST_CASE("Controller Applications (network)")
         impl::network_ca<decltype(t), decltype(scheduler)> impl(scheduler);
 
         // DEBT
-        impl.given_address = 77;
+        impl.address = 77;
 
         // FIX: Can't quite find the get_helper it needs
         //test::setup_agricultural_planter(impl.name, 1, 0, 0);
@@ -75,7 +75,7 @@ TEST_CASE("Controller Applications (network)")
 
             // Brute force expected address to compare against
             // DEBT: this much access to given_address a no no
-            p_claim.source_address(*impl.given_address);
+            p_claim.source_address(*impl.address);
 
             // Because it's a bit of work to convert a native CAN
             // to a PDU, we go the other direction for now
@@ -88,7 +88,7 @@ TEST_CASE("Controller Applications (network)")
         }
         SECTION("CA contends claim")
         {
-            p_claim.source_address(*impl.given_address);
+            p_claim.source_address(*impl.address);
 
             process_incoming(impl, t, frame_traits::create(p_claim));
 
@@ -101,7 +101,7 @@ TEST_CASE("Controller Applications (network)")
         SECTION("CA has no internal SA, requests address claimed")
         {
             // DEBT
-            impl.given_address.reset();
+            impl.address.reset();
 
             impl.start(t);
 
@@ -116,7 +116,7 @@ TEST_CASE("Controller Applications (network)")
         SECTION("randomness")
         {
             std::srand(std::time(nullptr));
-            
+
             for(int i = 100; --i > 0;)
             {
                 int v = impl.generate_preferred_sa();
