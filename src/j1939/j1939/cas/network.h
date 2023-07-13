@@ -273,6 +273,8 @@ struct network_ca : impl::controller_application<TTransport>,
     // to do a manual start call
     void start(transport_type& t);
 
+    uint8_t generate_preferred_sa();
+
     /// Is the address in this claimed message the same as the one we intend to use?
     constexpr bool is_contender(const pdu<pgns::address_claimed>& p) const
     {

@@ -7,6 +7,11 @@
  */
 #pragma once
 
+// DEBT: For 'rand'
+// DEBT: Would be nicer to use c++11 proper random number features, but that would be
+// a huge chore for AVR
+#include <cstdlib>
+
 #include "network.h"
 
 #include "../data_field/request.hpp"
@@ -14,6 +19,16 @@
 namespace embr { namespace j1939 {
 
 namespace impl {
+
+
+// DEBT: Right now this only is choosing from the narrow arbitrary address range
+template <class TTransport, class TScheduler>
+uint8_t network_ca<TTransport, TScheduler>::generate_preferred_sa()
+{
+    int v = 128 + (rand() % (248 - 127));
+    given_address = (uint8_t)v;
+    return (uint8_t)v;
+}
 
 // See [1] Figure A5, A6, A7
 template <class TTransport, class TScheduler>

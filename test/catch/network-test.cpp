@@ -113,5 +113,17 @@ TEST_CASE("Controller Applications (network)")
 
             process_incoming(impl, t, f);
         }
+        SECTION("randomness")
+        {
+            std::srand(std::time(nullptr));
+            
+            for(int i = 100; --i > 0;)
+            {
+                int v = impl.generate_preferred_sa();
+
+                REQUIRE(v >= 128);
+                REQUIRE(v < 254);
+            }
+        }
     }
 }
