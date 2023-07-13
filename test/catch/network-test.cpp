@@ -18,6 +18,8 @@ struct SyntheticAddressManager
 {
     unsigned seed = 0;
 
+    static constexpr bool depleted() { return false; }
+
     void reset()
     {
         seed = 0;
@@ -225,9 +227,11 @@ TEST_CASE("Controller Applications (network)")
         {
             std::srand(std::time(nullptr));
 
+            embr::j1939::impl::random_address_manager am;
+
             for(int i = 100; --i > 0;)
             {
-                int v = impl.generate_preferred_sa();
+                int v = am.get_candidate();
 
                 REQUIRE(v >= 128);
                 REQUIRE(v < 254);

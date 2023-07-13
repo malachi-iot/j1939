@@ -126,6 +126,8 @@ A "higher value" indicates a lower priority [1.5] 4.4.1
 
 ### 1.5. PGN: Cannot Claim Address
 
+This is a repackaging of [Address Claim](#11-pgn-address-claim) with distinction that SA MUST contain `null` (254)
+
 Transmitted when:
 
 * CA is Single Address and preferred address is contended

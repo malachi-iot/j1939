@@ -39,6 +39,13 @@ struct network_address_tracker
     std::bitset<max> claimed;
 };
 
+struct random_address_manager
+{
+    static constexpr bool depleted() { return false; }
+
+    static uint8_t get_candidate();
+};
+
 namespace experimental {
 
 // FIX: This is all sloppy, just doing this to bring things online.  We may instead consider always
@@ -136,6 +143,7 @@ public:
 
     using milliseconds = estd::chrono::milliseconds;
 
+    static constexpr milliseconds cannot_claim_address_max_timeout() { return milliseconds(153); }
     static constexpr milliseconds address_claim_timeout() { return milliseconds(250); }
     static constexpr milliseconds request_for_address_claim_timeout()
     {
@@ -170,9 +178,6 @@ struct network_ca : impl::controller_application<TTransport>,
     typedef estd::remove_reference_t<decltype(scheduler.impl())> scheduler_impl_type;
     typedef typename scheduler_impl_type::time_point time_point;
     typedef typename scheduler_impl_type::function_type fn_test;
-    // DEBT: Using dynamic allocated function, we strongly frown on this.  Being
-    // that we do not expect to free it, this is not a FIX
-    //typedef estd::experimental::function<void(time_point*, time_point)> old_function_type;
 
     using function_type = typename scheduler_impl_type::function_type;
     //typedef impl::experimental::ca_time_helper<scheduler_impl_type> helper;
@@ -182,9 +187,13 @@ struct network_ca : impl::controller_application<TTransport>,
     time_point last_claim;
     transport_type* t;
 
-    uint8_t generate_preferred_sa();
-
-    address_type find_new_address() const { return {}; }   // NOLINT
+    address_type find_new_address()
+    {
+        if(address_manager.depleted())
+            return {};
+        else
+            return address_manager.get_candidate();
+    }
 
     constexpr bool has_address() const
     {
@@ -199,6 +208,7 @@ struct network_ca : impl::controller_application<TTransport>,
     void send_cannot_claim(transport_type& t, pdu<pgns::address_claimed>& p)
     {
         p.can_id().source_address(address_traits::null);
+        p.payload() = name_;
         _transport_traits::send(t, p);
 
     }
@@ -208,7 +218,6 @@ struct network_ca : impl::controller_application<TTransport>,
         pdu<pgns::address_claimed> p;
 
         p.can_id().destination_address(address_traits::global);
-        p.payload() = name_;
 
         send_cannot_claim(t, p);
     }

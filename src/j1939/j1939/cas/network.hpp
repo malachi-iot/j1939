@@ -22,11 +22,9 @@ namespace impl {
 
 
 // DEBT: Right now this only is choosing from the narrow arbitrary address range
-template <class TTransport, class TScheduler, class TAddressManager>
-uint8_t network_ca<TTransport, TScheduler, TAddressManager>::generate_preferred_sa()
+inline uint8_t random_address_manager::get_candidate()
 {
-    int v = 128 + (rand() % (248 - 127));
-    address_ = (uint8_t)v;
+    int v = 128 + (rand() % (248 - 127));   // NOLINT
     return (uint8_t)v;
 }
 
