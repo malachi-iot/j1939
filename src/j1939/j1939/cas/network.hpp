@@ -26,7 +26,7 @@ template <class TTransport, class TScheduler, class TAddressManager>
 uint8_t network_ca<TTransport, TScheduler, TAddressManager>::generate_preferred_sa()
 {
     int v = 128 + (rand() % (248 - 127));
-    address = (uint8_t)v;
+    address_ = (uint8_t)v;
     return (uint8_t)v;
 }
 
@@ -141,7 +141,7 @@ bool network_ca<TTransport, TScheduler, TAddressManager>::process_incoming(trans
     }
 
     // [1] 4.4.3.3
-    if(sa == address)
+    if(sa == address_)
     {
         const embr::j1939::layer1::NAME& incoming_name = p.payload();
 
@@ -194,7 +194,7 @@ bool network_ca<TTransport, TScheduler, TAddressManager>::process_request_for_ad
     const uint8_t da = p.can_id().destination_address();
 
     if (!(da == address_traits::global ||
-          da == address))
+          da == address_))
         return false;
 
     switch(state)
@@ -248,6 +248,8 @@ void network_ca<TTransport, TScheduler, TAddressManager>::start(transport_type& 
     this->t = &t;
 
     function_type f{&wake_model};
+
+    address_ = address_manager.get_candidate();
 
     // DEBT: Not 100% right, more like we have an alleged address and
     // the send_claim is to ensure there's no contention

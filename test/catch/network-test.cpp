@@ -12,9 +12,16 @@ using namespace estd::chrono_literals;
 using namespace embr;
 using namespace embr::j1939;
 
+// This particular address manager stays in the strict arbitrary assigned
+// range
 struct SyntheticAddressManager
 {
     unsigned seed = 0;
+
+    void reset()
+    {
+        seed = 0;
+    }
 
     void rotate()
     {
@@ -22,11 +29,22 @@ struct SyntheticAddressManager
         seed ^= 123456789;
     }
 
-    uint8_t get_candidate()
+    uint8_t peek_candidate()
     {
-        rotate();
         unsigned v = seed % 120;
         return (uint8_t)v + 128;
+    }
+
+    uint8_t get_candidate()
+    {
+        const uint8_t v = peek_candidate();
+        rotate();
+        return v;
+    }
+
+    SyntheticAddressManager()
+    {
+        rotate();
     }
 };
 
@@ -36,8 +54,11 @@ TEST_CASE("Controller Applications (network)")
     using frame = can::loopback_transport::frame;
     using frame_type = frame;
     using frame_traits = j1939::frame_traits<frame>;
+    using address_traits = spn::internal::address_type_traits_base;
 
     can::loopback_transport t;
+
+    embr::internal::layer1::Scheduler<5, FunctorImpl> scheduler;
 
     SECTION("address manager impl")
     {
@@ -58,13 +79,8 @@ TEST_CASE("Controller Applications (network)")
     }
     SECTION("network")
     {
-        using address_traits = spn::internal::address_type_traits_base;
-
-        embr::internal::layer1::Scheduler<5, FunctorImpl> scheduler;
         impl::network_ca<decltype(t), decltype(scheduler), SyntheticAddressManager> impl(scheduler);
-
-        // DEBT
-        impl.address = 77;
+        const uint8_t addr = impl.address_manager.peek_candidate();
 
         // FIX: Can't quite find the get_helper it needs
         //test::setup_agricultural_planter(impl.name, 1, 0, 0);
@@ -110,7 +126,7 @@ TEST_CASE("Controller Applications (network)")
 
             // Brute force expected address to compare against
             // DEBT: this much access to given_address a no no
-            p_claim.source_address(*impl.address);
+            p_claim.source_address(*impl.address());
 
             // Because it's a bit of work to convert a native CAN
             // to a PDU, we go the other direction for now
@@ -123,11 +139,17 @@ TEST_CASE("Controller Applications (network)")
         }
         SECTION("CA contends claim")
         {
-            p_claim.source_address(*impl.address);
+            // Initiate network CA, creating announce
+            impl.start(t);
+
+            impl.address_manager.reset();
+
+            p_claim.source_address(*impl.address());
 
             process_incoming(impl, t, frame_traits::create(p_claim));
 
-            REQUIRE(!t.queue.empty());
+            // Contains initial claim followed by condender claim
+            REQUIRE(t.queue.size() == 2);
 
             frame_type f;
 
@@ -135,8 +157,11 @@ TEST_CASE("Controller Applications (network)")
         }
         SECTION("CA has no internal SA, requests address claimed")
         {
+            // FIX: This entire test is suspect, since it's indeterminate
+            // if on start a CA should issue a request for address claimed
+
             // DEBT
-            impl.address.reset();
+            //impl.address.reset();
 
             impl.start(t);
 

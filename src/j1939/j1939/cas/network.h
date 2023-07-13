@@ -107,15 +107,19 @@ struct network_ca_base : ca_base,
     states state = states::unstarted;
     substates substate = substates::unstarted;
 
-    layer1::NAME name;
-
     using address_traits = spn::internal::address_type_traits_base;
     using address_type = estd::layer1::optional<uint8_t, address_traits::null>;
+
+protected:
+    layer1::NAME name;
 
     // TODO: Change to non-optional (since state machine handles that)
     // May be claimed, claiming or cannot claim depending on
     // state machine
-    address_type address;
+    address_type address_;
+
+public:
+    const address_type& address() const { return address_; }
 
     using milliseconds = estd::chrono::milliseconds;
 
@@ -171,7 +175,7 @@ struct network_ca : impl::controller_application<TTransport>,
 
     constexpr bool has_address() const
     {
-        return address.has_value();
+        return address_.has_value();
     }
 
     // [1] 4.2.1
@@ -211,14 +215,14 @@ struct network_ca : impl::controller_application<TTransport>,
     {
         pdu<pgns::address_claimed> p;
 
-        send_claim(t, p, *address);
+        send_claim(t, p, *address_);
     }
 
     // [1] Figure D1
     constexpr bool skip_timeout() const
     {
-        return (address >= 0 && address <= 127) ||
-               (address >= 248 && address <= 253);
+        return (address_ >= 0 && address_ <= 127) ||
+               (address_ >= 248 && address_ <= 253);
     }
 
     bool schedule_address_claim_timeout(time_point* wake)
@@ -300,7 +304,7 @@ struct network_ca : impl::controller_application<TTransport>,
     /// Is the address in this claimed message the same as the one we intend to use?
     constexpr bool is_contender(const pdu<pgns::address_claimed>& p) const
     {
-        return p.source_address() == address;
+        return p.source_address() == address_;
     }
 
     /// In response to a contending incoming address claim, initiate process of
