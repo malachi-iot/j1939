@@ -82,6 +82,8 @@ TEST_CASE("Controller Applications (network)")
     embr::internal::layer1::Scheduler<5, FunctorImpl> scheduler;
     j1939::layer1::NAME name;
 
+    using network_ca = impl::network_ca<decltype(t), decltype(scheduler), SyntheticAddressManager>;
+
     // FIX: glitched out for the time being
     //test::setup_agricultural_planter(name, {0}, {0}, {0});
 
@@ -108,8 +110,7 @@ TEST_CASE("Controller Applications (network)")
     }
     SECTION("network")
     {
-        impl::network_ca<decltype(t), decltype(scheduler), SyntheticAddressManager>
-            impl(name, scheduler);
+        network_ca impl(name, scheduler);
         const unsigned addr = impl.address_manager.peek_candidate();
 
         // FIX: Can't quite find the get_helper it needs
@@ -174,6 +175,10 @@ TEST_CASE("Controller Applications (network)")
         }
         SECTION("CA contends claim")
         {
+            j1939::layer1::NAME contender_name;
+            test::names::agricultural_planter<true>::populate(contender_name);
+            network_ca contender(contender_name, scheduler);
+
             // Initiate network CA, creating announce
             impl.start(t);
 

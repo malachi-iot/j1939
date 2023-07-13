@@ -144,6 +144,9 @@ public:
     using milliseconds = estd::chrono::milliseconds;
 
     static constexpr milliseconds cannot_claim_address_max_timeout() { return milliseconds(153); }
+    // [1.5] 4.4.4.3
+    static constexpr milliseconds bus_collision_delay() { return milliseconds(153); }
+
     static constexpr milliseconds address_claim_timeout() { return milliseconds(250); }
     static constexpr milliseconds request_for_address_claim_timeout()
     {
