@@ -200,7 +200,8 @@ CA MUST emit [Address Claim](#11-pgn-address-claim) of preferred SA [1.5] 4.2.2
 
 #### 3.3.3. Address Contention
 
-If existing CA contends with newcomer CA, observe [Contention Rules](#111-contention-rules)
+If existing CA contends with newcomer CA, observe [Contention Rules](#111-contention-rules).
+Otherwise, startup procedure is complete and operation enters [Nominal](#34-nominal) mode.
 
 #### 3.3.3.1. Scenario 1: Followup Address Claim
 
@@ -213,3 +214,21 @@ This ultimately is quite similar to 3.3.2:
 #### 3.3.3.2. Scenario 2: Unable to proceed
 
 If one is unable to reattempt, then as per the contention rules a [Cannot Claim](#15-pgn-cannot-claim-address) is emitted.
+
+### 3.4. Nominal
+
+This sections outlines a step by step walk through of scenarios which occur after
+startup procedure (3.3) has completed and CA address is claimed
+
+#### 3.4.1. Scenario 1: Receipt of Address Claimed
+
+If incoming SA matches CA's claimed address, observe contention rules 1.1.1.
+Otherwise, message garners no response.
+
+#### 3.4.2. Scenario 2: Receipt of Request for Address Claimed
+
+As per 1.2.1., unless CA is in process of claiming an address, it MUST respond with either:
+
+- [Address Claim](#11-pgn-address-claim)
+- [Cannot Claim](#15-pgn-cannot-claim-address)
+
