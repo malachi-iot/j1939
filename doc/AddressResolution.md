@@ -80,14 +80,18 @@ Also known as `Request for Address Claim`.  Inquires one or all targets for thei
 
 SA field MUST be `null` unless CA has claimed an address [1.5] 4.4.2.1
 
-#### 1.2.1. Network Modes
+#### 1.2.1. Network Modes & Expected Responses
+
+Emitting CA waits 1250ms to gather CA responses as per [1.5] 4.2.2 and [1.1] 5.12.3.
+
+No response is required if CA has not yet attempted to claim an address.  Otherwise, factoring in
+implied behaviors as per 1.2.3., a response MUST emit.
 
 Operates in either BAM mode or specific DA mode:
 
 ##### 1.2.1.1. BAM mode
 
-Indicates all CAs MUST issue an immediate [Address Claim](#11-pgn-address-claim) or [Cannot Claim](#15-pgn-cannot-claim-address)
-as per [1.5] 4.4.3.1
+Indicates all CAs MUST issue an immediate [Address Claim](#11-pgn-address-claim) or [Cannot Claim](#15-pgn-cannot-claim-address) as per [1.5] 4.4.3.1.  This includes requesting CA [1.5] 4.2.1
 
 It is discouraged to use this mode since it generates a lot of traffic.
 
@@ -100,9 +104,17 @@ as per [1.5] 4.4.3.2
 
 [1.5] 4.4.3.3
 
-#### 1.2.3. Followup / Response
+#### 1.2.3. Ambiguities / Implied Behaviors
 
-Emitting CA waits 1250ms to gather CA responses.
+[1.5] 4.2.1 is unclear what to do if a CA receives this request while in process of claiming an address.  It is
+implied a response MUST emit.
+
+There is no indication if this restarts the claim process as per 3.3.3.1.  Specifically, to reset the 250ms timeout.
+
+For simplicity, we elect to:
+
+* NOT reset the timeout.
+* Emit address claim as implied by the spec, despite implying we have truly claimed it when we haven't 
 
 ### 1.3. NAME
 
