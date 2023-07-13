@@ -25,17 +25,15 @@ In canonical parlance, these are:
     * Self-Configurable Address CA
 * Arbitrary Address Capable CA
 
-## 1. Common Behaviors
+## 1. Core Behaviors
 
 ### 1.1. PGN: Address Claim
 
 A CA emits this message indicating ownership or intent to own a specific SA.
 
-A 250ms timeout is observed in which time other CAs may contend this claim with their
-own `Address Claim` message.
-
-DA field MUST be `global` [1.5] 4.4.2
-Payload MUST contain [NAME](#13-name)
+* SA field MUST contain intended source address of CA
+* DA field MUST be `global` [1.5] 4.4.2
+* Payload MUST contain [NAME](#13-name)
 
 #### 1.1.1. Contention Rules
 
@@ -45,6 +43,19 @@ If NAME is of a higher value, CA either:
 
 * emits a `Cannot Claim Address`
 * emits a `Claim Address` after selecting a new SA
+
+#### 1.1.2. Timing Scenarios
+
+A 250ms timeout is sometimes observed in which time other CAs may contend this claim with their own `Address Claim` message.
+
+##### 1.1.2.1. Scenario 1: Immediate Communication
+
+A Single Address Capable CA SHOULD begin normal communication immediately if
+its preferred SA is 0-127 or 248-253. [1.5] 4.4
+
+##### 1.1.2.2. Scenario 2: Delayed Communication
+
+If prerequisite from 1.1.2.1 is not met, a 250ms timeout is observed for other CAs to condend the claim. [1.5] 4.4
 
 ### 1.2. PGN: Request (Address Claim)
 
@@ -70,6 +81,10 @@ as per [1.5] 4.4.3.2
 
 [1.5] 4.4.3.3
 
+#### 1.2.3. Followup / Response
+
+Emitting CA waits 1250ms to gather CA responses.
+
 ### 1.3. NAME
 
 Designates a unique 8-byte value appearing in payload for [Address Claim](#11-pgn-address-claim)`
@@ -82,11 +97,11 @@ A "higher value" indicates a lower priority [1.5] 4.4.1
 
 ## 2. Reserved
 
-## 3. Modes
+## 3. Modes of Operation
 
 These modes are implicitly mutually inclusive.
 
-### 3.1. Modes: Our Parlance
+### 3.1. Specific Modes: Our Parlance
 
 #### 3.1.1. Address Claim
 
@@ -94,7 +109,7 @@ These modes are implicitly mutually inclusive.
 
 #### 3.1.3. Request for Address Claim: w/o preferred address
 
-### 3.2. Modes: Canonical Parlance
+### 3.2. Specific Modes: Canonical Parlance
 
 #### 3.2.1. Single Address Capable CA
 
@@ -114,7 +129,7 @@ Commanded Address Message assigns SA during "a 'service' mode" [1.5] 3.3.1.2.
 
 ##### 3.2.1.3. Command Configurable Address CA
 
-Commanded Address Message assigns SA at any time.
+Commanded Address Message assigns SA at any time.  Another CA MUST exist to emit such a command.
 
 ##### 3.2.1.4. Self-Configurable Address CA
 
@@ -123,13 +138,26 @@ Associated NAME MUST reflect these factors.
 
 #### 3.2.2. Arbitrary Address Capable CA
 
-In particular refers to [1.5] 3.3.2.  Implies a null SA with no preference as to which SA is chosen.
+In particular refers to [1.5] 3.3.2.  Implies a null SA with no preference as to which SA is chosen.  However, it appears a preferred SA is REQUIRED and SHOULD be in the range of 128-247 [1.5] 3.3.2
 
 MUST set `Arbitrary Capable Address` field in NAME
 
-Initiates via `Request for Address Claim` to mitigate collisions [1.5] 4.2.1.  Request either:
+Initiates via [Request for Address Claim](#12-pgn-request-address-claim) to mitigate collisions [1.5] 4.2.1.  Solicits a particular or all CAs for their SA. 
 
-* Solicits all CAs for their SAs
-* Solicits a particular CA at an SA
+### 3.3. Startup procedure
 
-A timeout period of 1250ms [1.5] Figure A5, A6, A7
+This section outlines a step by step walk through of address arbitration.
+Steps are REQUIRED unless denoted otherwise.
+
+#### 3.3.1. Prerequisites
+
+* CA SHOULD finish a POST
+* CA MUST have a preferred SA
+
+#### 3.3.2. Initial Address Claim
+
+CA MUST emit [Address Claim](#11-pgn-address-claim) preferred SA [1.5] 4.2.2
+
+#### 3.3.3. Address Contention
+
+If existing CA contends with newcomer CA, observe [Contention Rules](#111-contention-rules)

@@ -4,4 +4,10 @@
     3. SAEJ1939_71 (MAR2011).pdf
     4. J1939-73.pdf
     5. J1939-81 (MAY2003).pdf
+        1. https://embeddedflakes.com/network-management-in-sae-j1939/
 2. Reserved for ISO documents
+    1. Reserved
+    2. Reserved
+    3. Reserved
+    4. Reserved
+    5. ISO 11783-5-2019.pdf
