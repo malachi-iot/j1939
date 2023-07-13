@@ -291,6 +291,8 @@ void network_ca<TTransport, TScheduler>::start(transport_type& t)
 {
     this->t = &t;
 
+    function_type f{&wake_model};
+
     // DEBT: Not 100% right, more like we have an alleged address and
     // the send_claim is to ensure there's no contention
     if(has_address())
@@ -298,17 +300,18 @@ void network_ca<TTransport, TScheduler>::start(transport_type& t)
         state = states::claiming;
         substate = substates::waiting;
         send_claim(t);
+
+        scheduler.schedule(last_claim + address_claim_timeout(), f);
     }
     else
     {
+        // TODO: Likely we need to instead do this during the "cannot claim" process
         state = states::requesting;
         substate = substates::request_waiting;
         send_request_for_address_claimed(t);
+
+        scheduler.schedule(last_claim + request_for_address_claim_timeout(), f);
     }
-
-    function_type f{&wake_model};
-
-    scheduler.schedule(last_claim + address_claim_timeout(), f);
 }
 
 

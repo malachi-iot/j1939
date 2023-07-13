@@ -109,6 +109,22 @@ struct network_ca_base : ca_base,
 
     layer1::NAME name;
 
+    using address_traits = spn::internal::address_type_traits_base;
+    using address_type = estd::layer1::optional<uint8_t, address_traits::null>;
+
+    // TODO: Change to non-optional (since state machine handles that)
+    // May be claimed, claiming or cannot claim depending on
+    // state machine
+    address_type address;
+
+    using milliseconds = estd::chrono::milliseconds;
+
+    static constexpr milliseconds address_claim_timeout() { return milliseconds(250); }
+    static constexpr milliseconds request_for_address_claim_timeout()
+    {
+        return milliseconds(1250);
+    }
+
     constexpr bool arbitrary_address_capable() const
     {
         return name.arbitrary_address_capable();
@@ -124,15 +140,8 @@ struct network_ca : impl::controller_application<TTransport>,
     using typename base_type::transport_type;
     using typename base_type::frame_type;
     using typename base_type::frame_traits;
-    using address_traits = spn::internal::address_type_traits_base;
 
     typedef transport_traits<transport_type> _transport_traits;
-    using address_type = estd::layer1::optional<uint8_t, address_traits::null>;
-
-    // TODO: Change to non-optional (since state machine handles that)
-    // May be claimed, claiming or cannot claim depending on
-    // state machine
-    address_type address;
 
     typedef TScheduler scheduler_type;
 
@@ -148,11 +157,6 @@ struct network_ca : impl::controller_application<TTransport>,
 
     using function_type = typename scheduler_impl_type::function_type;
     //typedef impl::experimental::ca_time_helper<scheduler_impl_type> helper;
-    using milliseconds = estd::chrono::milliseconds;
-
-    // DEBT: Not all time_point will be chrono-compatible
-    //static constexpr time_point timeout() { return helper::milliseconds(250); }
-    static constexpr milliseconds address_claim_timeout() { return milliseconds(250); }
 
     //function_type f;
 
