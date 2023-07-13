@@ -112,4 +112,21 @@ TEST_CASE("j1939-81 NAME")
 
         REQUIRE(n.get_enum<j1939::manufacturer_codes>() == j1939::manufacturer_codes::qualcomm);
     }
+    SECTION("layer0")
+    {
+        test::names::trailer_brake<true>::sparse name1;
+        j1939::layer1::NAME name2;
+
+        name1.populate(name2);
+
+        REQUIRE(name2.arbitrary_address_capable());
+        //REQUIRE(embr::get<j1939::industry_groups>(name2) ==
+        REQUIRE((j1939::industry_groups)name2.industry_group().cvalue() ==
+                j1939::industry_groups::on_highway);
+
+        // Correctly is ambiguous, and qualifying by namespace
+        // fixes that
+        //test::names::synthetic_collider<true>::sparse name3;
+        test::names::ig2::synthetic_collider<true>::sparse name3;
+    }
 }

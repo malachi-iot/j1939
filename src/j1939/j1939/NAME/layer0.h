@@ -45,6 +45,7 @@ struct NAME
         word<5> function_instance = {0},
         word<3> ecu_instance = {0})
     {
+        n.industry_group((uint16_t)industry_group);
         n.arbitrary_address_capable(arbitrary_address_capable);
         n.vehicle_system((uint8_t)vehicle_system);
 
@@ -60,6 +61,35 @@ struct NAME
         n.function_instance(function_instance);
         n.ecu_instance(ecu_instance);
     }
+
+    struct sparse : NAME
+    {
+        uint16_t vehicle_system_instance_ : 4;
+        uint16_t function_instance_ : 5;
+        uint16_t ecu_instance_ : 3;
+
+        // DEBT: Pretty sure I'd prefer a undefined/uninitialized
+        // default constructor
+        constexpr sparse() :
+            vehicle_system_instance_{0},
+            function_instance_{0},
+            ecu_instance_{0}
+        {}
+
+        word<4> vehicle_system_instance() const
+        {
+            return { vehicle_system_instance_ };
+        }
+
+        template <class TContainer>
+        void populate(j1939::NAME<TContainer>& n)
+        {
+            NAME::populate(n,
+                vehicle_system_instance(),
+                function_instance_,
+                ecu_instance_);
+        }
+    };
 };
 
 }}}

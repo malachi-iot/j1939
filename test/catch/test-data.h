@@ -40,6 +40,42 @@ using NAME_trailer_brake = embr::j1939::layer0::NAME<
     embr::j1939::function_fields::brakes_system_controller,
     id, mc>;
 
+template <bool arbitrary_address,
+    embr::j1939::manufacturer_codes mc = embr::j1939::manufacturer_codes::not_applicable,
+    int32_t id = -1>
+using NAME_agrigultural_planter = embr::j1939::layer0::NAME<
+    arbitrary_address,
+    embr::j1939::industry_groups::agricultrual_and_forestry,
+    embr::j1939::vehicle_systems::secondary_tillage,
+    embr::j1939::function_fields::section_on_off_control,
+    id, mc>;
+
+// EXPERIMENTAL, but liking it
+namespace names {
+
+inline namespace ig1 {
+
+template <bool arbitrary_address>
+using trailer_brake = NAME_trailer_brake<arbitrary_address>;
+
+template <bool arbitrary_address>
+using synthetic_collider = trailer_brake<arbitrary_address>;
+
+}
+
+inline namespace ig2 {
+
+template <bool arbitrary_address>
+using agricultural_planter = NAME_agrigultural_planter<arbitrary_address>;
+
+template <bool arbitrary_address>
+using synthetic_collider = agricultural_planter<arbitrary_address>;
+
+}
+
+}
+
+
 // setup NAME as per [4] C.1.2
 template <class TContainer>
 void setup_trailer_brake(embr::j1939::NAME<TContainer>& n)
