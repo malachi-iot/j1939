@@ -44,6 +44,21 @@ If NAME is of a higher value, CA either:
 * emits a `Cannot Claim Address`
 * emits a `Claim Address` after selecting a new SA
 
+#### 1.1.1.1. Implied Behaviors: Request for Address Claim
+
+J1939 [1.5] *implies* that [Request for Address Claim](#12-pgn-request-address-claim) SHOULD be used to select a new SA at this point for [Arbitrary Address Capable CAs](#322-arbitrary-address-capable-ca)
+
+As of yet J1939-81 [1.5] only indicates a vague notion of when one MAY elect to use aforementioned, with notable exception of Figures A5, A6 and A7 which explicitly indicate its usage after POST.  
+
+This is in possible contradiction to 4.2.2
+which somewhat inspecifically claims "CAs must issue it [Address Claimed] during initialization of a network".  It is further contradicted by Figure D1 _never_ emitting a [Request for Address Claim](#12-pgn-request-address-claim).
+
+"These CAs should not send a Cannot Claim Address message or any other message until an Address Claim has been attempted." 4.2.1
+
+We are left with confusion as to when one is truly expected to emit this request.
+
+It is this author's opinion that [1.5] the usage of `Request for Address Claim` was recently expanded and verbiage was not fully aligned.
+
 #### 1.1.2. Timing Scenarios
 
 A 250ms timeout is sometimes observed in which time other CAs may contend this claim with their own `Address Claim` message.
@@ -55,7 +70,7 @@ its preferred SA is 0-127 or 248-253. [1.5] 4.4
 
 ##### 1.1.2.2. Scenario 2: Delayed Communication
 
-If prerequisite from 1.1.2.1 is not met, a 250ms timeout is observed for other CAs to condend the claim. [1.5] 4.4
+If prerequisite from 1.1.2.1 is not met, a 250ms timeout is REQUIRED to allow other CAs to condend the claim. [1.5] 4.4
 
 ### 1.2. PGN: Request (Address Claim)
 
@@ -72,6 +87,8 @@ Operates in either BAM mode or specific DA mode:
 Indicates all CAs MUST issue an immediate [Address Claim](#11-pgn-address-claim) or [Cannot Claim](#15-pgn-cannot-claim-address)
 as per [1.5] 4.4.3.1
 
+It is discouraged to use this mode since it generates a lot of traffic.
+
 ##### 1.2.1.2. Specific DA mode
 
 Indicates specific CA MUST issue an immediate [Address Claim](#11-pgn-address-claim) sent to `global` DA (BAM)
@@ -87,7 +104,7 @@ Emitting CA waits 1250ms to gather CA responses.
 
 ### 1.3. NAME
 
-Designates a unique 8-byte value appearing in payload for [Address Claim](#11-pgn-address-claim)`
+Designates a unique 8-byte value appearing in payload for [Address Claim](#11-pgn-address-claim)
 
 A "higher value" indicates a lower priority [1.5] 4.4.1
 
