@@ -39,14 +39,16 @@ A CA emits this message indicating ownership or intent to own a specific SA.
 
 "A CA should transmit an address claim if it receives an address claim with a source address that matches its own, and if its own NAME is of a lower value" [1.5] 4.4.3.3
 
-If NAME is of a higher value, CA either:
+If [NAME](#13-name) is of a higher value, CA either:
 
-* emits a `Cannot Claim Address`
+* emits a [Cannot Claim](#15-pgn-cannot-claim-address)
 * emits a `Claim Address` after selecting a new SA
 
 #### 1.1.1.1. Implied Behaviors: Request for Address Claim
 
 J1939 [1.5] *implies* that [Request for Address Claim](#12-pgn-request-address-claim) SHOULD be used to select a new SA at this point for [Arbitrary Address Capable CAs](#322-arbitrary-address-capable-ca)
+
+"An ECU that cannot claim an address shall not send any message other than the Cannot Claim Address message or a Request for Address Claim." [1.5] 4.2.2.3
 
 As of yet J1939-81 [1.5] only indicates a vague notion of when one MAY elect to use aforementioned, with notable exception of Figures A5, A6 and A7 which explicitly indicate its usage after POST.  
 
@@ -112,6 +114,13 @@ A "higher value" indicates a lower priority [1.5] 4.4.1
 
 ### 1.5. PGN: Cannot Claim Address
 
+Transmitted when:
+
+* CA is Single Address and preferred address is contended
+* CA is Arbitrary Address and all addresses are used
+
+"A pseudo-random delay of between 0 and 153 ms should be inserted between the reception of a message triggering the response and the Cannot Claim Address response" [1.5] 4.2.2.3
+
 ## 2. Reserved
 
 ## 3. Modes of Operation
@@ -173,8 +182,20 @@ Steps are REQUIRED unless denoted otherwise.
 
 #### 3.3.2. Initial Address Claim
 
-CA MUST emit [Address Claim](#11-pgn-address-claim) preferred SA [1.5] 4.2.2
+CA MUST emit [Address Claim](#11-pgn-address-claim) of preferred SA [1.5] 4.2.2
 
 #### 3.3.3. Address Contention
 
 If existing CA contends with newcomer CA, observe [Contention Rules](#111-contention-rules)
+
+#### 3.3.3.1. Scenario 1: Followup Address Claim
+
+After observing contention rules, one may elect to reattempt a claim.
+This ultimately is quite similar to 3.3.2:
+
+1. CA MUST emit [Address Claim](#11-pgn-address-claim) of newly selected SA
+2. Move on to 3.3.3
+
+#### 3.3.3.2. Scenario 2: Unable to proceed
+
+If one is unable to reattempt, then as per the contention rules a [Cannot Claim](#15-pgn-cannot-claim-address) is emitted.
