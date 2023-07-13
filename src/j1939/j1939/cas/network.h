@@ -111,15 +111,28 @@ struct network_ca_base : ca_base,
     using address_type = estd::layer1::optional<uint8_t, address_traits::null>;
 
 protected:
-    layer1::NAME name;
+    // TODO: Optimize to use sparse/layer0/layer2 name but not at the exclusion
+    // of the edge case where a NAME can be totally changed
+    layer1::NAME name_;
 
     // TODO: Change to non-optional (since state machine handles that)
     // May be claimed, claiming or cannot claim depending on
     // state machine
     address_type address_;
 
+    template <class TContainer>
+    network_ca_base(const NAME<TContainer>& name) :
+        name_{name}
+    {}
+
 public:
     const address_type& address() const { return address_; }
+
+    // DEBT: Would like this to work, though perhaps not specifically
+    // preferred.  See layer2::NAME in fwd for more details as to
+    // why it doesn't work yet
+    //const layer2::NAME name() { return { name_.data() }; }
+    const layer1::NAME& name() { return name_; }
 
     using milliseconds = estd::chrono::milliseconds;
 
@@ -131,7 +144,7 @@ public:
 
     constexpr bool arbitrary_address_capable() const
     {
-        return name.arbitrary_address_capable();
+        return name_.arbitrary_address_capable();
     }
 };
 
@@ -195,7 +208,7 @@ struct network_ca : impl::controller_application<TTransport>,
         pdu<pgns::address_claimed> p;
 
         p.can_id().destination_address(address_traits::global);
-        p.payload() = name;
+        p.payload() = name_;
 
         send_cannot_claim(t, p);
     }
@@ -204,7 +217,7 @@ struct network_ca : impl::controller_application<TTransport>,
     {
         // DEBT: Not sure if claim ALWAYS is a BAM but I think so
         p.can_id().destination_address(address_traits::global);
-        p.payload() = name;
+        p.payload() = name_;
         p.can_id().source_address(sa);
         _transport_traits::send(t, p);
 
@@ -275,16 +288,21 @@ struct network_ca : impl::controller_application<TTransport>,
 
     typename function_type::template model<wake_functor> wake_model{wake_functor{*this}};
 
-
-    explicit constexpr network_ca(scheduler_type& scheduler) : scheduler{scheduler}
+    template <class TContainer>
+    explicit constexpr network_ca(const NAME<TContainer>& name,
+        scheduler_type& scheduler) :
+        network_ca_base(name),
+        scheduler{scheduler}
         //f([&](time_point* wake, time_point current) { scheduled(wake, current); })
     {
 
     }
 
-    explicit constexpr network_ca(
+    template <class TContainer>
+    explicit constexpr network_ca(const NAME<TContainer>& name,
         scheduler_type& scheduler,
         address_manager_type& am) :
+        network_ca_base(name),
         scheduler{scheduler},
         address_manager{am}
     {

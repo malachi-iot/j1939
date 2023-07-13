@@ -78,6 +78,12 @@ TEST_CASE("Controller Applications (network)")
     can::loopback_transport t;
 
     embr::internal::layer1::Scheduler<5, FunctorImpl> scheduler;
+    j1939::layer1::NAME name;
+
+    // FIX: glitched out for the time being
+    //test::setup_agricultural_planter(name, {0}, {0}, {0});
+
+    test::NAME_trailer_brake<true>::populate(name);
 
     SECTION("address manager impl")
     {
@@ -100,7 +106,8 @@ TEST_CASE("Controller Applications (network)")
     }
     SECTION("network")
     {
-        impl::network_ca<decltype(t), decltype(scheduler), SyntheticAddressManager> impl(scheduler);
+        impl::network_ca<decltype(t), decltype(scheduler), SyntheticAddressManager>
+            impl(name, scheduler);
         const unsigned addr = impl.address_manager.peek_candidate();
 
         // FIX: Can't quite find the get_helper it needs

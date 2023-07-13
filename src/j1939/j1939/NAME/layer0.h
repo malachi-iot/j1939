@@ -1,5 +1,7 @@
 #pragma once
 
+#include <embr/word.h>
+
 #include "fwd.h"
 #include "function.h"
 #include "manufacturer.h"
@@ -8,14 +10,14 @@
 
 namespace embr { namespace j1939 { namespace layer0 {
 
-template <bool arbitrary_address_, industry_groups ig_,
+template <bool arbitrary_address_capable_, industry_groups ig_,
     vehicle_systems vs_,
     function_fields f_,
     int32_t identity_number_ = -1,
     manufacturer_codes mc_ = manufacturer_codes::reserved>
 struct NAME
 {
-    static constexpr bool arbitrary_address_capable = arbitrary_address_;
+    static constexpr bool arbitrary_address_capable = arbitrary_address_capable_;
     static constexpr industry_groups industry_group = ig_;
     static constexpr vehicle_systems vehicle_system = vs_;
     static constexpr function_fields function = f_;

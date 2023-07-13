@@ -147,7 +147,7 @@ bool network_ca<TTransport, TScheduler, TAddressManager>::process_incoming(trans
 
         // DEBT: a C#-style compare returning an int would be useful here,
         // or the c++ two way compare <=>
-        if(name < incoming_name)
+        if(name_ < incoming_name)
         {
             // we have the higher priority name
             // transmit our own address, basically re-announce our claim
@@ -155,7 +155,7 @@ bool network_ca<TTransport, TScheduler, TAddressManager>::process_incoming(trans
 
             // DEBT: Do we need to schedule a followup here?
         }
-        else if(name > incoming_name)
+        else if(name_ > incoming_name)
         {
             // we have the lower priority name
 
