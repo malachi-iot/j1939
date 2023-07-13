@@ -26,6 +26,7 @@ set(SOURCE_FILES
     experimental-test.cpp
     ecu-test.cpp
     name-test.cpp
+    network-test.cpp
     pdu-test.cpp
     pgn-test.cpp
     slots-test.cpp

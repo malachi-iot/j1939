@@ -13,6 +13,8 @@
 
 #include <estd/cstdint.h>
 
+#include <embr/scheduler.h>
+
 #include <j1939/pdu.h>
 #include <j1939/NAME/name.h>
 #include <j1939/NAME/manufacturer.h>
@@ -81,3 +83,12 @@ void setup_agricultural_planter(embr::j1939::NAME<TContainer>& n,
 }
 
 }
+
+
+struct FunctorImpl : embr::internal::scheduler::impl::Function<estd::chrono::milliseconds>
+{
+    estd::chrono::milliseconds now_ = estd::chrono::milliseconds::zero();
+
+    estd::chrono::milliseconds now() const { return now_; }
+};
+
