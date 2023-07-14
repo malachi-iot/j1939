@@ -99,6 +99,7 @@ If address is contended, see [Contention Rules](#111-contention-rules)
 Also known as `Request for Address Claim`.  Inquires one or all targets for their current SA.
 
 SA field MUST be `null` unless CA has claimed an address [1.5] 4.4.2.1
+DA field MUST be `global` or specific DA as per 1.2.1.1 and 1.2.1.2
 
 #### 1.2.1. Network Modes & Expected Responses
 
@@ -107,9 +108,9 @@ Emitting CA waits 1250ms to gather CA responses as per [1.5] 4.2.2 and [1.1] 5.1
 No response is required if CA has not yet attempted to claim an address.  Otherwise, factoring in
 implied behaviors as per 1.2.3., a response MUST emit.
 
-Operates in either BAM mode or specific DA mode:
+Operates in either broadcast mode or specific DA mode:
 
-##### 1.2.1.1. BAM mode
+##### 1.2.1.1. Broadcast mode
 
 Indicates all CAs MUST issue an immediate [Address Claim](#11-pgn-address-claim) or [Cannot Claim](#15-pgn-cannot-claim-address) as per [1.5] 4.4.3.1.  This includes requesting CA [1.5] 4.2.1
 
@@ -143,6 +144,8 @@ Designates a unique 8-byte value appearing in payload for [Address Claim](#11-pg
 A "higher value" indicates a lower priority [1.5] 4.4.1
 
 ### 1.4. PGN: Commanded Address
+
+This "contains 9 bytes of data" and MUST use TP.CM_BAM [1.5] 4.2.3, [1.1] 5.10.3.5
 
 ### 1.5. PGN: Cannot Claim Address
 
