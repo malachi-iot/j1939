@@ -184,7 +184,7 @@ MUST set `Arbitrary Capable Address` field in NAME
 
 Initiates via [Request for Address Claim](#12-pgn-request-address-claim) to mitigate collisions [1.5] 4.2.1.  Solicits a particular or all CAs for their SA. 
 
-### 3.3. Startup procedure
+### 3.3. Startup state
 
 This section outlines a step by step walk through of address arbitration.
 Steps are REQUIRED unless denoted otherwise.
@@ -214,21 +214,34 @@ This ultimately is quite similar to 3.3.2:
 #### 3.3.3.2. Scenario 2: Unable to proceed
 
 If one is unable to reattempt, then as per the contention rules a [Cannot Claim](#15-pgn-cannot-claim-address) is emitted.
+[Degraded](#35-degraded-cannot-claim) mode is entered.
 
-### 3.4. Nominal
+### 3.4. Nominal state
 
 This sections outlines a step by step walk through of scenarios which occur after
 startup procedure (3.3) has completed and CA address is claimed
 
 #### 3.4.1. Scenario 1: Receipt of Address Claimed
 
-If incoming SA matches CA's claimed address, observe contention rules 1.1.1.
-Otherwise, message garners no response.
+If incoming SA matches CA's claimed address, observe contention rules 1.1.1.  This may end up placing CA into [Degraded](#35-degraded-cannot-claim) state.
+
+If no contention, message garners no response.
 
 #### 3.4.2. Scenario 2: Receipt of Request for Address Claimed
 
-As per 1.2.1., unless CA is in process of claiming an address, it MUST respond with either:
+As per 1.2.1., CA MUST respond with [Address Claim](#11-pgn-address-claim)
 
-- [Address Claim](#11-pgn-address-claim)
-- [Cannot Claim](#15-pgn-cannot-claim-address)
+### 3.5. Degraded (Cannot Claim) state
+
+This sections outlines a step by step walk through of scenarios which occur after
+startup procedure (3.3.3.2) has ended and no address could be claimed.
+
+#### 3.5.1. Scenario 1: Receipt of Address Claimed
+
+TBD - evaluate against incoming NAME
+
+#### 3.5.2. Scenario 2: Receipt of Request for Address Claimed
+
+TBD - evaluate against incoming NAME
+As per 1.2.1., CA MUST respond with [Cannot Claim](#15-pgn-cannot-claim-address)
 
