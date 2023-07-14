@@ -43,6 +43,8 @@ struct random_address_manager
 {
     static constexpr bool depleted() { return false; }
 
+    static void encountered(uint8_t) {}
+
     static uint8_t get_candidate();
 };
 
@@ -175,7 +177,9 @@ struct network_ca : impl::controller_application<TTransport>,
     typedef TAddressManager address_manager_type;
 
     scheduler_type& scheduler;
-    address_manager_type address_manager;
+    address_manager_type address_manager_;
+
+    address_manager_type& address_manager() { return address_manager_; }
 
     // DEBT: Instead, expose impl_type directly from sechduler_type
     typedef estd::remove_reference_t<decltype(scheduler.impl())> scheduler_impl_type;
@@ -192,10 +196,10 @@ struct network_ca : impl::controller_application<TTransport>,
 
     address_type find_new_address()
     {
-        if(address_manager.depleted())
+        if(address_manager().depleted())
             return {};
         else
-            return address_manager.get_candidate();
+            return address_manager().get_candidate();
     }
 
     constexpr bool has_address() const
@@ -316,7 +320,7 @@ struct network_ca : impl::controller_application<TTransport>,
         address_manager_type& am) :
         network_ca_base(name),
         scheduler{scheduler},
-        address_manager{am}
+        address_manager_{am}
     {
 
     }

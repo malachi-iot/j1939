@@ -4,6 +4,7 @@
  *
  * 1. J1939-81 (draft MAY2003)
  * 2. J1939-21 (DEC2006)
+ * 3. AddressResolution.md v0.1
  */
 #pragma once
 
@@ -155,6 +156,8 @@ bool network_ca<TTransport, TScheduler, TAddressManager>::process_incoming(trans
         }
         else if(name_ > incoming_name)
         {
+            address_manager().encountered(sa);
+
             // we have the lower priority name
 
             // [1] 4.4.4
@@ -177,7 +180,12 @@ bool network_ca<TTransport, TScheduler, TAddressManager>::process_incoming(trans
         else
         {
             // equals, which is not a covered scenario that I know of
+            // See [3] 1.1.1 and 1.1.1.2
         }
+    }
+    else
+    {
+        address_manager().encountered(sa);
     }
 
     return false;
@@ -247,7 +255,7 @@ void network_ca<TTransport, TScheduler, TAddressManager>::start(transport_type& 
 
     function_type f{&wake_model};
 
-    address_ = address_manager.get_candidate();
+    address_ = address_manager().get_candidate();
 
     // DEBT: Not 100% right, more like we have an alleged address and
     // the send_claim is to ensure there's no contention

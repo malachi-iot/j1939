@@ -34,6 +34,8 @@ struct SyntheticAddressManager
         seed ^= 123456789;
     }
 
+    static void encountered(uint8_t) {}
+
     uint8_t peek_candidate()
     {
         unsigned v = seed % 120;
@@ -125,7 +127,7 @@ TEST_CASE("Controller Applications (network)")
     SECTION("network")
     {
         network_ca impl(name, scheduler);
-        const unsigned addr = impl.address_manager.peek_candidate();
+        const unsigned addr = impl.address_manager().peek_candidate();
 
         REQUIRE(addr == saddresses[0]);
 
@@ -194,7 +196,7 @@ TEST_CASE("Controller Applications (network)")
             // Initiate network CA, creating announce
             impl.start(t);
 
-            impl.address_manager.reset();
+            impl.address_manager().reset();
 
             p_claim.source_address(*impl.address());
 
