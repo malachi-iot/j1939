@@ -223,7 +223,7 @@ startup procedure (3.3) has completed and CA address is claimed
 
 #### 3.4.1. Scenario 1: Receipt of Address Claimed
 
-If incoming SA matches CA's claimed address, observe contention rules 1.1.1.  This may end up placing CA into [Degraded](#35-degraded-cannot-claim) state.
+If incoming SA matches CA's claimed address, observe [contention rules](#111-contention-rules)  This may end up placing CA into [Degraded](#35-degraded-cannot-claim) state.
 
 If no contention, message garners no response.
 
@@ -238,10 +238,11 @@ startup procedure (3.3.3.2) has ended and no address could be claimed.
 
 #### 3.5.1. Scenario 1: Receipt of Address Claimed
 
-TBD - evaluate against incoming NAME
+> TBD - evaluate against incoming NAME
 
 #### 3.5.2. Scenario 2: Receipt of Request for Address Claimed
 
-TBD - evaluate against incoming NAME
+> TBD - evaluate against incoming NAME
+
 As per 1.2.1., CA MUST respond with [Cannot Claim](#15-pgn-cannot-claim-address)
 
