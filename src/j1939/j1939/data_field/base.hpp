@@ -19,6 +19,12 @@
 
 namespace embr { namespace j1939 {
 
+namespace experimental {
+struct layer1_tag {};
+struct layer2_tag {};
+struct layer3_tag {};
+}
+
 namespace internal {
 
 // length is processed from bit position towards msb, as per [lost reference]
@@ -29,6 +35,8 @@ struct data_field_base :
         TContainer>
 {
     typedef TContainer container_type;
+
+protected:
     typedef bits::internal::material<e, bits::lsb_to_msb, bits::lsb_to_msb,
         TContainer> base_type;
 
@@ -42,6 +50,12 @@ struct data_field_base :
         estd::copy_n(copy_from, 8, container_type::begin());
     }
 
+    explicit data_field_base(experimental::layer2_tag, uint8_t* init_from) : base_type(init_from)
+    {
+
+    }
+
+public:
     template <class TInt>
     inline TInt get(spn::descriptor d) const
     {

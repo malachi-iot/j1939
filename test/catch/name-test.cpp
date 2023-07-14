@@ -132,4 +132,12 @@ TEST_CASE("j1939-81 NAME")
         //test::names::synthetic_collider<true>::sparse name3;
         test::names::ig2::synthetic_collider<true>::sparse name3;
     }
+    SECTION("layer2")
+    {
+        bool v = n == n;
+
+        j1939::layer2::NAME name1(j1939::experimental::layer2_tag{}, n.data());
+
+        //REQUIRE(name1 == n);
+    }
 }
