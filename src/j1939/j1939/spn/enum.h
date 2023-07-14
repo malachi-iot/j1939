@@ -164,6 +164,7 @@ enum class spns
     parameter_group_number_rqst = 2540,             // [5]
     controller_application_identity = 2554,         // [5]
     short_name_of_device = 2554,                    // [14] Section D.1
+    packets_to_send = 2561,                         // [14] Table D1
     rqst2 = 2574,                                   // [14] Section D.1
     use_transfer_mode = 2575,                       // [14] Section D.1
     net_battery_current_highres = 2579,             // [13]
