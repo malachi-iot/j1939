@@ -63,10 +63,22 @@ struct PduDecomposer
 
     pgns pgn = (pgns) (id.is_pdu1() ? id.range() : _id.range());
 
+    estd::span<const uint8_t> payload;
+
     PduDecomposer(unsigned can_id) :
         id{can_id}, _id{can_id}
     {}
+
+    PduDecomposer(unsigned can_id, const uint8_t* data, unsigned sz) :
+        id{can_id}, _id{can_id},
+        payload(data, sz)
+    {}
+
+    PduDecomposer(const frame& f) :
+        id{f.id}, _id{f.id}, payload(f.payload, f.dlc) {}
 };
+
+constexpr unsigned saddresses[] = { 197, 181, 133, 221 };
 
 
 TEST_CASE("Controller Applications (network)")
@@ -99,19 +111,21 @@ TEST_CASE("Controller Applications (network)")
             // Semi arbitrary pseudo random test just for
             // sanity check
             v = am.get_candidate();
-            REQUIRE(v == 197);
+            REQUIRE(v == saddresses[0]);
             v = am.get_candidate();
-            REQUIRE(v == 181);
+            REQUIRE(v == saddresses[1]);
             v = am.get_candidate();
-            REQUIRE(v == 133);
+            REQUIRE(v == saddresses[2]);
             v = am.get_candidate();
-            REQUIRE(v == 221);
+            REQUIRE(v == saddresses[3]);
         }
     }
     SECTION("network")
     {
         network_ca impl(name, scheduler);
         const unsigned addr = impl.address_manager.peek_candidate();
+
+        REQUIRE(addr == saddresses[0]);
 
         // FIX: Can't quite find the get_helper it needs
         //test::setup_agricultural_planter(impl.name, 1, 0, 0);
@@ -173,12 +187,8 @@ TEST_CASE("Controller Applications (network)")
 
             // DEBT: NAME won't match yet
         }
-        SECTION("CA contends claim")
+        SECTION("CA contends claim (fully synthetic)")
         {
-            j1939::layer1::NAME contender_name;
-            test::names::agricultural_planter<true>::populate(contender_name);
-            network_ca contender(contender_name, scheduler);
-
             // Initiate network CA, creating announce
             impl.start(t);
 
@@ -188,14 +198,14 @@ TEST_CASE("Controller Applications (network)")
 
             process_incoming(impl, t, frame_traits::create(p_claim));
 
-            // Contains initial claim followed by condender claim
+            // Contains initial claim followed by contender claim
             REQUIRE(t.queue.size() == 2);
 
             frame_type f;
 
             t.receive(&f);
 
-            PduDecomposer pd{f.id};
+            PduDecomposer pd{f};
 
             REQUIRE(pd.pgn == pgns::address_claimed);
             REQUIRE(pd.id.source_address() == addr);
@@ -207,6 +217,70 @@ TEST_CASE("Controller Applications (network)")
             REQUIRE(pd.pgn == pgns::address_claimed);
             // TODO: Not quite ready yet
             //REQUIRE((unsigned)pd.id.source_address() == addr);
+
+            REQUIRE(!t.receive(&f));
+        }
+        SECTION("CA contends claim (2 SAs)")
+        {
+            j1939::layer1::NAME contender_name;
+            test::names::agricultural_planter<true>::populate(contender_name);
+            network_ca contender(contender_name, scheduler);
+
+            REQUIRE(!(contender.name() == impl.name()));
+
+            // Initiate primary CA, creating announce
+            impl.start(t);
+
+            // Initiate secondary (contender) CA, creating announce also on same address
+            contender.start(t);
+
+            // Contains initial claim followed by contender claim
+            REQUIRE(t.queue.size() == 2);
+
+            // Technically we should have something like two duplicated transports
+            // to really simulate all this, but for now we'll fudge it
+            frame_type f;
+
+            // Yank out primary CA address claim
+            REQUIRE(t.receive(&f));
+
+            PduDecomposer pd{f};
+
+            REQUIRE(pd.pgn == pgns::address_claimed);
+            REQUIRE(pd.id.source_address() == addr);
+            REQUIRE(f.dlc == 8);
+
+            embr::j1939::layer1::NAME n(f.payload);
+
+            REQUIRE(n == impl.name());
+
+            // Evaluate contender first
+            process_incoming(contender, t, f);
+
+            REQUIRE(t.queue.size() == 2);
+
+            // Yank out initial contender CA address claim
+            t.receive(&f);
+
+            pd = f;
+            n = f.payload;
+
+            REQUIRE(n == contender.name());
+            REQUIRE(pd.pgn == pgns::address_claimed);
+            REQUIRE(pd.id.source_address() == addr);
+            REQUIRE(f.dlc == 8);
+
+            // Yank out subsequence contender CA address claim with
+            // new address in tow, since its NAME is lower priority than
+            // primary CA
+            t.receive(&f);
+
+            pd = f;
+            n = f.payload;
+
+            REQUIRE(n == contender.name());
+            REQUIRE(pd.pgn == pgns::address_claimed);
+            REQUIRE((unsigned)pd.id.source_address() == saddresses[1]);
 
             REQUIRE(!t.receive(&f));
         }

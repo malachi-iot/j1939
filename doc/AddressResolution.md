@@ -139,8 +139,6 @@ Transmitted when:
 
 ## 3. Modes of Operation
 
-These modes are implicitly mutually inclusive.
-
 ### 3.1. Specific Modes: Our Parlance
 
 #### 3.1.1. Address Claim
@@ -150,6 +148,8 @@ These modes are implicitly mutually inclusive.
 #### 3.1.3. Request for Address Claim: w/o preferred address
 
 ### 3.2. Specific Modes: Canonical Parlance
+
+These modes are implicitly mutually inclusive.
 
 #### 3.2.1. Single Address Capable CA
 
