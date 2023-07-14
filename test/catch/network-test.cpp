@@ -1,3 +1,5 @@
+#include <estd/chrono.h>
+
 #include <embr/scheduler.hpp>
 
 #include <can/loopback.h>
@@ -283,6 +285,25 @@ TEST_CASE("Controller Applications (network)")
             REQUIRE((unsigned)pd.id.source_address() == saddresses[1]);
 
             REQUIRE(!t.receive(&f));
+
+            process_incoming(impl, t, f);
+
+            // TODO: Not quite sure whether we should be emitting something or not here
+            // [AddressResolution.md] 1.1.3
+            //REQUIRE(t.receive(&f));
+
+            // DEBT: Why doesn't ms user literal work?
+            scheduler.process(estd::chrono::milliseconds(11));
+
+            REQUIRE(impl.state == network_ca::states::claiming);
+
+            scheduler.process(estd::chrono::milliseconds(249));
+
+            REQUIRE(impl.state == network_ca::states::claiming);
+
+            scheduler.process(estd::chrono::milliseconds(250));
+
+            REQUIRE(impl.state == network_ca::states::claimed);
         }
         SECTION("CA has no internal SA, requests address claimed")
         {

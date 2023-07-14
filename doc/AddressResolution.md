@@ -37,12 +37,20 @@ A CA emits this message indicating ownership or intent to own a specific SA.
 
 #### 1.1.1. Contention Rules
 
-"A CA should transmit an address claim if it receives an address claim with a source address that matches its own, and if its own NAME is of a lower value" [1.5] 4.4.3.3
+If incoming `Address Claim` SA collides with receiving SA's address, this rule is observed.
+
+"A CA should transmit an address claim if it receives an address claim with a source address that matches its own, and if its own NAME is of a lower value" [1.5] 4.4.3.3.  This specifically pertains to emitting a claim with the same SA.
+
+Therefore,
+
+If [NAME](#13-name) is of a lower value, CA emits a `Claim Address` with its unchanged SA
 
 If [NAME](#13-name) is of a higher value, CA either:
 
 * emits a [Cannot Claim](#15-pgn-cannot-claim-address)
 * emits a `Claim Address` after selecting a new SA
+
+If [NAME](#13-name) is of equal value, it is [implied](#1112-implied-behaviors-detecting-ones-own-address-claim) message is ignored
 
 #### 1.1.1.1. Implied Behaviors: Request for Address Claim
 
@@ -61,6 +69,12 @@ We are left with confusion as to when one is truly expected to emit this request
 
 It is this author's opinion that [1.5] the usage of `Request for Address Claim` was recently expanded and verbiage was not fully aligned.
 
+#### 1.1.1.2. Implied Behaviors: Detecting ones' own address claim
+
+"A CA that is configured to receive messages that it transmits should be able to differentiate between Address Claimed messages received from itself and those received from other CAs" [1.5] 4.4.2
+
+This strongly implies that NAME is used to determine this equality, as there is no other means discussed in [1.5] to do so.
+
 #### 1.1.2. Timing Scenarios
 
 A 250ms timeout is sometimes observed in which time other CAs may contend this claim with their own `Address Claim` message.
@@ -73,6 +87,12 @@ its preferred SA is 0-127 or 248-253. [1.5] 4.4
 ##### 1.1.2.2. Scenario 2: Delayed Communication
 
 If prerequisite from 1.1.2.1 is not met, a 250ms timeout is REQUIRED to allow other CAs to condend the claim. [1.5] 4.4
+
+#### 1.1.3. Response Rules
+
+If address is contended, see [Contention Rules](#111-contention-rules)
+
+> Otherwise, behavior is TBD
 
 ### 1.2. PGN: Request (Address Claim)
 
@@ -196,16 +216,19 @@ Steps are REQUIRED unless denoted otherwise.
 
 #### 3.3.2. Initial Address Claim
 
-CA MUST emit [Address Claim](#11-pgn-address-claim) of preferred SA [1.5] 4.2.2
+CA MUST emit [Address Claim](#11-pgn-address-claim) of preferred SA [1.5] 4.2.2.
+Proceed immediately to 3.3.3.
 
-#### 3.3.3. Address Contention
+#### 3.3.3. Claiming / Address Contention
+
+This step happens over the course of 250ms
 
 If existing CA contends with newcomer CA, observe [Contention Rules](#111-contention-rules).
 Otherwise, startup procedure is complete and operation enters [Nominal](#34-nominal) mode.
 
 #### 3.3.3.1. Scenario 1: Followup Address Claim
 
-After observing contention rules, one may elect to reattempt a claim.
+If addres is contested, one may elect to reattempt a claim.
 This ultimately is quite similar to 3.3.2:
 
 1. CA MUST emit [Address Claim](#11-pgn-address-claim) of newly selected SA
