@@ -174,6 +174,12 @@ struct network_ca : impl::controller_application<TTransport>,
     typedef transport_traits<transport_type> _transport_traits;
 
     typedef TScheduler scheduler_type;
+
+    // DEBT: Filter by scheduler_type::impl::is_chrono, that is a necessity
+    // DEBT: Filter by scheduker_type::impl::tag::Function, that is a
+    //       necessity at the moment, though network_ca could be specialized to
+    //       operate in other modes such as 'Traditional'
+
     typedef TAddressManager address_manager_type;
 
     scheduler_type& scheduler;
@@ -189,9 +195,12 @@ struct network_ca : impl::controller_application<TTransport>,
     using function_type = typename scheduler_impl_type::function_type;
     //typedef impl::experimental::ca_time_helper<scheduler_impl_type> helper;
 
-    //function_type f;
+    // Depending on whether we're claiming or request for claim we'll
+    // timeout 250ms or 1250ms.  Also expected but not yet implemented
+    // is a pre-send timeout with bus_collision_delay
+    // NOTE: We miss old 'last_claim' but this is more efficient
+    time_point timeout;
 
-    time_point last_claim;
     transport_type* t;
 
     address_type find_new_address()
@@ -237,7 +246,8 @@ struct network_ca : impl::controller_application<TTransport>,
         p.can_id().source_address(sa);
         _transport_traits::send(t, p);
 
-        last_claim = scheduler.impl().now();
+        // DEBT: May not want to do this IN emitter method itself
+        timeout = scheduler.impl().now() + address_claim_timeout();
     }
 
     void send_claim(transport_type& t)
@@ -254,6 +264,8 @@ struct network_ca : impl::controller_application<TTransport>,
                (address_ >= 248 && address_ <= 253);
     }
 
+    // DEBT: Need to coordinate this better with 'timeout' assignment,
+    // otherwise we'll definitely run into a form of jitter
     bool schedule_address_claim_timeout(time_point* wake)
     {
         if(skip_timeout()) return false;
@@ -263,6 +275,7 @@ struct network_ca : impl::controller_application<TTransport>,
     }
 
 
+    // Scheduler calls this guy
     void scheduled_claiming(time_point* wake, time_point current);
 
     void scheduled_cannot_claim(time_point* wake, time_point current)

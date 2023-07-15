@@ -42,6 +42,9 @@ void network_ca<TTransport, TScheduler, TAddressManager>::send_request_for_addre
     p.can_id().destination_address(dest);
 
     _transport_traits::send(t, p);
+
+    // DEBT: May not want to do this IN emitter method itself
+    timeout = scheduler.impl().now() + request_for_address_claim_timeout();
 }
 
 
@@ -264,8 +267,6 @@ void network_ca<TTransport, TScheduler, TAddressManager>::start(transport_type& 
         state = states::claiming;
         substate = substates::waiting;
         send_claim(t);
-
-        scheduler.schedule(last_claim + address_claim_timeout(), f);
     }
     else
     {
@@ -273,9 +274,9 @@ void network_ca<TTransport, TScheduler, TAddressManager>::start(transport_type& 
         state = states::requesting;
         substate = substates::request_waiting;
         send_request_for_address_claimed(t);
-
-        scheduler.schedule(last_claim + request_for_address_claim_timeout(), f);
     }
+
+    scheduler.schedule(timeout, f);
 }
 
 
