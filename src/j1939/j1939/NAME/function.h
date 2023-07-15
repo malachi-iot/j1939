@@ -70,6 +70,7 @@ enum class function_fields
 
     // IG=5, VehSys=0
     generator_voltage_regulator = 130,
+    ig5_not_available = 255,
 
 };
 

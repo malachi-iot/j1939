@@ -13,6 +13,8 @@ namespace embr { namespace j1939 { namespace layer0 {
 template <bool arbitrary_address_capable_, industry_groups ig_,
     vehicle_systems vs_,
     function_fields f_,
+    // DEBT: Swap around mc and identity number, since identity number is 100% dependent
+    // on mc, and not specifically the other way around
     int32_t identity_number_ = -1,
     manufacturer_codes mc_ = manufacturer_codes::reserved>
 struct NAME

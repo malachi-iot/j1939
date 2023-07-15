@@ -6,7 +6,6 @@
  * 2. J1939-21 (DEC2006)
  */
 #pragma once
-#include <bitset>       // DEBT, make an estd one and use it
 
 #include <estd/chrono.h>
 #include <estd/functional.h>
@@ -18,35 +17,13 @@
 #include "../data_field/network.hpp"
 #include "../data_field/transport_protocol.hpp"
 
+#include "internal/rng_address_manager.h"
+
 #include "fwd.h"
 
 namespace embr { namespace j1939 {
 
 namespace impl {
-
-// this one will use a lot of RAM
-template <size_t max>
-struct network_address_and_name_tracker
-{
-    pdu<pgns::address_claimed> claims[max];
-};
-
-
-template <size_t max>
-struct network_address_tracker
-{
-    // starting from 128
-    std::bitset<max> claimed;
-};
-
-struct random_address_manager
-{
-    static constexpr bool depleted() { return false; }
-
-    static void encountered(uint8_t) {}
-
-    static uint8_t get_candidate();
-};
 
 namespace experimental {
 

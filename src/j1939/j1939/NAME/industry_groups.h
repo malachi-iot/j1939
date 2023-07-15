@@ -5,7 +5,7 @@
  */
 #pragma once
 
-#include <cstdint>
+#include <estd/cstdint.h>
 
 namespace embr { namespace j1939 {
 

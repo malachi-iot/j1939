@@ -12,6 +12,9 @@
 #include <j1939/pgn.h>
 #include <j1939/ca.hpp>
 
+#include <j1939/cas/network.hpp>
+#include <j1939/cas/internal/prng_address_manager.h>
+
 #include <j1939/data_field/all.hpp>
 
 // DEBT: Eventually we'd like to auto include this
@@ -19,6 +22,7 @@
 
 #include "main.h"
 #include "menu.hpp"
+#include "scheduler.h"
 #include "transport.h"
 
 #include "ca.hpp"
@@ -53,7 +57,18 @@ uint8_t source_address = 0x70;
 #endif
 #endif
 
+scheduler_type scheduler;
 diagnostic_ca<transport> dca;
+using proto_name = embr::j1939::layer0::NAME<true,
+    industry_groups::process_control,
+    vehicle_systems::ig5_not_available, // DEBT: Change to a better IG/Veh Sys,
+    function_fields::ig5_not_available>;
+
+embr::j1939::layer1::NAME name;
+/*
+embr::j1939::impl::network_ca<transport,
+    scheduler_type,
+    embr::j1939::internal::prng_address_manager> nca(name, scheduler); */
 
 enum class States
 {
@@ -236,6 +251,19 @@ class CanPGNAction : public menu::Action
         impl.prep(p);
 
         send(p, &out);
+    }
+};
+
+class InitiateNetworkCAAction : public menu::Action
+{
+    void render(ostream& out) const override
+    {
+        out << F("Start up Network (addressing) CA") << endl;
+    }
+
+    void action(ostream& out) override
+    {
+
     }
 };
 
@@ -438,4 +466,7 @@ void loop()
     cin >> buffer;
     cout << F("You input: ") << buffer << estd::endl; */
     menu1(&nav, ios{cin, cout});
+
+    // FIX: arduino_clock does not have a 'now', but probably should
+    //scheduler.process();
 }

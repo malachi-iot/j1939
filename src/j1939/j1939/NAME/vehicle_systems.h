@@ -24,6 +24,8 @@ enum class vehicle_systems
     communication = 70,                                ///< IG=4
     instrumentation_general = 80,                      ///< IG=4
     hvac = 90,                                         ///< IG=4
+
+    ig5_not_available = 127,                ///< IG=5 " can be used until an explicit function has been assigned."
 };
 
 }}
