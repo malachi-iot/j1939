@@ -65,10 +65,9 @@ using proto_name = embr::j1939::layer0::NAME<true,
     function_fields::ig5_not_available>;
 
 embr::j1939::layer1::NAME name;
-/*
 embr::j1939::impl::network_ca<transport,
     scheduler_type,
-    embr::j1939::internal::prng_address_manager> nca(name, scheduler); */
+    embr::j1939::internal::prng_address_manager> nca(name, scheduler);
 
 enum class States
 {
@@ -263,7 +262,23 @@ class InitiateNetworkCAAction : public menu::Action
 
     void action(ostream& out) override
     {
+        if(nca.state == impl::network_ca_base::states::unstarted)
+        {
+            out << F("Starting network CA...");
+            nca.start(t);
+        }
+        else
+        {
+            out << F("Already started");
 
+            if(nca.state == impl::network_ca_base::states::claimed)
+            {
+                out << endl;
+                out << F("Claimed address: ") << (unsigned) nca.address().value();
+            }
+        }
+
+        out << endl;
     }
 };
 
@@ -392,6 +407,8 @@ CanPGNAction<pgns::oel> item4;
 CanPGNAction<pgns::cab_message1> item5;
 menu::MenuAction subitem1(&nav, &submenu);
 
+InitiateNetworkCAAction subitem1_1;
+
 void setup() 
 {
     Serial.begin(115200);
@@ -402,9 +419,14 @@ void setup()
     topLevel.items.push_back(&item4);
     topLevel.items.push_back(&item5);
 
+    submenu.items.push_back(&subitem1_1);
+
     while(!Serial);
 
     init_can(t);
+
+    // NOTE: Not verified if this works yet, because we are using prng
+    srand(analogRead(0));
 
     ::layer1::menu_type{}.render(cout);
 }
@@ -468,5 +490,5 @@ void loop()
     menu1(&nav, ios{cin, cout});
 
     // FIX: arduino_clock does not have a 'now', but probably should
-    //scheduler.process();
+    scheduler.process();
 }

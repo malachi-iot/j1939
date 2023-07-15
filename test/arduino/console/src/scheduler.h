@@ -12,5 +12,6 @@ using steady_clock = arduino_clock;
 #include <embr/scheduler.hpp>
 
 // DEBT: I think scheduler's just about ready to emerge from internal namespace
+// ~100 bytes for scheduler on Pro micro
 using scheduler_type = embr::internal::layer1::Scheduler<10>;
 
