@@ -49,7 +49,8 @@ void network_ca<TTransport, TScheduler, TAddressManager>::send_request_for_addre
 
 
 template <class TTransport, class TScheduler, class TAddressManager>
-void network_ca<TTransport, TScheduler, TAddressManager>::scheduled_claiming(time_point* wake, time_point current)
+void network_ca<TTransport, TScheduler, TAddressManager>::scheduled_claiming(
+    time_point* wake, time_point current)
 {
     switch(substate)
     {
@@ -90,9 +91,20 @@ void network_ca<TTransport, TScheduler, TAddressManager>::scheduled_claiming(tim
             break;
 
         case substates::waiting:
-            // got to timeout without contention means successful claim
-            state = states::claimed;
-            substate = substates::expired;
+            if(current >= timeout)
+            {
+                // got to timeout without contention means successful claim
+                state = states::claimed;
+                substate = substates::expired;
+            }
+            else
+            {
+                // timeout can get adjusted when contenders come in, since
+                // we sometimes need to re-emit and therefore re-start claim
+                // process as per [3] 3.3.3.1
+                // this effectively elongates the 'waiting' period so we reschedule
+                *wake = timeout;
+            }
             break;
 
         default:
@@ -101,7 +113,9 @@ void network_ca<TTransport, TScheduler, TAddressManager>::scheduled_claiming(tim
 }
 
 template <class TTransport, class TScheduler, class TAddressManager>
-bool network_ca<TTransport, TScheduler, TAddressManager>::process_incoming(transport_type& t, const pdu<pgns::address_claimed>& p)
+bool network_ca<TTransport, TScheduler, TAddressManager>::process_incoming(
+    transport_type& t,
+    const pdu<pgns::address_claimed>& p)
 {
     pdu<pgns::address_claimed> p_resp;
 
@@ -139,7 +153,7 @@ bool network_ca<TTransport, TScheduler, TAddressManager>::process_incoming(trans
         // If claim_failed, we've given up trying to get on network
         case states::unstarted:
         case states::claim_failed:
-            break;
+            return false;
     }
 
     // [1] 4.4.3.3
@@ -167,23 +181,34 @@ bool network_ca<TTransport, TScheduler, TAddressManager>::process_incoming(trans
             // emit a 'cannot claim' or attempt to claim a new address
             address_type new_address = find_new_address();
 
-            // DEBT: At the moment, find_new_address always finds nothing
             if(new_address.has_value())
             {
                 pdu<pgns::address_claimed> p;
 
-                send_claim(t, p, *new_address);
+                // DEBT: Account for 'requesting' state in which case we probably
+                // shouldn't respond right away but probably should still find_new_address
+                send_claim_and_schedule(t, p, *new_address);
 
-                // TODO: Still need to turn this into 'given_address'
-                // if we receive no contention.
+                // DEBT: Account for other states here also
+                if(state == states::claimed)
+                    state = states::claiming;
+
+                // We optimistically assign ourselves this new address, expecting someone
+                // will contend us necessary
+                address_ = new_address;
             }
             else
+            {
                 send_cannot_claim(t);
+                state = states::claim_failed;
+            }
         }
         else
         {
             // equals, which is not a covered scenario that I know of
             // See [3] 1.1.1 and 1.1.1.2
+            // That said, we MAY encounter this when responding to our own request for address
+            // as per [3] 1.2.1.1
         }
     }
     else
@@ -195,7 +220,8 @@ bool network_ca<TTransport, TScheduler, TAddressManager>::process_incoming(trans
 }
 
 template <class TTransport, class TScheduler, class TAddressManager>
-bool network_ca<TTransport, TScheduler, TAddressManager>::process_request_for_address_claimed(transport_type& t, const pdu<pgns::request>& p)
+bool network_ca<TTransport, TScheduler, TAddressManager>::process_request_for_address_claimed(
+    transport_type& t, const pdu<pgns::request>& p)
 {
     // TODO: Verify source address is null and log if it isn't
     const address_type sa = p.can_id().source_address();
@@ -277,6 +303,32 @@ void network_ca<TTransport, TScheduler, TAddressManager>::start(transport_type& 
     }
 
     scheduler.schedule(timeout, f);
+}
+
+template <class TTransport, class TScheduler, class TAddressManager>
+void network_ca<TTransport, TScheduler, TAddressManager>::send_claim_and_schedule(
+    transport_type& t, pdu<pgns::address_claimed>& p, uint8_t sa)
+{
+    function_type f{&wake_model};
+
+    switch(state)
+    {
+        case states::claimed:
+            send_claim(t, p, sa);
+            scheduler.schedule(timeout, f);
+            break;
+
+        case states::claiming:
+            send_claim(t, p, sa);
+            // this implicitly reschedules by virtue of adjusting 'timeout'
+            break;
+
+        default:
+            // unstarted = no actions
+            // cannot_claim = no point in attempting
+            // requesting = undefined behavior (address claim WITHOUT followup appropriate here [3] 1.2.1.1. )
+            break;
+    }
 }
 
 

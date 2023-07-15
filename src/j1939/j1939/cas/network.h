@@ -257,6 +257,10 @@ struct network_ca : impl::controller_application<TTransport>,
         send_claim(t, p, *address_);
     }
 
+    // Emits address claim over transport and assures a followup of
+    // is scheduled for 250ms later
+    void send_claim_and_schedule(transport_type& t, pdu<pgns::address_claimed>& p, uint8_t sa);
+
     // [1] Figure D1
     constexpr bool skip_timeout() const
     {
@@ -361,8 +365,8 @@ struct network_ca : impl::controller_application<TTransport>,
         // TODO: We'll need to emit our own address claimed, cannot claim and
         // perhaps do some requests to see what address we should try for
 
-        state = states::claiming;
-        substate = substates::contending;
+        //state = states::claiming;
+        //substate = substates::contending;
     }
 
     template <pgns pgn>

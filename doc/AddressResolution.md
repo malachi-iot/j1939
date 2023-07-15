@@ -112,7 +112,7 @@ Operates in either broadcast mode or specific DA mode:
 
 ##### 1.2.1.1. Broadcast mode
 
-Indicates all CAs MUST issue an immediate [Address Claim](#11-pgn-address-claim) or [Cannot Claim](#15-pgn-cannot-claim-address) as per [1.5] 4.4.3.1.  This includes requesting CA [1.5] 4.2.1
+Indicates all CAs MUST issue an immediate [Address Claim](#11-pgn-address-claim) or [Cannot Claim](#15-pgn-cannot-claim-address) as per [1.5] 4.4.3.1.  This includes us, requesting CA [1.5] 4.2.1
 
 It is discouraged to use this mode since it generates a lot of traffic.
 
@@ -226,20 +226,20 @@ Proceed immediately to 3.3.3.
 
 This step happens over the course of 250ms
 
-If existing CA contends with newcomer CA, observe [Contention Rules](#111-contention-rules).
+If existing CA contends with newcomer (this) CA, observe [Contention Rules](#111-contention-rules).
 Otherwise, startup procedure is complete and operation enters [Nominal](#34-nominal) mode.
 
 #### 3.3.3.1. Scenario 1: Followup Address Claim
 
-If addres is contested, one may elect to reattempt a claim.
+If addres is contested and [Contention Rules](#111-contention-rules) permit, one SHOULD attempt a new claim.
 This ultimately is quite similar to 3.3.2:
 
 1. CA MUST emit [Address Claim](#11-pgn-address-claim) of newly selected SA
-2. Move on to 3.3.3
+2. Loop back to 3.3.3
 
 #### 3.3.3.2. Scenario 2: Unable to proceed
 
-If one is unable to reattempt, then as per the contention rules a [Cannot Claim](#15-pgn-cannot-claim-address) is emitted.
+If one is unable to reattempt, then as per contention rules a [Cannot Claim](#15-pgn-cannot-claim-address) is emitted.
 [Degraded](#35-degraded-cannot-claim) mode is entered.
 
 ### 3.4. Nominal state
