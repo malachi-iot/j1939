@@ -65,7 +65,8 @@ struct NAME
     }
 
     template <bool aac>
-    struct sparse_base : NAME<aac, ig_, vs_, f_, identity_number_, mc_>
+    struct sparse_base : NAME<aac, ig_, vs_, f_, identity_number_, mc_>,
+        sparse_tag
     {
         uint16_t vehicle_system_instance_ : 4;
         uint16_t function_instance_ : 5;
@@ -77,6 +78,12 @@ struct NAME
             vehicle_system_instance_{0},
             function_instance_{0},
             ecu_instance_{0}
+        {}
+
+        constexpr sparse_base(uint16_t vsi, uint16_t fi, uint16_t ei) :
+            vehicle_system_instance_{vsi},
+            function_instance_{fi},
+            ecu_instance_{ei}
         {}
 
         word<4> vehicle_system_instance() const

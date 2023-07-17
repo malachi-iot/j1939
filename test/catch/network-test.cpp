@@ -107,6 +107,16 @@ TEST_CASE("Controller Applications (network)")
             }
         }
     }
+    SECTION("network ca base")
+    {
+        test::NAME_trailer_brake<true>::sparse v;
+
+        impl::network_ca_base ncb1(v);
+        impl::network_ca_base ncb2(test::NAME_trailer_brake<true>::sparse{});
+
+        REQUIRE(ncb1.name() == name);
+        REQUIRE(ncb2.name() == name);
+    }
     SECTION("impl network_ca")
     {
         network_ca impl(name, scheduler);

@@ -10,6 +10,7 @@
 #include <estd/chrono.h>
 #include <estd/functional.h>
 #include <estd/optional.h>
+#include <estd/type_traits.h>
 
 #include <embr/service.h>
 
@@ -106,10 +107,20 @@ protected:
     // state machine
     address_type address_;
 
+#if UNIT_TESTING
+public:
+#endif
     template <class TContainer>
-    network_ca_base(const NAME<TContainer>& name) :
+    constexpr explicit network_ca_base(const NAME<TContainer>& name) :
         name_{name}
     {}
+
+    template <class TLayer0Name, estd::enable_if_t<estd::is_base_of<
+        embr::j1939::layer0::sparse_tag, TLayer0Name>::value, bool> = true>
+    explicit network_ca_base(TLayer0Name sparse)
+    {
+        sparse.populate(name_);
+    }
 
 public:
     const address_type& address() const { return address_; }
@@ -297,6 +308,14 @@ struct network_ca : impl::controller_application<TTransport>,
     };
 
     typename function_type::template model<wake_functor> wake_model{wake_functor{*this}};
+
+    template <class TLayer0Name, estd::enable_if_t<estd::is_base_of<
+        embr::j1939::layer0::sparse_tag, TLayer0Name>::value, bool> = true>
+    explicit constexpr network_ca(TLayer0Name sparse,
+        scheduler_type& scheduler) :
+        network_ca_base(sparse),
+        scheduler{scheduler}
+    {}
 
     template <class TContainer>
     explicit constexpr network_ca(const NAME<TContainer>& name,

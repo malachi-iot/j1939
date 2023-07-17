@@ -49,12 +49,15 @@ bool address_claimed_ = false;
 using ft = embr::can::frame_traits<transport::frame>;
 #ifdef __AVR__
 uint8_t source_address_ = 0x7;
+constexpr embr::word<3> ecu_instance(0);
 #else
 #if ADAFRUIT_FEATHER_M4_CAN
 uint8_t source_address_ = 0x77;
+constexpr embr::word<3> ecu_instance(1);
 #else
 // Assuming ESP32
 uint8_t source_address_ = 0x70;
+constexpr embr::word<3> ecu_instance(2);
 #endif
 #endif
 
@@ -65,10 +68,10 @@ using proto_name = embr::j1939::layer0::NAME<true,
     vehicle_systems::ig5_not_available, // DEBT: Change to a better IG/Veh Sys,
     function_fields::ig5_not_available>;
 
-embr::j1939::layer1::NAME name;
 embr::j1939::impl::network_ca<transport,
     scheduler_type,
-    embr::j1939::internal::prng_address_manager> nca(name, scheduler);
+    embr::j1939::internal::prng_address_manager> nca(
+    proto_name::sparse{0, 0, ecu_instance.value()}, scheduler);
 
 enum class States
 {
@@ -410,7 +413,7 @@ using menu_type = menu::layer1::Menu<
 
 }
 
-menu::Menu topLevel, submenu(F("Management"), &topLevel);
+menu::Menu topLevel, submenu("Management", &topLevel);
 SyntheticMenuAction item1{0}, item2{1};
 menu::Navigator nav(&topLevel);
 CanPGNAction<pgns::oel> item4;

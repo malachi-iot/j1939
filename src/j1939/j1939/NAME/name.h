@@ -15,6 +15,7 @@
 #include "../data_field/base.hpp"
 
 #include "layer0.h"
+#include "ostream.h"
 
 namespace embr { namespace j1939 {
 

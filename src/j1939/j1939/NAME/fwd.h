@@ -10,6 +10,12 @@ struct NAME;
 #if __cpp_concepts
 #endif
 
+namespace layer0 {
+
+struct sparse_tag {};
+
+}
+
 namespace layer1 {
 
 using NAME = j1939::NAME<estd::array<uint8_t, 8> >;
