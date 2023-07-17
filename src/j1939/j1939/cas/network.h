@@ -122,6 +122,14 @@ public:
         sparse.populate(name_);
     }
 
+    // [1] Figure D1
+    constexpr bool skip_timeout() const
+    {
+        return (address_ >= 0 && address_ <= 127) ||
+            (address_ >= 248 && address_ <= 253);
+    }
+
+
 public:
     const address_type& address() const { return address_; }
 
@@ -248,13 +256,6 @@ struct network_ca : impl::controller_application<TTransport>,
     // Emits address claim over transport and assures a followup of
     // is scheduled for 250ms later
     void send_claim_and_schedule(transport_type& t, pdu<pgns::address_claimed>& p, uint8_t sa);
-
-    // [1] Figure D1
-    constexpr bool skip_timeout() const
-    {
-        return (address_ >= 0 && address_ <= 127) ||
-               (address_ >= 248 && address_ <= 253);
-    }
 
     // DEBT: Need to coordinate this better with 'timeout' assignment,
     // otherwise we'll definitely run into a form of jitter

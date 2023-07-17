@@ -161,9 +161,10 @@ bool network_ca<TTransport, TScheduler, TAddressManager>::process_incoming(
         }
         else if(name_ > incoming_name)
         {
-            address_manager().encountered(sa);
-
             // we have the lower priority name
+
+            // Incoming address remembered so that we avoid RNG attempts at it
+            address_manager().encountered(sa);
 
             // [1] 4.4.4
             // emit a 'cannot claim' or attempt to claim a new address
@@ -201,6 +202,9 @@ bool network_ca<TTransport, TScheduler, TAddressManager>::process_incoming(
     }
     else
     {
+        // Address not matching our own encountered, take note
+        // NOTE: Strongly consider filtering this so that only incoming NAMEs which don't
+        // contend us get registered
         address_manager().encountered(sa);
     }
 

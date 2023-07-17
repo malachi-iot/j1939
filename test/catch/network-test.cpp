@@ -100,10 +100,12 @@ TEST_CASE("Controller Applications (network)")
 
             for(int i = 100; --i > 0;)
             {
-                int v = am.get_candidate();
+                unsigned v = am.get_candidate();
 
                 REQUIRE(v >= 128);
                 REQUIRE(v < 254);
+
+                am.encountered(v);
             }
         }
     }
