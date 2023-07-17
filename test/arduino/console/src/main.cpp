@@ -47,13 +47,13 @@ static transport t;
 // with one in embr::j1939
 using ft = embr::can::frame_traits<transport::frame>;
 #ifdef __AVR__
-uint8_t source_address = 0x7;
+uint8_t source_address_ = 0x7;
 #else
 #if ADAFRUIT_FEATHER_M4_CAN
-uint8_t source_address = 0x77;
+uint8_t source_address_ = 0x77;
 #else
 // Assuming ESP32
-uint8_t source_address = 0x70;
+uint8_t source_address_ = 0x70;
 #endif
 #endif
 
@@ -77,6 +77,14 @@ enum class States
 
 States state = States::Entry;
 estd::layer1::string<128> input;
+
+uint8_t source_address()
+{
+    if(nca.state == impl::network_ca_base::states::claimed)
+        return nca.address().value();
+    else
+        return source_address_;
+}
 
 
 namespace menu {
@@ -171,7 +179,8 @@ struct CanPGNActionImpl<pgns::cab_message1>
 
     void prep(pdu<pgns::cab_message1>& p)
     {
-        p.destination_address(source_address == 7 ? 0x77 : 0x7);
+        // DEBT: Old flip/flop dest trick won't work here now
+        p.destination_address(source_address() == 7 ? 0x77 : 0x7);
 
         p.cab_interior_temperature_command(c);
         p.requested_percent_fan_speed(50_pct);
@@ -181,7 +190,7 @@ struct CanPGNActionImpl<pgns::cab_message1>
 template <pgns pgn>
 void send(pdu<pgn>& p, arduino_ostream* out = nullptr)
 {
-    p.source_address(source_address);
+    p.source_address(source_address());
 
     auto frame = ft::create(p.can_id(), p.data(), p.size());
 
@@ -319,7 +328,7 @@ void menu1(menu::Navigator* nav, ios io)
 
     if(state == States::Entry)
     {
-        cout << F("Top level: source_address=") << source_address << endl << endl;
+        cout << F("Top level: source_address=") << source_address() << endl << endl;
         state = States::Running;
 
         menu->render(cout);
