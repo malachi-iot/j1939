@@ -6,6 +6,8 @@
  */
 #pragma once
 
+#include "fwd.h"
+
 //#include "bits.hpp"
 #include "can_id.h"
 #include "pgn/enum.h"
@@ -78,31 +80,15 @@ struct pdu2_header : can_id
     void range(uint32_t v) { value.set(d::range_pdu2(), v); }
 };
 
-namespace internal {
-
-template <bool v>
-using Range = estd::internal::Range<v>;
-
-}
-
-// TODO: Consider further specializing these based on transport, so that we can use native
-// types to avoid copying and unnecessary allocating.  If so, it makes sense to do that by policy
-
-///
-/// @tparam pgn
-/// @tparam TPolicy - place where perhaps we can specify underlying storage class preferences, etc
-template <pgns pgn, class TPolicy = void, typename = internal::Range<true> >
-class pdu;
-
-template <pgns _pgn>
+template <pgns pgn_>
 class pdu1 : public pdu1_header,
-    public data_field<_pgn>
+    public data_field<pgn_>
 {
     typedef pdu1_header id;
-    typedef data_field<_pgn> data_field_type;
+    typedef data_field<pgn_> data_field_type;
 
 public:
-    static constexpr pgns pgn = _pgn;
+    static constexpr pgns pgn = pgn_;
     static constexpr pgn::descriptor descriptor() { return pgn::get_descriptor<pgn>(); }
 
     pdu1() : id{descriptor().default_priority, pgn} {}
@@ -121,15 +107,15 @@ public:
     data_field_type& payload() { return *this; }
 };
 
-template <pgns _pgn>
+template <pgns pgn_>
 class pdu2 : public pdu2_header,
-    public data_field<_pgn>
+    public data_field<pgn_>
 {
     typedef pdu2_header id;
-    typedef data_field<_pgn> data_field_type;
+    typedef data_field<pgn_> data_field_type;
 
 public:
-    static constexpr pgns pgn = _pgn;
+    static constexpr pgns pgn = pgn_;
     static constexpr pgn::descriptor descriptor() { return pgn::get_descriptor<pgn>(); }
 
     pdu2() : id{descriptor().default_priority, pgn} {}

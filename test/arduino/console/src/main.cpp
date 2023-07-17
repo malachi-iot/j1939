@@ -17,8 +17,7 @@
 
 #include <j1939/data_field/all.hpp>
 
-// DEBT: Eventually we'd like to auto include this
-#include <j1939/units/ostream.h>
+#include <j1939/ostream.h>
 
 #include "main.h"
 #include "menu.hpp"
@@ -478,7 +477,7 @@ void loop()
         cout << endl;
 
         r = process_incoming(dca, t, frame);
-        process_incoming(nca, t, canMsg);
+        process_incoming(nca, t, frame);
     }
 
     //testOut();
