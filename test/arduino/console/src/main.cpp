@@ -463,6 +463,7 @@ void loop()
         }
 
         r = process_incoming(dca, t, canMsg);
+        process_incoming(nca, t, canMsg);
 
         cout << endl;
     }
@@ -477,6 +478,7 @@ void loop()
         cout << endl;
 
         r = process_incoming(dca, t, frame);
+        process_incoming(nca, t, canMsg);
     }
 
     //testOut();

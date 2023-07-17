@@ -6,7 +6,7 @@ namespace embr { namespace j1939 { namespace internal {
 // range
 struct prng_address_manager
 {
-    unsigned seed = 0;
+    uint32_t seed = 0;
 
     static constexpr bool depleted() { return false; }
 
