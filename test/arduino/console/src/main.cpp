@@ -43,6 +43,7 @@ static transport t(10);     // CS pin
 static transport t;
 #endif
 
+bool address_claimed_ = false;
 // DEBT: Can't alias directly frame_traits due to ambiguity
 // with one in embr::j1939
 using ft = embr::can::frame_traits<transport::frame>;
@@ -409,7 +410,7 @@ using menu_type = menu::layer1::Menu<
 
 }
 
-menu::Menu topLevel, submenu("submenu#1", &topLevel);
+menu::Menu topLevel, submenu(F("Management"), &topLevel);
 SyntheticMenuAction item1{0}, item2{1};
 menu::Navigator nav(&topLevel);
 CanPGNAction<pgns::oel> item4;
@@ -500,4 +501,15 @@ void loop()
 
     // FIX: arduino_clock does not have a 'now', but probably should
     scheduler.process();
+
+    if(address_claimed_ == false && nca.state == impl::network_ca_base::states::claimed)
+    {
+        address_claimed_ = true;
+        cout << F("Claimed address: ") << nca.address().value() << endl;
+    }
+    else if(address_claimed_ == true && nca.state != impl::network_ca_base::states::claimed)
+    {
+        address_claimed_ = false;
+        cout << F("Lost address: ") << nca.address().value() << endl;
+    }
 }
