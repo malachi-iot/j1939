@@ -190,5 +190,4 @@ struct traits<pgns::lighting_command>
     static constexpr const char* abbrev() { return "LCMD"; }
 };
 
-
 }}}

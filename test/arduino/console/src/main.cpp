@@ -507,11 +507,17 @@ void loop()
 
     if(address_claimed_ == false && nca.state == impl::network_ca_base::states::claimed)
     {
+        // DEBT: I think ostream isn't reverting back to default hex/dec states properly
+        out << estd::dec;
+
         address_claimed_ = true;
         cout << F("Claimed address: ") << nca.address().value() << endl;
     }
     else if(address_claimed_ == true && nca.state != impl::network_ca_base::states::claimed)
     {
+        // DEBT: I think ostream isn't reverting back to default hex/dec states properly
+        out << estd::dec;
+
         address_claimed_ = false;
         cout << F("Lost address: ") << nca.address().value() << endl;
     }

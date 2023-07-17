@@ -20,6 +20,23 @@ constexpr descriptor get_descriptor<spns::parameter_group_number_rqst>()
 
 }
 
+namespace pgn {
+
+template <>
+struct traits<pgns::request> : internal::traits_base
+{
+    static constexpr const char* name()
+    {
+        return "Request";
+    }
+
+    // DEBT: J1939-21 (REV2006) Table D1 implies this, but not 100% sure
+    static constexpr const char* abbrev() { return "RQST"; }
+};
+
+
+}
+
 template <class TContainer>
 struct data_field<pgns::request, TContainer> :
     internal::data_field_base<TContainer>

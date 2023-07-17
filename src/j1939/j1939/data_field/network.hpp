@@ -35,6 +35,25 @@ constexpr descriptor get_descriptor<spns::address_assignment>()
 }
 
 
+namespace pgn {
+
+template <>
+struct traits<pgns::address_claimed> : internal::traits_base
+{
+    static constexpr const char* name()
+    {
+        return "Address Claim";
+    }
+
+    static constexpr const char* abbrev()
+    {
+        // DEBT: J1939-81 doesn't seem to indicate what abbrev is for this guy
+        return "AC";
+    }
+};
+
+}
+
 
 //
 // "The Cannot Claim Address message is the same PGN as the Address Claimed message but has a source
