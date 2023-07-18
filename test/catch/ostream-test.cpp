@@ -31,15 +31,19 @@ TEST_CASE("ostream")
     {
         SECTION("pdu1")
         {
-            j1939::pdu1_header ph{0};
+            pdu1_header ph{0};
 
             out << ph;
+
+            REQUIRE(out_s == "SA:0 DA:0");
         }
         SECTION("pdu2")
         {
-            j1939::pdu2_header ph{0};
+            pdu2_header ph{0};
 
             out << ph;
+
+            REQUIRE(out_s == "SA:0");
         }
     }
     SECTION("data_field")
