@@ -1,3 +1,5 @@
+#include <estd/sstream.h>
+
 #include <embr/scheduler.hpp>
 
 #include <can/loopback.h>
@@ -7,6 +9,7 @@
 #include <j1939/cas/lighting_command.hpp>
 #include <j1939/cas/network.hpp>
 #include <j1939/cas/transport_protocol.hpp>
+#include <j1939/cas/diagnostic.hpp>
 
 #include "test-data.h"
 
@@ -89,12 +92,19 @@ struct BlinkCAImpl
 };
 
 
+using ostringstream = estd::detail::basic_ostream<estd::layer1::stringbuf<128>>;
+
+
 TEST_CASE("Controller Applications")
 {
     using namespace j1939;
     using frame = can::loopback_transport::frame;
     using frame_type = frame;
     using frame_traits = j1939::frame_traits<frame>;
+
+    ostringstream out;
+    const auto& out_s = out.rdbuf()->str();
+    uint32_t can_id;
 
     can::loopback_transport t;
 
@@ -165,5 +175,17 @@ TEST_CASE("Controller Applications")
         scheduler.process();
         REQUIRE(t.queue.size() == 1);
         REQUIRE(t.receive(&frame));
+    }
+    SECTION("diagnostic ca")
+    {
+        diagnostic_ca<can::loopback_transport, ostringstream> dca(out);
+
+        pdu<pgns::oel> p;
+
+        frame f = frame_traits::create(p);
+
+        process_incoming(dca, t, f);
+
+        REQUIRE(out_s == "OEL SA:0 ff ff ff ff ff ff ff ff \n");
     }
 }

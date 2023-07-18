@@ -6,10 +6,18 @@
 #pragma once
 
 #include "enum.h"
+#include "../pdu/fwd.h"
 
 namespace embr { namespace j1939 {
 
 enum class pgns : uint32_t;
+
+namespace internal {
+
+template <pgns pgn>
+struct pgn_put;
+
+}
 
 namespace pgn {
 
@@ -53,4 +61,9 @@ constexpr descriptor get_descriptor<pgns::commanded_address>()
 
 }
 
-}}
+}
+
+template <j1939::pgns pgn>
+j1939::internal::pgn_put<pgn> put_pdu(const j1939::pdu<pgn>& pdu_);
+
+}

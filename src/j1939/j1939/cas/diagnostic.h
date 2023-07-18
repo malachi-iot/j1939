@@ -2,12 +2,13 @@
 
 #include <estd/type_traits.h>
 
-#include <j1939/ca.h>
-#include <j1939/pgn/traits.h>
+#include "../ca.h"
+#include "../pgn/traits.h"
 
+namespace embr { namespace j1939 {
 
 template <class TTransport, class TOStream>
-class diagnostic_ca : 
+class diagnostic_ca :
     public embr::j1939::impl::controller_application<TTransport>
 {
     using base_type = embr::j1939::impl::controller_application<TTransport>;
@@ -35,3 +36,5 @@ public:
     template <pgns pgn>
     bool process_incoming(transport_type& t, const pdu<pgn>& p);
 };
+
+}}

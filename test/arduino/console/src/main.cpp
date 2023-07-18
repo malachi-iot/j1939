@@ -12,6 +12,7 @@
 #include <j1939/pgn.h>
 #include <j1939/ca.hpp>
 
+#include <j1939/cas/diagnostic.hpp>
 #include <j1939/cas/network.hpp>
 #include <j1939/cas/internal/prng_address_manager.h>
 
@@ -23,8 +24,6 @@
 #include "menu.hpp"
 #include "scheduler.h"
 #include "transport.h"
-
-#include "ca.hpp"
 
 uint32_t start_ms;
 
@@ -453,7 +452,6 @@ void loop()
 
     if (e == MCP2515::ERROR_OK)
     {
-        /*
         cout << F("id: ") << hex << canMsg.can_id << ' ' << canMsg.can_dlc << ' ';
 
         for (int i = 0; i<canMsg.can_dlc; i++)
@@ -462,7 +460,7 @@ void loop()
             Serial.print(" ");
         }
 
-        cout << endl; */
+        cout << endl;
 
         r = process_incoming(dca, t, canMsg);
         process_incoming(nca, t, canMsg);

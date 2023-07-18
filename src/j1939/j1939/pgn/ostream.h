@@ -35,6 +35,16 @@ estd::detail::basic_ostream<TStreambuf, TBase>& operator <<(
 }
 
 
+template <pgns pgn, class TStreambuf, class TBase>
+estd::detail::basic_ostream<TStreambuf, TBase>& operator <<(
+    estd::detail::basic_ostream<TStreambuf, TBase>& out,
+    const pdu<pgn>& p)
+{
+    out << embr::put_pdu(p);
+    return out;
+}
+
+
 namespace internal {
 
 template <pgns pgn>

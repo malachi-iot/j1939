@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../pgn/fwd.h"
+#include <estd/internal/deduce_fixed_size.h>    // For 'Range'
+#include "../pgn/enum.h"
 
 namespace embr { namespace j1939 {
 
