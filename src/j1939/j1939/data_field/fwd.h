@@ -38,7 +38,7 @@ struct get_helper;
 
 namespace internal {
 
-template <pgns pgn>
+template <pgns pgn, class TContainer = typename data_field<pgn>::container_type>
 struct payload_put;
 
 }

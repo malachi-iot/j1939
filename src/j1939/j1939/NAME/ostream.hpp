@@ -20,6 +20,14 @@ void NAME_payload_put::operator()(estd::detail::basic_ostream<TStreambuf, TBase>
     out << "id=" << estd::hex << name.identity_number().value();
 }
 
+template <>
+struct payload_put<pgns::address_claimed> : NAME_payload_put
+{
+    using base_type = NAME_payload_put;
+
+    ESTD_CPP_FORWARDING_CTOR(payload_put)
+};
+
 
 }
 

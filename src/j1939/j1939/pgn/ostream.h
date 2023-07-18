@@ -26,18 +26,26 @@ estd::detail::basic_ostream<TStreambuf, TBase>& operator <<(
 
 namespace internal {
 
-template <pgns pgn>
-struct payload_put : estd::internal::ostream_functor_tag
+template <class TContainer>
+struct payload_put_base : estd::internal::ostream_functor_tag
 {
-    const data_field<pgn>& payload;
+    using payload_type = internal::data_field_base<TContainer>;
+    const payload_type& payload;
 
-    constexpr explicit payload_put(const data_field<pgn>& payload) : payload{payload} {}
+    constexpr explicit payload_put_base(const payload_type& payload) : payload{payload} {}
 
     template <class TStreambuf, class TBase>
     void operator()(estd::detail::basic_ostream<TStreambuf, TBase>& out) const
     {
         for(unsigned v : payload)   out << v << ' ';
     }
+};
+
+template <pgns pgn, class TContainer>
+struct payload_put : payload_put_base<TContainer>
+{
+    constexpr explicit payload_put(const data_field<pgn>& payload) :
+        payload_put_base<TContainer>{payload} {}
 };
 
 
@@ -50,8 +58,9 @@ struct traits_wrapper
     static const char* abbrev() { return "NA"; }
 };
 
-template <embr::j1939::pgns pgn
-    >
+// DEBT: Move this out to an .hpp which has included a ton of stuff already
+// to better check for specializations
+template <embr::j1939::pgns pgn>
 struct traits_wrapper<pgn, estd::enable_if_t<
     (sizeof(embr::j1939::pgn::traits<pgn>) > 0)> > :
     embr::j1939::pgn::traits<pgn>
@@ -73,11 +82,29 @@ struct pgn_put : estd::internal::ostream_functor_tag
     void operator()(estd::detail::basic_ostream<TStreambuf, TBase>& out) const
     {
         // DEBT: Consolidate this into a helper function to avoid code bloat
+#if FEATURE_EMBR_J1939_OSTREAM_PGN_ABBREV
         const char* abbrev = traits::abbrev();
-        out << abbrev << ' ' << estd::hex;
-        out << pdu_.can_id() << ' ';
+        out << abbrev << ' ';
+#else
+        // Turns out that due to code bloat it takes MORE code to do this
+        // uint32_t output on AVR than the abbrev above.  That will likely
+        // change with a helper function though
+#error Unsupported
+        out << (uint32_t) pgn << ' ';
+#endif        
 
+        // DEBT: This is vague what we're really outputting here, tighten this up
+        out << estd::hex << pdu_.can_id() << ' ';
+
+#if FEATURE_EMBR_J1939_OSTREAM_FULL_PAYLOAD
         payload_put<pgn>{pdu_.payload()}(out);
+#else
+        // Saves over 1k of code space easily
+        auto& payload = pdu_.payload();
+        using data_field_type = estd::remove_cvref_t<decltype(payload)>;
+
+        payload_put_base<typename data_field_type::container_type>{payload}(out);
+#endif
     }
 };
 

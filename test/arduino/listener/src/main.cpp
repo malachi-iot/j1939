@@ -47,6 +47,6 @@ void loop()
     if(t.receive(&f))
     {
         // overflows attiny
-        //process_incoming(dca, t, f);
+        process_incoming(dca, t, f);
     }
 }

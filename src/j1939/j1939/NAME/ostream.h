@@ -34,15 +34,6 @@ struct NAME_payload_put : estd::internal::ostream_functor_tag
     void operator()(estd::detail::basic_ostream<TStreambuf, TBase>& out) const;
 };
 
-template <>
-struct payload_put<pgns::address_claimed> : NAME_payload_put
-{
-    using base_type = NAME_payload_put;
-
-    ESTD_CPP_FORWARDING_CTOR(payload_put)
-};
-
-
 /*
  * FIX: This guy doesn't work, even though above seems to
 template <>

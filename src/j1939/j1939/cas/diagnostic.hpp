@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../data_field/all.hpp"
+
 #include "diagnostic.h"
 
 #include "../ostream.h"
