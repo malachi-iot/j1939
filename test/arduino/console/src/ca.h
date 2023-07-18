@@ -6,7 +6,7 @@
 #include <j1939/pgn/traits.h>
 
 
-template <class TTransport>
+template <class TTransport, class TOStream>
 class diagnostic_ca : 
     public embr::j1939::impl::controller_application<TTransport>
 {
@@ -22,9 +22,11 @@ class diagnostic_ca :
     template <class TPDU>
     inline bool process_incoming2(transport_type&, TPDU) { return false; }
 
-    const char* name_;
+    TOStream& out;
 
 public:
+    constexpr diagnostic_ca(TOStream& out) : out(out) {}
+
     // DEBT: inline instead of constexpr seems to hels compiler not favor this
     // one.  However, that is obnoxious
     //template <class TPDU>
@@ -32,6 +34,4 @@ public:
 
     template <pgns pgn>
     bool process_incoming(transport_type& t, const pdu<pgn>& p);
-
-    const char* name() { return name_; }
 };

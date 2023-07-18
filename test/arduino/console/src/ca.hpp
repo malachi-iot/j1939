@@ -2,6 +2,8 @@
 
 #include "ca.h"
 
+#include <j1939/ostream.h>
+
 // Adapted from https://devblogs.microsoft.com/oldnewthing/20190710-00/?p=102678
 // https://stackoverflow.com/questions/39816779/check-if-type-is-defined
 
@@ -31,17 +33,11 @@ struct traits_wrapper<pgn, estd::enable_if_t<
     static constexpr const char specialized = true;
 };
 
-template <class TTransport>
+template <class TTransport, class TOStream>
 template <embr::j1939::pgns pgn>
-bool diagnostic_ca<TTransport>::process_incoming(transport_type& t, const pdu<pgn>& param_type)
+bool diagnostic_ca<TTransport, TOStream>::process_incoming(transport_type& t, const pdu<pgn>& p)
 {
-    using traits = traits_wrapper<pgn>;
+    out << p;
 
-    const char* name = traits::name();
-
-    name_ = name;
-    
-    //using traits = estd::conditional_t<estd::enable_if_t<
-      //  embr::j1939::pgn::traits<pgn>, bool>
     return true;
 }

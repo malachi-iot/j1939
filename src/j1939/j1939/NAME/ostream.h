@@ -6,6 +6,8 @@
 
 namespace embr { namespace j1939 {
 
+/*
+ FIX: Somehow this collides with pdu_header flavor
 template <class TContainer, class TStreambuf, class TBase>
 estd::detail::basic_ostream<TStreambuf, TBase>& operator <<(
     estd::detail::basic_ostream<TStreambuf, TBase>& out,
@@ -18,7 +20,7 @@ estd::detail::basic_ostream<TStreambuf, TBase>& operator <<(
     out << "mc=" << (unsigned)name.manufacturer_code();
     out << estd::hex << name.identity_number();
     return out;
-}
+} */
 
 namespace internal {
 

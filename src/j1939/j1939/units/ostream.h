@@ -1,3 +1,5 @@
+#pragma once
+
 #include <estd/iosfwd.h>
 #include <estd/locale.h>
 

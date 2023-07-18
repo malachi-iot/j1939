@@ -61,7 +61,7 @@ constexpr embr::word<3> ecu_instance(2);
 #endif
 
 scheduler_type scheduler;
-diagnostic_ca<transport> dca;
+diagnostic_ca<transport, arduino_ostream> dca(cout);
 using proto_name = embr::j1939::layer0::NAME<true,
     industry_groups::process_control,
     vehicle_systems::ig5_not_available, // DEBT: Change to a better IG/Veh Sys,
@@ -483,12 +483,6 @@ void loop()
     //testOut();
     //estd::this_thread::sleep_for(100ms);
 #endif
-
-    if(r)
-    {
-        cout << F("CA registered ") << dca.name();
-        cout << endl;
-    }
 
 /*
     uint32_t now_ms = millis();
