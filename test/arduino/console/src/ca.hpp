@@ -16,28 +16,18 @@ struct is_type_complete : estd::false_type {};
 template<typename T>
 struct is_type_complete<T, estd::enable_if_t<(sizeof(T) > 0)> > : estd::true_type {};
 
-template <embr::j1939::pgns, typename = void>
-struct traits_wrapper
-{
-    static constexpr const char specialized = false;
-
-    static const char* name() { return "N/A"; }
-};
-
-template <embr::j1939::pgns pgn
-    >
-struct traits_wrapper<pgn, estd::enable_if_t<
-    (sizeof(embr::j1939::pgn::traits<pgn>) > 0)> > :
-    embr::j1939::pgn::traits<pgn>
-{
-    static constexpr const char specialized = true;
-};
-
 template <class TTransport, class TOStream>
 template <embr::j1939::pgns pgn>
 bool diagnostic_ca<TTransport, TOStream>::process_incoming(transport_type& t, const pdu<pgn>& p)
 {
-    out << p;
+    // FIX: Something is wrong here, it just vanishes without a trace
+    //out << p;
+
+    out << "GOT HERE";
+
+    out << embr::put_pdu(p);
+
+    out << estd::endl;
 
     return true;
 }

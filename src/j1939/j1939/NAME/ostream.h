@@ -43,6 +43,8 @@ struct payload_put<pgns::address_claimed> : NAME_payload_put
 };
 
 
+/*
+ * FIX: This guy doesn't work, even though above seems to
 template <>
 struct payload_put<pgns::commanded_address> : NAME_payload_put
 {
@@ -50,7 +52,7 @@ struct payload_put<pgns::commanded_address> : NAME_payload_put
 
     ESTD_CPP_FORWARDING_CTOR(payload_put)
 };
-
+*/
 
 }
 

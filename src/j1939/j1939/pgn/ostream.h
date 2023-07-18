@@ -51,11 +51,32 @@ struct payload_put : estd::internal::ostream_functor_tag
     }
 };
 
+
+template <embr::j1939::pgns, typename = void>
+struct traits_wrapper
+{
+    static constexpr const char specialized = false;
+
+    static const char* name() { return "N/A"; }
+    static const char* abbrev() { return "NA"; }
+};
+
+template <embr::j1939::pgns pgn
+    >
+struct traits_wrapper<pgn, estd::enable_if_t<
+    (sizeof(embr::j1939::pgn::traits<pgn>) > 0)> > :
+    embr::j1939::pgn::traits<pgn>
+{
+    static constexpr const char specialized = true;
+};
+
+
+
 template <pgns pgn>
 struct pgn_put : estd::internal::ostream_functor_tag
 {
     const pdu<pgn>& pdu_;
-    using traits = pgn::traits<pgn>;
+    using traits = traits_wrapper<pgn>;
 
     constexpr pgn_put(const pdu<pgn>& p) : pdu_{p} {}
 
