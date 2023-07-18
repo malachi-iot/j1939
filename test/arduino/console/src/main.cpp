@@ -452,6 +452,7 @@ void loop()
 
     if (e == MCP2515::ERROR_OK)
     {
+        // DEBT: Adapt and move this into the diagnostic fallback code
         cout << F("id: ") << hex << canMsg.can_id << ' ' << canMsg.can_dlc << ' ';
 
         for (int i = 0; i<canMsg.can_dlc; i++)
@@ -473,6 +474,7 @@ void loop()
 
     if (can_online && t.receive(&frame))
     {
+        // DEBT: Adapt and move this into the diagnostic fallback code
         cout << F("Received packet with id 0x") << hex << frame.id;
         cout << ' ' << frame.dlc;
         cout << endl;
