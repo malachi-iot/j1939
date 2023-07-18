@@ -14,6 +14,9 @@
 using namespace embr::j1939;
 
 #include <j1939/pgn/ostream.h>
+#include <j1939/NAME/ostream.hpp>
+
+#include "test-data.h"
 
 using ostringstream = estd::detail::basic_ostream<estd::layer1::stringbuf<128>>;
 
@@ -47,7 +50,7 @@ TEST_CASE("pdu")
 
         out << embr::put_pdu(p);
 
-        REQUIRE(out_s.starts_with("CM1 SA:0 7d"));
+        REQUIRE(out_s.starts_with("CM1 SA:0 DA:0 7d"));
     }
     SECTION("fd")
     {
@@ -102,5 +105,15 @@ TEST_CASE("pdu")
         REQUIRE(p.payload().source_address() == 7);
 
         p.payload().identity_number(0x1234);
+    }
+    SECTION("address_claimed")
+    {
+        pdu<pgns::address_claimed> p;
+
+        test::NAME_trailer_brake<true>::populate(p.payload());
+
+        out << embr::put_pdu(p);
+
+        REQUIRE(out_s == "AC SA:0 DA:0 ig1 vs=2:0 f=9:0 ecu=0 mc=7ff id=1fffff");
     }
 }

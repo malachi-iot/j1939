@@ -8,7 +8,7 @@
 #include <estd/ostream.h>
 
 #include "fwd.h"
-#include "../pdu/fwd.h"
+#include "../pdu/header.h"
 
 namespace embr { namespace j1939 {
 
@@ -19,6 +19,9 @@ estd::detail::basic_ostream<TStreambuf, TBase>& operator <<(
         estd::detail::basic_ostream<TStreambuf, TBase>& out,
         const pdu1_header& ph)
 {
+    out << "SA:" << ph.source_address() << ' ';
+    out << "DA:" << ph.destination_address();
+    return out;
 }
 
 
@@ -27,6 +30,8 @@ estd::detail::basic_ostream<TStreambuf, TBase>& operator <<(
         estd::detail::basic_ostream<TStreambuf, TBase>& out,
         const pdu2_header& ph)
 {
+    out << "SA:" << ph.source_address();
+    return out;
 }
 
 
@@ -37,7 +42,7 @@ struct payload_put : estd::internal::ostream_functor_tag
 {
     const data_field<pgn>& payload;
 
-    constexpr payload_put(const data_field<pgn>& payload) : payload{payload} {}
+    constexpr explicit payload_put(const data_field<pgn>& payload) : payload{payload} {}
 
     template <class TStreambuf, class TBase>
     void operator()(estd::detail::basic_ostream<TStreambuf, TBase>& out) const
@@ -60,7 +65,7 @@ struct pgn_put : estd::internal::ostream_functor_tag
         // DEBT: Consolidate this into a helper function to avoid code bloat
         const char* abbrev = traits::abbrev();
         out << abbrev << ' ' << estd::hex;
-        out << "SA:" << pdu_.source_address() << ' ';
+        out << pdu_.can_id() << ' ';
 
         payload_put<pgn>{pdu_.payload()}(out);
     }

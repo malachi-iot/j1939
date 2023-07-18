@@ -240,4 +240,23 @@ struct data_field<pgns::oel, TContainer> :
     EMBR_J1939_PROPERTY(hazard_light_switch);
 };
 
+namespace internal {
+
+/* Almost there, just not ready for testing yet
+template <>
+struct payload_put<pgns::oel> : estd::internal::ostream_functor_tag
+{
+    const data_field<pgns::oel>& payload;
+
+    constexpr explicit payload_put(const data_field<pgns::oel>& payload) : payload{payload} {}
+
+    template <class TStreambuf, class TBase>
+    void operator()(estd::detail::basic_ostream<TStreambuf, TBase>& out) const
+    {
+        out << "high beam=" << payload.high_low_beam_switch();
+    }
+}; */
+
+}
+
 }}

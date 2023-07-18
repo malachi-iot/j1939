@@ -36,5 +36,11 @@ struct get_helper;
 
 }
 
+namespace internal {
+
+template <pgns pgn>
+struct payload_put;
+
+}
 
 }}

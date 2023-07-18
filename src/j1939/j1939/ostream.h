@@ -2,16 +2,8 @@
 
 #include "fwd.h"
 
+#include "pgn/ostream.h"
+#include "pdu/ostream.h"
 #include "units/ostream.h"
+#include "NAME/ostream.hpp"
 
-namespace embr { namespace j1939 {
-
-// DEBT: Probably would prefer this off in special pdu area
-template <pgns pgn, class TStreambuf, class TBase>
-estd::detail::basic_ostream<TStreambuf, TBase>& operator <<(
-    estd::detail::basic_ostream<TStreambuf, TBase>& out,
-    const pdu<pgn>& name)
-{
-}
-
-}}

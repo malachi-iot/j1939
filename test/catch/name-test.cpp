@@ -9,6 +9,8 @@
 #include <j1939/NAME/name.h>
 #include <j1939/NAME/manufacturer.h>
 
+#include <j1939/ostream.h>
+
 #include "test-data.h"
 
 using namespace embr;
