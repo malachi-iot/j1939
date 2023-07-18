@@ -8,8 +8,27 @@
 #include <estd/ostream.h>
 
 #include "fwd.h"
+#include "../pdu/fwd.h"
 
 namespace embr { namespace j1939 {
+
+// DEBT: All this stuff seems better suited to a pdu specific area, not pgn
+
+template <class TStreambuf, class TBase>
+estd::detail::basic_ostream<TStreambuf, TBase>& operator <<(
+        estd::detail::basic_ostream<TStreambuf, TBase>& out,
+        const pdu1_header& ph)
+{
+}
+
+
+template <class TStreambuf, class TBase>
+estd::detail::basic_ostream<TStreambuf, TBase>& operator <<(
+        estd::detail::basic_ostream<TStreambuf, TBase>& out,
+        const pdu2_header& ph)
+{
+}
+
 
 namespace internal {
 
