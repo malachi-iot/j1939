@@ -60,7 +60,9 @@ struct NAME : internal::data_field_base<TContainer>
 
     inline bool arbitrary_address_capable() const
     {
-        return base_type::template get<bool>(d::arbitrary_address_capable());
+        // DEBT: underlying 'material' doesn't handle bool gracefully yet
+        //return base_type::template get<bool>(d::arbitrary_address_capable());
+        return (bool)base_type::template get<unsigned>(d::arbitrary_address_capable());
     }
 
     inline void arbitrary_address_capable(bool v)

@@ -367,7 +367,7 @@ void menu1(menu::Navigator* nav, ios io)
             {
                 expected<void, errc> r(menu->activate(selected - 1, io.out));
 
-                /* FIX: something's wrong with copy constructo/assignment
+                /* FIX: something's wrong with copy constructor/assignment
                 expected<void, errc> r = menu->activate(selected - 1); */
 
                 if(r.has_value() == false)

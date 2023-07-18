@@ -216,7 +216,7 @@ bool network_ca<TTransport, TScheduler, TAddressManager>::process_request_for_ad
     transport_type& t, const pdu<pgns::request>& p)
 {
     // TODO: Verify source address is null and log if it isn't
-    const address_type sa = p.can_id().source_address();
+    //const address_type sa = p.can_id().source_address();
 
     const uint8_t da = p.can_id().destination_address();
 
