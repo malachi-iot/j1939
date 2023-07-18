@@ -28,4 +28,19 @@ bool diagnostic_ca<TTransport, TOStream>::process_incoming(transport_type& t, co
     return true;
 }
 
+template <class TTransport, class TOStream>
+bool diagnostic_ca<TTransport, TOStream>::process_incoming_default(
+    transport_type& t, const frame_type& f) const
+{
+    pdu1_header id{frame_traits::id(f)};
+    pdu2_header _id{frame_traits::id(f)};
+
+    auto pgn = (long) (id.is_pdu1() ? id.range() : _id.range());
+
+    out << "Couldn't resolve PDU: " << estd::dec << pgn << '/' << estd::hex << pgn << estd::endl;
+
+    return false;
+}
+
+
 }}

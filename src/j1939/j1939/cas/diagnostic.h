@@ -14,6 +14,8 @@ class diagnostic_ca :
     using base_type = embr::j1939::impl::controller_application<TTransport>;
 
     using typename base_type::transport_type;
+    typedef typename TTransport::frame frame_type;
+    typedef can::frame_traits<frame_type> frame_traits;
 
     using pgns = embr::j1939::pgns;
 
@@ -32,6 +34,8 @@ public:
     // one.  However, that is obnoxious
     //template <class TPDU>
     //inline bool process_incoming(transport_type&, TPDU) { return false; }
+
+    bool process_incoming_default(transport_type& t, const frame_type& f) const;    // NOLINT
 
     template <pgns pgn>
     bool process_incoming(transport_type& t, const pdu<pgn>& p);
