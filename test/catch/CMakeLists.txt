@@ -29,6 +29,7 @@ set(SOURCE_FILES
     network-test.cpp
     pdu-test.cpp
     pgn-test.cpp
+    ostream-test.cpp
     slots-test.cpp
     spn-test.cpp
     transport-test.cpp
