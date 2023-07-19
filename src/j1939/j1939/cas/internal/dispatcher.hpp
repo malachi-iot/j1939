@@ -16,7 +16,7 @@ struct app_state
     TContext& context;
 
     template <pgns pgn>
-    bool invoker(uint32_t id, const uint8_t* payload)
+    ESTD_CPP_CONSTEXPR_RET bool invoker(uint32_t id, const uint8_t* payload) const
     {
         return impl.process_incoming(t, pdu<pgn>(id, payload), context);
     }
@@ -30,7 +30,7 @@ struct app_state<TTransport, TImpl, estd::monostate>
     TImpl& impl;
 
     template <pgns pgn>
-    bool invoker(uint32_t id, const uint8_t* payload)
+    ESTD_CPP_CONSTEXPR_RET bool invoker(uint32_t id, const uint8_t* payload) const
     {
         return impl.process_incoming(t, pdu<pgn>(id, payload));
     }
