@@ -122,7 +122,7 @@ enum addresses
     // NAME Function ??
     power_systems_manager = 91,
 
-    // [2] Table B3 (On Highway Equipment)
+    // [2] Table B3 (ig1: On Highway Equipment)
     // ------------
     steering_input_unit = 228,
     body_to_vehicle_interface_control = 230,

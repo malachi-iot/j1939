@@ -62,6 +62,10 @@ enum class function_fields
 
     // IG=3, VehSys=0
     joystick_control = 141,
+    
+    // IG=4, VehSys=30 (Power Management)
+    pm_switch = 130,
+    pm_load = 140,
 
     // IG=4, VehSys=80 (instrumentation/general)
     time_date_systems = 130,
