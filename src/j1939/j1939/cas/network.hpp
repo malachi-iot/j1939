@@ -180,7 +180,12 @@ bool network_ca<TTransport, TScheduler, TAddressManager>::process_incoming(
 
                 // DEBT: Account for other states here also
                 if(state == states::claimed)
+                {
+                    // DEBT: Assigning state & substate at once is reasonable but clumsy
+                    // and easy to get wrong
                     state = states::claiming;
+                    substate = substates::waiting;
+                }
 
                 // We optimistically assign ourselves this new address, expecting someone
                 // will contend us necessary

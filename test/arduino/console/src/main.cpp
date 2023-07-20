@@ -517,6 +517,6 @@ void loop()
         cout << estd::dec;
 
         address_claimed_ = false;
-        cout << F("Lost address: ") << nca.address().value() << endl;
+        cout << F("Lost address") << endl;
     }
 }
