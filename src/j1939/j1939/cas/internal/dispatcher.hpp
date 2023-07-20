@@ -59,6 +59,9 @@ bool process_incoming(internal::app_state<TTransport, TImpl, TContext> state, co
 
     switch(pgn)
     {
+        case pgns::auxiliary_input_output_status_1:
+            return state.template invoker<pgns::auxiliary_input_output_status_1>(id, payload);
+
         case pgns::acknowledgement:
             return state.template invoker<pgns::acknowledgement>(id, payload);
 
@@ -79,6 +82,9 @@ bool process_incoming(internal::app_state<TTransport, TImpl, TContext> state, co
 
         case pgns::commanded_address:
             return state.template invoker<pgns::commanded_address>(id, payload);
+
+        case pgns::direct_lamp_control_data1:
+            return state.template invoker<pgns::direct_lamp_control_data1>(id, payload);
 
         case pgns::ecm_information:
             return state.template invoker<pgns::ecm_information>(id, payload);
@@ -116,6 +122,9 @@ bool process_incoming(internal::app_state<TTransport, TImpl, TContext> state, co
         case pgns::request:
             return state.template invoker<pgns::request>(id, payload);
 
+        case pgns::shutdown:
+            return state.template invoker<pgns::shutdown>(id, payload);
+
         case pgns::switch_bank_control:
             return state.template invoker<pgns::switch_bank_control>(id, payload);
 
@@ -133,9 +142,6 @@ bool process_incoming(internal::app_state<TTransport, TImpl, TContext> state, co
 
         case pgns::tp_dt:
             return state.template invoker<pgns::tp_dt>(id, payload);
-
-        case pgns::shutdown:
-            return state.template invoker<pgns::shutdown>(id, payload);
 
         case pgns::vehicle_electrical_power_1:
             return state.template invoker<pgns::vehicle_electrical_power_1>(id, payload);
