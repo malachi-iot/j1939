@@ -15,12 +15,11 @@ namespace embr { namespace j1939 {
 // DEBT: All this stuff seems better suited to a pdu specific area, not pgn
 
 template <pgns pgn, class TStreambuf, class TBase>
-estd::detail::basic_ostream<TStreambuf, TBase>& operator <<(
+constexpr estd::detail::basic_ostream<TStreambuf, TBase>& operator <<(
     estd::detail::basic_ostream<TStreambuf, TBase>& out,
     const pdu<pgn>& p)
 {
-    out << embr::put_pdu(p);
-    return out;
+    return out << embr::put_pdu(p);
 }
 
 
@@ -54,8 +53,8 @@ struct traits_wrapper
 {
     static constexpr const char specialized = false;
 
-    static const char* name() { return "N/A"; }
-    static const char* abbrev() { return "NA"; }
+    static constexpr const char* name() { return "N/A"; }
+    static constexpr const char* abbrev() { return "NA"; }
 };
 
 // DEBT: Move this out to an .hpp which has included a ton of stuff already
@@ -69,6 +68,18 @@ struct traits_wrapper<pgn, estd::enable_if_t<
 };
 
 
+// DEBT: Not great naming
+// Helper to reduce code bloat slightly (this has better change of not inlining)
+template <class TPduHeader, class TStreambuf, class TBase>
+void out_helper(const char* abbrev,
+    const TPduHeader& can_id,
+    estd::detail::basic_ostream<TStreambuf, TBase>& out)
+{
+    out << abbrev << ' ';
+
+    // Outputs PDU header portion
+    out << estd::hex << can_id << ' ';
+}
 
 template <pgns pgn>
 struct pgn_put : estd::internal::ostream_functor_tag
@@ -83,24 +94,24 @@ struct pgn_put : estd::internal::ostream_functor_tag
     {
         // DEBT: Consolidate this into a helper function to avoid code bloat
 #if FEATURE_EMBR_J1939_OSTREAM_PGN_ABBREV
-        const char* abbrev = traits::abbrev();
-        out << abbrev << ' ';
+        out_helper(traits::abbrev(), pdu_.can_id(), out);
 #else
         // Turns out that due to code bloat it takes MORE code to do this
         // uint32_t output on AVR than the abbrev above.  That will likely
         // change with a helper function though
 #error Unsupported
         out << (uint32_t) pgn << ' ';
-#endif        
 
         // Outputs PDU header portion
         out << estd::hex << pdu_.can_id() << ' ';
+#endif
+
+        const auto& payload = pdu_.payload();
 
 #if FEATURE_EMBR_J1939_OSTREAM_FULL_PAYLOAD
-        payload_put<pgn>{pdu_.payload()}(out);
+        payload_put<pgn>{payload}(out);
 #else
         // Saves over 1k of code space easily
-        auto& payload = pdu_.payload();
         using data_field_type = estd::remove_cvref_t<decltype(payload)>;
 
         payload_put_base<typename data_field_type::container_type>{payload}(out);
@@ -113,7 +124,7 @@ struct pgn_put : estd::internal::ostream_functor_tag
 }
 
 template <j1939::pgns pgn>
-j1939::internal::pgn_put<pgn> put_pdu(const j1939::pdu<pgn>& pdu_)
+constexpr j1939::internal::pgn_put<pgn> put_pdu(const j1939::pdu<pgn>& pdu_)
 {
     return { pdu_ };
 }

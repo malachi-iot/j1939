@@ -64,6 +64,6 @@ constexpr descriptor get_descriptor<pgns::commanded_address>()
 }
 
 template <j1939::pgns pgn>
-j1939::internal::pgn_put<pgn> put_pdu(const j1939::pdu<pgn>& pdu_);
+constexpr j1939::internal::pgn_put<pgn> put_pdu(const j1939::pdu<pgn>& pdu_);
 
 }
