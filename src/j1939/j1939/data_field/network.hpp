@@ -7,6 +7,7 @@
  * 1. J1939-21 (DEC2006)
  * 2. J1939-71 (MAR2011)
  * 3. J1939-81 (draft MAY2003)
+ * 4. J1939 (OCT2007)
  */
 #pragma once
 
@@ -37,20 +38,35 @@ constexpr descriptor get_descriptor<spns::address_assignment>()
 
 namespace pgn {
 
+// As per [4] Table A2
 template <>
 struct traits<pgns::address_claimed> : internal::traits_base
 {
     static constexpr const char* name()
     {
-        return "Address Claim";
+        return "Address Claimed";
     }
 
     static constexpr const char* abbrev()
     {
-        // DEBT: J1939-81 doesn't seem to indicate what abbrev is for this guy
         return "AC";
     }
 };
+
+template <>
+struct traits<pgns::commanded_address> : internal::traits_base
+{
+    static constexpr const char* name()
+    {
+        return "Commanded Address";
+    }
+
+    static constexpr const char* abbrev()
+    {
+        return "CA";
+    }
+};
+
 
 }
 

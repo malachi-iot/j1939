@@ -41,7 +41,7 @@ static transport t(10);     // CS pin
 static transport t;
 #endif
 
-bool address_claimed_ = false;
+embr::j1939::impl::network_ca_base::states nca_last_state {};
 // DEBT: Can't alias directly frame_traits due to ambiguity
 // with one in embr::j1939
 using ft = embr::can::frame_traits<transport::frame>;
@@ -442,6 +442,32 @@ void setup()
     ::layer1::menu_type{}.render(cout);
 }
 
+
+#define EXPLICIT_CAN_LOG 0
+
+void nca_report()
+{
+    if(nca_last_state != nca.state)
+    {
+        // DEBT: I think ostream isn't reverting back to default hex/dec states properly
+        cout << estd::dec;
+
+        switch(nca.state)
+        {
+            case impl::network_ca_base::states::claimed:
+                cout << F("Claimed address: ") << nca.address().value() << endl;
+                break;
+
+            default:
+                if(nca_last_state != impl::network_ca_base::states::unstarted)
+                    cout << F("Lost address") << endl;
+                break;
+        }
+
+        nca_last_state = nca.state;
+    }
+}
+
 void loop() 
 {
     bool r = false;
@@ -452,7 +478,9 @@ void loop()
 
     if (e == MCP2515::ERROR_OK)
     {
-        // DEBT: Adapt and move this into the diagnostic fallback code
+#if EXPLICIT_CAN_LOG
+        // DEBT: Adapt and move this into the diagnostic fallback code - mostly done now
+        // keeping this around just incase diagnostic code has issues
         cout << F("id: ") << hex << canMsg.can_id << ' ' << canMsg.can_dlc << ' ';
 
         for (int i = 0; i<canMsg.can_dlc; i++)
@@ -462,6 +490,7 @@ void loop()
         }
 
         cout << endl;
+#endif
 
         r = process_incoming(dca, t, canMsg);
         process_incoming(nca, t, canMsg);
@@ -474,10 +503,12 @@ void loop()
 
     if (can_online && t.receive(&frame))
     {
-        // DEBT: Adapt and move this into the diagnostic fallback code
+#if EXPLICIT_CAN_LOG
+        // DEBT: See above EXPLICIT_CAN_LOG debt
         cout << F("Received packet with id 0x") << hex << frame.id;
         cout << ' ' << frame.dlc;
         cout << endl;
+#endif
 
         r = process_incoming(dca, t, frame);
         process_incoming(nca, t, frame);
@@ -487,36 +518,9 @@ void loop()
     //estd::this_thread::sleep_for(100ms);
 #endif
 
-/*
-    uint32_t now_ms = millis();
-
-    long count = now_ms - start_ms;
-
-    cout << F("Please input something: ");
-
-    estd::layer1::string<128> buffer;
-
-    cin >> buffer;
-    cout << F("You input: ") << buffer << estd::endl; */
     menu1(&nav, ios{cin, cout});
 
-    // FIX: arduino_clock does not have a 'now', but probably should
     scheduler.process();
 
-    if(address_claimed_ == false && nca.state == impl::network_ca_base::states::claimed)
-    {
-        // DEBT: I think ostream isn't reverting back to default hex/dec states properly
-        cout << estd::dec;
-
-        address_claimed_ = true;
-        cout << F("Claimed address: ") << nca.address().value() << endl;
-    }
-    else if(address_claimed_ == true && nca.state != impl::network_ca_base::states::claimed)
-    {
-        // DEBT: I think ostream isn't reverting back to default hex/dec states properly
-        cout << estd::dec;
-
-        address_claimed_ = false;
-        cout << F("Lost address") << endl;
-    }
+    nca_report();
 }
