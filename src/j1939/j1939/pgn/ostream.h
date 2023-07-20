@@ -93,7 +93,7 @@ struct pgn_put : estd::internal::ostream_functor_tag
         out << (uint32_t) pgn << ' ';
 #endif        
 
-        // DEBT: This is vague what we're really outputting here, tighten this up
+        // Outputs PDU header portion
         out << estd::hex << pdu_.can_id() << ' ';
 
 #if FEATURE_EMBR_J1939_OSTREAM_FULL_PAYLOAD

@@ -57,4 +57,16 @@ TEST_CASE("ostream")
             REQUIRE(out_s == "ff ff ff ff ff ff ff ff ");
         }
     }
+    SECTION("can_id")
+    {
+        pdu<pgns::oel> p;
+
+        out << p.can_id();
+
+        REQUIRE(out_s == "SA:0");
+    }
+    SECTION("pdu")
+    {
+
+    }
 }
