@@ -76,8 +76,7 @@ struct NAME : internal::data_field_base<TContainer>
         base_type::set(d::arbitrary_address_capable(), v);
     }
 
-    inline const vehicle_systems
-    vehicle_system() const
+    ESTD_CPP_CONSTEXPR_RET vehicle_systems vehicle_system() const
     {
         return (vehicle_systems) base_type::template get<uint8_t>(spn::descriptor{7, 2, 7});
     }
