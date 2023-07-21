@@ -59,17 +59,32 @@ constexpr embr::word<3> ecu_instance(2);
 #endif
 #endif
 
+#define FEATURE_AGGREGATED_CA 0
+
 scheduler_type scheduler;
-diagnostic_ca<transport, arduino_ostream> dca(cout);
+using dca_type = diagnostic_ca<transport, arduino_ostream>;
+
 using proto_name = embr::j1939::layer0::NAME<true,
     industry_groups::process_control,
     vehicle_systems::ig5_not_available, // DEBT: Change to a better IG/Veh Sys,
     function_fields::ig5_not_available>;
 
-embr::j1939::impl::network_ca<transport,
+using nca_type = embr::j1939::impl::network_ca<transport,
     scheduler_type,
-    embr::j1939::internal::prng_address_manager> nca(
-    proto_name::sparse{0, 0, ecu_instance.value()}, scheduler);
+    embr::j1939::internal::prng_address_manager>;
+
+#if FEATURE_AGGREGATED_CA
+embr::j1939::impl::controller_application_aggregator<dca_type, nca_type>
+    app_ca(
+        cout,
+        nca_type::get_init(
+            proto_name::sparse{0, 0, ecu_instance.value()},
+            scheduler));
+nca_type& nca = estd::get<0>(app_ca.child_cas);
+#else
+dca_type dca(cout);
+nca_type nca(proto_name::sparse{0, 0, ecu_instance.value()}, scheduler);
+#endif
 
 enum class States
 {
@@ -492,8 +507,12 @@ void loop()
         cout << endl;
 #endif
 
+#if FEATURE_AGGREGATED_CA
+        process_incoming(app_ca, t, canMsg);
+#else
         r = process_incoming(dca, t, canMsg);
         process_incoming(nca, t, canMsg);
+#endif
 
         cout << endl;
     }

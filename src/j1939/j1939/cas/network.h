@@ -314,6 +314,16 @@ struct network_ca : impl::controller_application<TTransport>,
     template <class TLayer0Name>
     using init1 = embr::j1939::experimental::tuple_init<TLayer0Name, scheduler_type&>;
 
+    // EXPERIMENTAL
+    template <class TLayer0Name, estd::enable_if_t<estd::is_base_of<
+        embr::j1939::layer0::sparse_tag, TLayer0Name>::value, bool> = true>
+    static init1<TLayer0Name> get_init(TLayer0Name sparse, scheduler_type& scheduler)
+    {
+        // DEBT: For values at a minimum we shouldn't need to forward
+        // here
+        return { std::forward<TLayer0Name>(sparse), scheduler };
+    }
+
     template <class TLayer0Name, estd::enable_if_t<estd::is_base_of<
         embr::j1939::layer0::sparse_tag, TLayer0Name>::value, bool> = true>
     explicit constexpr network_ca(TLayer0Name sparse,

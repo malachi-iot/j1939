@@ -232,16 +232,18 @@ TEST_CASE("Controller Applications")
             industry_groups::process_control,
             vehicle_systems::ig5_not_available, // DEBT: Change to a better IG/Veh Sys,
             function_fields::ig5_not_available>;
-        proto_name::sparse sparse(0, 0, 0);
         using nca_init_type = nca_type::init1<proto_name::sparse>;
-        nca_init_type nca_init(std::forward<proto_name::sparse>(sparse), scheduler);
+        nca_init_type nca_init(proto_name::sparse(0, 0, 0), scheduler);
+        auto nca_init2 = nca_type::get_init(proto_name::sparse(0, 0, 0), scheduler);
         embr::j1939::layer1::NAME name;
 
-        nca_type nca(nca_init);
+        nca_type nca(nca_init2);
 
-        sparse.populate(name);
+        estd::get<0>(nca_init).populate(name);
 
         REQUIRE(nca.name() == name);
+
+        //impl::controller_application_aggregator<nca_type> app_ca(nca_init2);
     }
 }
 

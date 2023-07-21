@@ -60,9 +60,10 @@ class controller_application_aggregator
 {
     using tuple = estd::tuple<TCAs...>;
 
-#if UNIT_TESTING
+// DEBT
+//#if UNIT_TESTING
 public:
-#endif
+//#endif
     tuple child_cas;
 
     template <class TTransport>
@@ -125,6 +126,15 @@ public:
         const typename TTransport::frame& frame)
     {
         return apply(transport, frame);
+    }
+
+    controller_application_aggregator() = default;
+
+    template <class ...TArgs>
+    constexpr explicit controller_application_aggregator(TArgs&&...args) :
+        child_cas(std::forward<TArgs>(args)...)
+    {
+
     }
 };
 

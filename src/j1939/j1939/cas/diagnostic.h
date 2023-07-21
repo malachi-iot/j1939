@@ -28,7 +28,7 @@ class diagnostic_ca :
     TOStream& out;
 
 public:
-    constexpr diagnostic_ca(TOStream& out) : out(out) {}
+    explicit constexpr diagnostic_ca(TOStream& out) : out(out) {}
 
     // DEBT: inline instead of constexpr seems to hels compiler not favor this
     // one.  However, that is obnoxious
