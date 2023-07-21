@@ -224,6 +224,25 @@ TEST_CASE("Controller Applications")
             REQUIRE(child2.unhandled_counter == 1);
         }
     }
+    SECTION("experimental")
+    {
+        embr::internal::layer1::Scheduler<5, FunctorImpl> scheduler;
+        using nca_type = embr::j1939::impl::network_ca<decltype(t), decltype(scheduler), estd::monostate>;
+        using proto_name = embr::j1939::layer0::NAME<true,
+            industry_groups::process_control,
+            vehicle_systems::ig5_not_available, // DEBT: Change to a better IG/Veh Sys,
+            function_fields::ig5_not_available>;
+        proto_name::sparse sparse(0, 0, 0);
+        using nca_init_type = nca_type::init1<proto_name::sparse>;
+        nca_init_type nca_init(std::forward<proto_name::sparse>(sparse), scheduler);
+        embr::j1939::layer1::NAME name;
+
+        nca_type nca(nca_init);
+
+        sparse.populate(name);
+
+        REQUIRE(nca.name() == name);
+    }
 }
 
 #include "macro/pop.h"

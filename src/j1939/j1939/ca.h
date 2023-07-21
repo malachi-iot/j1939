@@ -54,7 +54,7 @@ public:
     }
 };
 
-
+// DEBT: Move aggregator to its own .h/.hpp file
 template <class ...TCAs>
 class controller_application_aggregator
 {
@@ -154,6 +154,13 @@ public:
 
     }
 };
+
+namespace experimental {
+
+template <class ...TArgs>
+using tuple_init = estd::tuple<TArgs...>;
+
+}
 
 
 }}

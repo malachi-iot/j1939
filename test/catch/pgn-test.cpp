@@ -11,6 +11,8 @@
 using namespace embr::j1939;
 using namespace embr::units::literals;
 
+#include "macro/push.h"
+
 TEST_CASE("pgn")
 {
     SECTION("data_field")
@@ -174,3 +176,5 @@ TEST_CASE("pgn")
         }
     }
 }
+
+#include "macro/pop.h"

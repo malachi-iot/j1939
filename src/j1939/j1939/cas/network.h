@@ -310,12 +310,23 @@ struct network_ca : impl::controller_application<TTransport>,
 
     typename function_type::template model<wake_functor> wake_model{wake_functor{*this}};
 
+    // EXPERIMENTAL
+    template <class TLayer0Name>
+    using init1 = embr::j1939::experimental::tuple_init<TLayer0Name, scheduler_type&>;
+
     template <class TLayer0Name, estd::enable_if_t<estd::is_base_of<
         embr::j1939::layer0::sparse_tag, TLayer0Name>::value, bool> = true>
     explicit constexpr network_ca(TLayer0Name sparse,
         scheduler_type& scheduler) :
         network_ca_base(sparse),
         scheduler{scheduler}
+    {}
+
+    // EXPERIMENTAL
+    template <class TLayer0Name, estd::enable_if_t<estd::is_base_of<
+        embr::j1939::layer0::sparse_tag, TLayer0Name>::value, bool> = true>
+    explicit constexpr network_ca(init1<TLayer0Name> v) :
+        network_ca(estd::get<0>(v), estd::get<1>(v))
     {}
 
     template <class TContainer>

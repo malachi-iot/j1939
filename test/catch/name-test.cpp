@@ -21,6 +21,8 @@ EMBR_J1939_GET_SET_ENUM(manufacturer_code, manufacturer_codes)
 
 }}}
 
+#include "macro/push.h"
+
 TEST_CASE("j1939-81 NAME")
 {
     using NAME = j1939::NAME<estd::array<uint8_t, 8> >;
@@ -143,3 +145,5 @@ TEST_CASE("j1939-81 NAME")
         //REQUIRE(name1 == n);
     }
 }
+
+#include "macro/pop.h"

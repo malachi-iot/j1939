@@ -53,7 +53,7 @@ TEST_CASE("dispatcher")
             o.counters.at(pgns::lighting_command);
             FAIL("Should throw an exception");
         }
-        catch(std::out_of_range)
+        catch(const std::out_of_range&)
         {
 
         }
