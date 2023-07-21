@@ -71,7 +71,7 @@ public:
         TTransport& transport;
 
         template <size_t I, class TCA, pgns pgn>
-        bool operator()(estd::variadic::visitor_index<I, TCA>, tuple& ccas,
+        bool operator()(estd::variadic::type<I, TCA>, tuple& ccas,
             const pdu<pgn>& p) const
         {
             TCA& ca = estd::get<I>(ccas);
@@ -82,7 +82,7 @@ public:
         }
 
         template <size_t I, class TCA>
-        bool operator()(estd::variadic::visitor_index<I, TCA>, tuple& ccas,
+        bool operator()(estd::variadic::type<I, TCA>, tuple& ccas,
             const typename TTransport::frame& frame) const
         {
             TCA& ca = estd::get<I>(ccas);
@@ -93,19 +93,30 @@ public:
         }
     };
 
-public:
-    template <class TTransport, pgns pgn>
-    bool process_incoming(TTransport& transport, const pdu<pgn>& p)
+    template <class TTransport, class ...TArgs>
+    bool apply(TTransport& transport, TArgs&&...args)
     {
         // DEBT: Pretty sure there's a tuple specific overload of all this
         // and if there isn't, make one.  Specifically, (e)std::apply
-        // https://en.cppreference.com/w/cpp/utility/apply
+        // https://en.cppreference.com/w/cpp/utility/apply.
+        // Note though that stock apply doesn't allow for additional
+        // parameters - think we might want to make estd::apply do so
+        // Note also that existing 'apply' uses a std::move but should
+        // use a std::forward
         estd::variadic::type_visitor<TCAs...>::visit(
-            visitor<TTransport>{transport}, child_cas, p);
+            visitor<TTransport>{transport}, child_cas,
+            std::forward<TArgs>(args)...);
 
         // DEBT: Need to |= results together, though not 100% sure
         // I like that overall paradigm either
         return false;
+    }
+
+public:
+    template <class TTransport, pgns pgn>
+    bool process_incoming(TTransport& transport, const pdu<pgn>& p)
+    {
+        return apply(transport, p);
     }
 
     // Effectively undefined/unhandled CAN frame.  Otherwise, you'll want to add to the switch/data_field mapper
@@ -113,10 +124,7 @@ public:
     bool process_incoming_default(TTransport& transport,
         const typename TTransport::frame& frame)
     {
-        // DEBT: See above ::visit debt
-        estd::variadic::type_visitor<TCAs...>::visit(
-            visitor<TTransport>{transport}, child_cas, frame);
-        return false;
+        return apply(transport, frame);
     }
 };
 

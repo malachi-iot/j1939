@@ -7,6 +7,8 @@
 
 using namespace embr::can;
 
+#include "macro/push.h"
+
 TEST_CASE("transport (can)")
 {
     SECTION("loopback")
@@ -86,3 +88,6 @@ TEST_CASE("transport (can)")
         using address_traits = spn::internal::address_type_traits_base;
     }
 }
+
+#include "macro/pop.h"
+

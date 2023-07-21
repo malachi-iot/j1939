@@ -200,14 +200,6 @@ TEST_CASE("Controller Applications")
 
         REQUIRE(out_s == "OEL SA:0 ff ff ff ff ff ff ff ff \n");
     }
-    SECTION("glitch")
-    {
-        SyntheticCA2<decltype(t)> ca;
-        auto frame = frame_traits::create(fmsi);
-
-        ca.process_incoming_default(t, frame);
-        //process_incoming(ca, t, frame_traits::create(fmsi));
-    }
     SECTION("aggregated")
     {
         SECTION("basic")
