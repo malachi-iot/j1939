@@ -39,7 +39,7 @@ struct data_field<pgns::switch_bank_status, TContainer> : internal::data_field_b
 
         operator bool() const
         {
-            const unsigned mask = (1 << bitpos);
+            //const unsigned mask = (1 << bitpos);
 
             return (*raw & bitpos) != 0;
         }

@@ -13,6 +13,8 @@
 
 #include "test-data.h"
 
+#include "macro/push.h"
+
 using namespace estd::chrono_literals;
 using namespace embr;
 using namespace embr::j1939;
@@ -31,12 +33,12 @@ struct SyntheticCA : j1939::impl::controller_application<TTransport>
     typedef transport_traits<transport_type> _transport_traits;
 
     template <pgns pgn>
-    inline bool process_incoming(transport_type& t, pdu<pgn> p) { return false; }
+    inline bool process_incoming(transport_type&, pdu<pgn>) { return false; }
 
     int switch_bank_control_counter = 0;
     int oel_counter = 0;
 
-    bool process_incoming(transport_type&, pdu<pgns::switch_bank_control> p)
+    bool process_incoming(transport_type&, pdu<pgns::switch_bank_control>)
     {
         ++switch_bank_control_counter;
         return true;
@@ -69,11 +71,13 @@ struct SyntheticCA2 : j1939::impl::controller_application<TTransport>
 {
     int unhandled_counter = 0;
 
-    // FIX: Inexplicable SIGTRAP here.  Pointer for 'this' looks right
+    // Was experiencing inexplicable SIGTRAP here.  Turns out I forgot to
+    // return a value and once again I was only warned (not error'd) about it
     bool process_incoming_default(TTransport&,
         const typename TTransport::frame&)
     {
         ++unhandled_counter;
+        return false;
     }
 };
 
@@ -123,6 +127,8 @@ TEST_CASE("Controller Applications")
     uint32_t can_id;
 
     can::loopback_transport t;
+
+    const pdu<pgns::fms_identity> fmsi;   // Specifically, not a dispatched flavor
 
     SECTION("basics")
     {
@@ -194,31 +200,39 @@ TEST_CASE("Controller Applications")
 
         REQUIRE(out_s == "OEL SA:0 ff ff ff ff ff ff ff ff \n");
     }
+    SECTION("glitch")
+    {
+        SyntheticCA2<decltype(t)> ca;
+        auto frame = frame_traits::create(fmsi);
+
+        ca.process_incoming_default(t, frame);
+        //process_incoming(ca, t, frame_traits::create(fmsi));
+    }
     SECTION("aggregated")
     {
-        // FIX: Inexplicable SIGTRAP when visiting child#2 somehow
-        /*
-        impl::controller_application_aggregator<
-            SyntheticCA<decltype(t)>,
-            SyntheticCA2<decltype(t)> > ca;
+        SECTION("basic")
+        {
+            impl::controller_application_aggregator<
+                SyntheticCA<decltype(t)>,
+                SyntheticCA2<decltype(t)> > ca;
 
-        REQUIRE(sizeof(ca) == 12); */
+            //REQUIRE(sizeof(ca) == 12);
 
-        impl::controller_application_aggregator<
-            SyntheticCA<decltype(t)> > ca;
+            auto& child1 = estd::get<0>(ca.child_cas);
+            auto& child2 = estd::get<1>(ca.child_cas);
 
-        auto& child1 = estd::get<0>(ca.child_cas);
-        //auto& child2 = estd::get<1>(ca.child_cas);
+            pdu<pgns::oel> oel1;
 
-        pdu<pgns::oel> oel1;
-        pdu<pgns::fms_identity> fi;   // Specifically, not a dispatched flavor
+            oel1.payload().turn_signal_switch(enum_type<spns::turn_signal_switch>::left_turn_to_be_flashing);
 
-        oel1.payload().turn_signal_switch(enum_type<spns::turn_signal_switch>::left_turn_to_be_flashing);
+            process_incoming(ca, t, frame_traits::create(oel1));
+            process_incoming(ca, t, frame_traits::create(fmsi));
 
-        process_incoming(ca, t, frame_traits::create(oel1));
-        process_incoming(ca, t, frame_traits::create(fi));
-
-        REQUIRE(child1.oel_counter == 1);
-        //REQUIRE(child2.unhandled_counter == 1);
+            REQUIRE(child1.oel_counter == 1);
+            REQUIRE(child2.unhandled_counter == 1);
+        }
     }
 }
+
+#include "macro/pop.h"
+

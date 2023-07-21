@@ -38,6 +38,12 @@ set(SOURCE_FILES
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
+# DEBT: Consolidate this into an estdlib helper cmake, and perhaps even a
+# kind of CMake OPTION which defaults to off - that might be even better
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Werror=return-type)
+endif()
+
 target_link_libraries(${PROJECT_NAME}
     Catch2
     malachi-iot::embr malachi-iot::estd
