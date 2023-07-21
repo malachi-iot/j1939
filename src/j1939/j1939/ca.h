@@ -10,6 +10,7 @@
 #pragma once
 
 #include <estd/tuple.h>
+#include <estd/internal/variadic.h>
 
 #include <can/transport.h>
 
@@ -47,7 +48,7 @@ public:
     constexpr bool process_incoming(transport_type&, pdu<pgn>) const { return false; }
 
     // Effectively undefined/unhandled CAN frame.  Otherwise, you'll want to add to the switch/data_field mapper
-    constexpr bool process_incoming_default(transport_type& t, const frame_type& f) const
+    constexpr bool process_incoming_default(transport_type&, const frame_type&) const
     {
         return false;
     }
@@ -57,42 +58,64 @@ public:
 template <class ...TCAs>
 class controller_application_aggregator
 {
-    estd::tuple<TCAs...> child_cas;
+    using tuple = estd::tuple<TCAs...>;
 
-    static constexpr std::size_t sz = sizeof...(TCAs);
+#if UNIT_TESTING
+public:
+#endif
+    tuple child_cas;
 
-    // Some guidance from
-    // https://stackoverflow.com/questions/1198260/how-can-you-iterate-over-the-elements-of-an-stdtuple
-    // std::apply would come in handy here, but only if we are c++17
-
-    template <std::size_t I = 0, class TTransport, pgns pgn>
-    constexpr typename estd::enable_if<I == sz, bool>::type
-    _process_incoming(TTransport& t, const pdu<pgn>& p) const
+    template <class TTransport>
+    struct visitor
     {
-        return false;
-    }
+        TTransport& transport;
 
-    template <std::size_t I = 0, class TTransport, pgns pgn>
-    inline typename estd::enable_if<(I < sz), bool>::type
-    _process_incoming(TTransport& t, const pdu<pgn>& p)
-    {
-        bool result = estd::get<I>(child_cas).process_incoming(t, p);
-        return result | _process_incoming<I + 1>(t, p);
-    }
+        template <size_t I, class TCA, pgns pgn>
+        bool operator()(estd::variadic::visitor_index<I, TCA>, tuple& ccas,
+            const pdu<pgn>& p) const
+        {
+            TCA& ca = estd::get<I>(ccas);
+
+            ca.process_incoming(transport, p);
+
+            return false;
+        }
+
+        template <size_t I, class TCA>
+        bool operator()(estd::variadic::visitor_index<I, TCA>, tuple& ccas,
+            const typename TTransport::frame& frame) const
+        {
+            TCA& ca = estd::get<I>(ccas);
+
+            ca.process_incoming_default(transport, frame);
+
+            return false;
+        }
+    };
 
 public:
-
     template <class TTransport, pgns pgn>
-    inline bool process_incoming(TTransport& t, const pdu<pgn>& p)
+    bool process_incoming(TTransport& transport, const pdu<pgn>& p)
     {
-        return _process_incoming(t, p);
+        // DEBT: Pretty sure there's a tuple specific overload of all this
+        // and if there isn't, make one.  Specifically, (e)std::apply
+        // https://en.cppreference.com/w/cpp/utility/apply
+        estd::variadic::type_visitor<TCAs...>::visit(
+            visitor<TTransport>{transport}, child_cas, p);
+
+        // DEBT: Need to |= results together, though not 100% sure
+        // I like that overall paradigm either
+        return false;
     }
 
     // Effectively undefined/unhandled CAN frame.  Otherwise, you'll want to add to the switch/data_field mapper
     template <class TTransport>
-    constexpr bool process_incoming_default(TTransport& t, const typename TTransport::frame& f) const
+    bool process_incoming_default(TTransport& transport,
+        const typename TTransport::frame& frame)
     {
-        // TODO: Aggregate this too
+        // DEBT: See above ::visit debt
+        estd::variadic::type_visitor<TCAs...>::visit(
+            visitor<TTransport>{transport}, child_cas, frame);
         return false;
     }
 };

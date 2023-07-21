@@ -34,19 +34,21 @@ struct SyntheticCA : j1939::impl::controller_application<TTransport>
     inline bool process_incoming(transport_type& t, pdu<pgn> p) { return false; }
 
     int switch_bank_control_counter = 0;
+    int oel_counter = 0;
 
-    inline bool process_incoming(transport_type& t, pdu<pgns::switch_bank_control> p)
+    bool process_incoming(transport_type&, pdu<pgns::switch_bank_control> p)
     {
         ++switch_bank_control_counter;
         return true;
     }
 
-    inline bool process_incoming(transport_type& t, pdu<pgns::oel> p)
+    bool process_incoming(transport_type& t, pdu<pgns::oel> p)
     {
         switch(p.turn_signal_switch())
         {
             case enum_type<spns::turn_signal_switch>::left_turn_to_be_flashing:
             {
+                ++oel_counter;
                 // DEBT: Not really a great command/response chain, but better than a pure echoback
                 pdu<pgns::switch_bank_control> pdu_response;
 
@@ -61,6 +63,20 @@ struct SyntheticCA : j1939::impl::controller_application<TTransport>
         return true;
     }
 };
+
+template <class TTransport>
+struct SyntheticCA2 : j1939::impl::controller_application<TTransport>
+{
+    int unhandled_counter = 0;
+
+    // FIX: Inexplicable SIGTRAP here.  Pointer for 'this' looks right
+    bool process_incoming_default(TTransport&,
+        const typename TTransport::frame&)
+    {
+        ++unhandled_counter;
+    }
+};
+
 
 
 namespace embr { namespace  j1939 { namespace  impl { namespace  experimental {
@@ -130,16 +146,6 @@ TEST_CASE("Controller Applications")
 
         REQUIRE(ca.switch_bank_control_counter == 1);
     }
-    SECTION("aggregated")
-    {
-        impl::controller_application_aggregator<SyntheticCA<decltype(t)> > ca;
-
-        pdu<pgns::oel> oel1;
-
-        oel1.payload().turn_signal_switch(enum_type<spns::turn_signal_switch>::left_turn_to_be_flashing);
-
-        process_incoming(ca, t, frame_traits::create(oel1));
-    }
     SECTION("transport protocol")
     {
         impl::transport_protocol_ca<decltype(t)> impl_;
@@ -187,5 +193,32 @@ TEST_CASE("Controller Applications")
         process_incoming(dca, t, f);
 
         REQUIRE(out_s == "OEL SA:0 ff ff ff ff ff ff ff ff \n");
+    }
+    SECTION("aggregated")
+    {
+        // FIX: Inexplicable SIGTRAP when visiting child#2 somehow
+        /*
+        impl::controller_application_aggregator<
+            SyntheticCA<decltype(t)>,
+            SyntheticCA2<decltype(t)> > ca;
+
+        REQUIRE(sizeof(ca) == 12); */
+
+        impl::controller_application_aggregator<
+            SyntheticCA<decltype(t)> > ca;
+
+        auto& child1 = estd::get<0>(ca.child_cas);
+        //auto& child2 = estd::get<1>(ca.child_cas);
+
+        pdu<pgns::oel> oel1;
+        pdu<pgns::fms_identity> fi;   // Specifically, not a dispatched flavor
+
+        oel1.payload().turn_signal_switch(enum_type<spns::turn_signal_switch>::left_turn_to_be_flashing);
+
+        process_incoming(ca, t, frame_traits::create(oel1));
+        process_incoming(ca, t, frame_traits::create(fi));
+
+        REQUIRE(child1.oel_counter == 1);
+        //REQUIRE(child2.unhandled_counter == 1);
     }
 }
