@@ -19,3 +19,4 @@ include(${ESTDLIB_DIR}/tools/esp-idf/project.cmake)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 
+add_compile_definitions(WORKAROUND_EMBR_MAYBE_UNINITIALIZED=1)
