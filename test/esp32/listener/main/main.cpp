@@ -30,9 +30,10 @@ void twai_init()
     static twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(
         (gpio_num_t)CONFIG_GPIO_TWAI_TX,
         (gpio_num_t)CONFIG_GPIO_TWAI_RX,
-        TWAI_MODE_NORMAL);  // DEBT: Probably do listener only for this particular scenario
+        //TWAI_MODE_NORMAL);  // DEBT: Probably do listener only for this particular scenario
+        TWAI_MODE_LISTEN_ONLY);
     static const twai_filter_config_t f_config = TWAI_FILTER_CONFIG_ACCEPT_ALL();
-    static const twai_timing_config_t t_config = TWAI_TIMING_CONFIG_250KBITS();
+    static const twai_timing_config_t t_config = TWAI_TIMING_CONFIG_125KBITS();
 
     //esp_err_t ret;
 
@@ -54,12 +55,12 @@ extern "C" void app_main(void)
 
     twai_init();
 
-    ESP_LOGI(TAG, "Startup");
-
     const auto& out_s = out.rdbuf()->str();
 
     for(;;)
     {
+        ESP_LOGI(TAG, "Waiting for packet...");
+
         transport_type::frame frame;
 
         transport_type::receive(&frame);
@@ -68,12 +69,14 @@ extern "C" void app_main(void)
 
         embr::j1939::process_incoming(dca, t, frame);
 
-        // TODO: Output what 'out' gathered
         // TODO: Could be interesting to make an 'out' which uses esp-idf's low level
         // log output facility and/or low level serial output
 
         esp_log_write(ESP_LOG_INFO, TAG, out_s.data());
 
-        //vTaskDelay(5000 / portTICK_PERIOD_MS);
+        out.clear();
+
+        // Just in case of problems, wait a little to avoid overly spamming
+        vTaskDelay(500 / portTICK_PERIOD_MS);
     }
 }
