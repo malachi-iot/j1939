@@ -12,6 +12,8 @@
 #include <can/platform/esp-idf/transport.hpp>
 #include <j1939/ca.hpp>
 
+#include "streambuf.h"
+
 // blocking
 // DEBT: I'd prefer nonblocking one right now... I think
 using transport_type = embr::can::esp_idf::twai_transport<true>;
@@ -20,6 +22,7 @@ using ostream_type = estd::experimental::ostringstream<256>;
 using dca_type = embr::j1939::diagnostic_ca<transport_type, ostream_type>;
 
 static ostream_type out;
+static estd::detail::basic_ostream<esp_idf::impl::log_ostreambuf<estd::char_traits<char> >> clog;
 dca_type dca(out);
 
 void twai_init()
@@ -69,6 +72,8 @@ extern "C" void app_main(void)
         // TODO: Could be interesting to make an 'out' which uses esp-idf's low level
         // log output facility and/or low level serial output
 
-        vTaskDelay(5000 / portTICK_PERIOD_MS);
+        esp_log_write(ESP_LOG_INFO, TAG, out_s.data());
+
+        //vTaskDelay(5000 / portTICK_PERIOD_MS);
     }
 }
