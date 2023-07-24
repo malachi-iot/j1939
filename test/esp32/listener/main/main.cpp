@@ -1,5 +1,6 @@
-#include "esp_log.h"
-#include "nvs_flash.h"
+#include <esp_log.h>
+#include <nvs_flash.h>
+#include <driver/twai.h>
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
@@ -21,6 +22,21 @@ using dca_type = embr::j1939::diagnostic_ca<transport_type, ostream_type>;
 static ostream_type out;
 dca_type dca(out);
 
+void twai_init()
+{
+    static twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(
+        (gpio_num_t)CONFIG_GPIO_TWAI_TX,
+        (gpio_num_t)CONFIG_GPIO_TWAI_RX,
+        TWAI_MODE_NORMAL);  // DEBT: Probably do listener only for this particular scenario
+    static const twai_filter_config_t f_config = TWAI_FILTER_CONFIG_ACCEPT_ALL();
+    static const twai_timing_config_t t_config = TWAI_TIMING_CONFIG_250KBITS();
+
+    //esp_err_t ret;
+
+    ESP_ERROR_CHECK(twai_driver_install(&g_config, &t_config, &f_config));
+    ESP_ERROR_CHECK(twai_start());
+}
+
 extern "C" void app_main(void)
 {
     static const char* TAG = "app_main";
@@ -32,6 +48,8 @@ extern "C" void app_main(void)
         ret = nvs_flash_init();
     }
     ESP_ERROR_CHECK(ret);
+
+    twai_init();
 
     ESP_LOGI(TAG, "Startup");
 

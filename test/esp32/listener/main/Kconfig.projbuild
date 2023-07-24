@@ -1,0 +1,11 @@
+menu "J1939 Listener"
+
+        config GPIO_TWAI_TX
+                int "Pin for TWAI/CAN TX"
+		default 5
+		
+        config GPIO_TWAI_RX
+                int "Pin for TWAI/CAN TX"
+		default 4
+
+endmenu
