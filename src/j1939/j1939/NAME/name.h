@@ -58,7 +58,7 @@ struct NAME : internal::data_field_base<TContainer>
         { return spn::descriptor{5, 4, 5}; }
     };
 
-    inline bool arbitrary_address_capable() const
+    constexpr bool arbitrary_address_capable() const
     {
         // DEBT: underlying 'material' doesn't handle bool gracefully yet
         //return base_type::template get<bool>(d::arbitrary_address_capable());

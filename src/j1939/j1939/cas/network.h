@@ -62,6 +62,10 @@ struct ca_base
 struct network_ca_base : ca_base,
     embr::Service   // Ready and waiting, premature to start migrating to this atm
 {
+#ifdef ESP_PLATFORM
+    static constexpr const char* TAG = "network_ca";
+#endif
+
     // DEBT: Upgrade this to embr 'service' architecture
     enum class states
     {

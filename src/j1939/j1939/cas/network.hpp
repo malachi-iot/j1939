@@ -8,6 +8,10 @@
  */
 #pragma once
 
+#ifdef ESP_PLATFORM
+#include <esp_log.h>
+#endif
+
 #include "network.h"
 
 #include "../data_field/request.hpp"
@@ -110,6 +114,11 @@ bool network_ca<TTransport, TScheduler, TAddressManager>::process_incoming(
     uint8_t sa = p.can_id().source_address();
     // we expect all address_claimed messages to be BAM
     //uint8_t da = p.can_id().destination_address();
+
+#ifdef ESP_PLATFORM
+    // Don't go too bananas, since we already have a diagnostic_ca
+    ESP_LOGV(TAG, "processing AC with SA:%X", sa);
+#endif
 
     switch(state)
     {

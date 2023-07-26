@@ -41,3 +41,7 @@ build-*/
 
 # PlatformIO
 .pio/
+
+# esp-idf
+sdkconfig.old
+
