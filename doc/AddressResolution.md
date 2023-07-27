@@ -35,6 +35,8 @@ A CA emits this message indicating ownership or intent to own a specific SA.
 * DA field MUST be `global` [1.5] 4.4.2
 * Payload MUST contain [NAME](#13-name)
 
+This message has [special retransmit rules](#114-transport-rules)
+
 #### 1.1.1. Contention Rules
 
 If incoming `Address Claim` SA collides with receiving SA's address, this rule is observed.
@@ -94,6 +96,12 @@ If address is contended, see [Contention Rules](#111-contention-rules)
 
 > Otherwise, behavior is TBD
 
+#### 1.1.4. Transport Rules
+
+For this address claim PGN in particular, one SHOULD turn off physical transport
+retry mechanisms and instead schedule a 0-153ms pseudo random delay per
+retransmission [1.5] 4.4.4.3
+
 ### 1.2. PGN: Request (Address Claim)
 
 Also known as `Request for Address Claim`.  Inquires one or all targets for their current SA.
@@ -149,14 +157,24 @@ This "contains 9 bytes of data" and MUST use TP.CM_BAM [1.5] 4.2.3, [1.1] 5.10.3
 
 ### 1.5. PGN: Cannot Claim Address
 
-This is a repackaging of [Address Claim](#11-pgn-address-claim) with distinction that SA MUST contain `null` (254)
+This is actually the same PGN as [Address Claim](#11-pgn-address-claim) with distinction that SA MUST contain `null` (254)
 
 Transmitted when:
 
 * CA is Single Address and preferred address is contended
 * CA is Arbitrary Address and all addresses are used
 
+This message has [special retransmit rules](#154-transport-rules)
+
+#### 1.5.1. Reserved
+#### 1.5.2. Reserved
+#### 1.5.3. Reserved
+
+#### 1.5.4. Transport Rules
+
 "A pseudo-random delay of between 0 and 153 ms should be inserted between the reception of a message triggering the response and the Cannot Claim Address response" [1.5] 4.2.2.3
+
+This is identical behavior to 1.1.4.
 
 ## 2. Reserved
 
