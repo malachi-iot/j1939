@@ -24,7 +24,7 @@ struct tag_provider
 
 struct tag_provider
 {
-    const char* TAG_;
+    const char* TAG_ = "dummy";
 
     constexpr const char* TAG() { return TAG_; }
 };
@@ -63,7 +63,9 @@ public:
     using tp_type = tag_provider;
 
 protected:
-    static constexpr const estd::size_t N = 32;
+    // DEBT: Ultimately we should be able to make this pretty small,
+    // once the append/loop code works (maybe ~32 bytes)
+    static constexpr const estd::size_t N = 256;
 
     // Trouble in paradise, esp-idf's esp_log_writev doesn't take
     // a count, mandating a double-buffer situation
@@ -76,12 +78,45 @@ public:
     esp_log_level_t log_level_;
     bool header_emitted_ = false;
 
+    void write(const char* s)
+    {
+        // DEBT: Should probably use esp_log_writev here        
+        esp_log_write(log_level_, tp_type::TAG(), s);
+    }
+
+    void emit_header()
+    {
+        if(header_emitted_) return;
+
+        // DEBT: Look up LOG_FORMAT and steal its tricks
+        switch(log_level_)
+        {
+            case ESP_LOG_INFO:
+                write("I ");
+                break;
+
+            case ESP_LOG_WARN:
+                write("W ");
+                break;
+
+            case ESP_LOG_VERBOSE:
+                write("V ");
+                break;
+
+            default:    break;
+        }
+
+        write(tp_type::TAG());
+        write(": ");
+
+        header_emitted_ = true;
+    }
+
     int sync()
     {
         if(s_.empty()) return 0;
 
-        // DEBT: Should probably use esp_log_writev here        
-        esp_log_write(log_level_, tp_type::TAG(), s_.data());
+        write(s_.data());
         s_.clear();
 
         return 0;
@@ -89,7 +124,12 @@ public:
 
     estd::streamsize xsputn(const char_type* s, estd::streamsize count)
     {
+        emit_header();
+
         // crude overflow accomodator.  Needs more work
+        // TODO: surrounding sputn code has a while loop here I believe,
+        // so leverage that - but to do so we do need to know more about
+        // append's success
         if(s_.size() + count > s_.max_size())
             sync();
 
@@ -112,6 +152,10 @@ public:
 
     int_type sputc(char_type ch)
     {
+        emit_header();
+
+        if(ch == '\n')  header_emitted_ = false;
+
         s_ += ch;
         return traits_type::to_int_type(ch);
     }

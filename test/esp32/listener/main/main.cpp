@@ -19,7 +19,7 @@ using ostream_type = estd::experimental::ostringstream<256>;
 // DEBT: impl vs non impl here
 using dca_type = embr::j1939::diagnostic_ca<transport_type, ostream_type>;
 
-static esp_idf::log_ostream clog;
+static esp_idf::log_ostream clog;   // Coming along well, almost ready
 
 void twai_init()
 {
@@ -111,9 +111,6 @@ extern "C" void app_main(void)
 
             // diagnostic_ca emits eol into 'out'
             esp_log_write(ESP_LOG_INFO, TAG, out_s.data());
-
-            clog << esp_idf::verbose << "hi2u1" << estd::endl;
-            clog << esp_idf::warn << "hi2u2" << estd::endl;
 
             // This just clears format/error flags, we need an out.rdbuf()->clear();
             //out.clear();
