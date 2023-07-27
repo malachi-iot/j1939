@@ -1,11 +1,15 @@
 #pragma once
 
+#include "rng.h"
+
 namespace embr { namespace j1939 { namespace internal {
 
 // This particular address manager stays in the strict arbitrary assigned
 // range
 struct prng_address_manager
 {
+    psuedo_random_generator prng;
+
     uint32_t seed = 0;
 
     static constexpr bool depleted() { return false; }
