@@ -98,9 +98,16 @@ If address is contended, see [Contention Rules](#111-contention-rules)
 
 #### 1.1.4. Transport Rules
 
-For this address claim PGN in particular, one SHOULD turn off physical transport
+For just this PGN, one SHOULD turn off physical transport
 retry mechanisms and instead schedule a 0-153ms pseudo random delay per
 retransmission [1.5] 4.4.4.3
+
+##### 1.1.4.1. Implied Behaviors
+
+"The transmit delay will be added to the normal idle period before the 
+next claim message is transmitted" [1.5] 4.4.4.3
+
+"idle period" is unclear here, but it probably referes to [the 250ms timeout](#1122-scenario-2-delayed-communication)
 
 ### 1.2. PGN: Request (Address Claim)
 
@@ -164,17 +171,27 @@ Transmitted when:
 * CA is Single Address and preferred address is contended
 * CA is Arbitrary Address and all addresses are used
 
-This message has [special retransmit rules](#154-transport-rules)
+This message has [special transmit rules](#154-transport-rules)
 
 #### 1.5.1. Reserved
 #### 1.5.2. Reserved
-#### 1.5.3. Reserved
 
-#### 1.5.4. Transport Rules
+#### 1.5.3. Response Rules
 
 "A pseudo-random delay of between 0 and 153 ms should be inserted between the reception of a message triggering the response and the Cannot Claim Address response" [1.5] 4.2.2.3
 
-This is identical behavior to 1.1.4.
+This is similar to [address claim rules](#114-transport-rules) but differs in that:
+
+* prng delay only happens in context to a response
+* transport level retry is normal, not disabled
+
+##### 1.5.3.1. Implied Behaviors & Ambiguities
+
+[1.5] 4.4.4.4 indicates that response rules are actually identical to (#114-transport-rules) which among other things means transport level retry is disabled.
+
+#### 1.5.4. Transport Rules
+
+No special physical transport behavior is required, as [stated above](#153-response-rules)
 
 ## 2. Reserved
 
