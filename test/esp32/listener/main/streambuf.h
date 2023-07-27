@@ -7,8 +7,29 @@
 
 namespace esp_idf { namespace impl {
 
+// DEBT: Use value_evaporator for tag provider
+
+namespace layer0 {
+
+template <const char* TAG_>
+struct tag_provider
+{
+    static constexpr const char* TAG() { return TAG_; };
+};
+
+}
+
+struct tag_provider
+{
+    const char* TAG_;
+
+    constexpr const char* TAG() { return TAG_; }
+};
+
 template <class Traits>
-class log_ostreambuf : public estd::internal::impl::out_pos_streambuf_base<Traits>
+class log_ostreambuf :
+    public estd::internal::impl::out_pos_streambuf_base<Traits>,
+    public tag_provider
 {
     using base_type = estd::internal::impl::streambuf_base<Traits>;
 
@@ -16,6 +37,7 @@ public:
     using traits_type = Traits;
     using typename base_type::char_type;
     using typename base_type::int_type;
+    using tp_type = tag_provider;
 
 protected:
     static constexpr const estd::size_t N = 32;
@@ -29,19 +51,22 @@ protected:
     // DEBT: Make all this protected too
 public:
     esp_log_level_t log_level_;
-    const char* TAG_;
 
     void sync()
     {
         if(s_.empty()) return;
 
         // DEBT: Should probably use esp_log_writev here        
-        esp_log_write(log_level_, TAG_, s_.data());
+        esp_log_write(log_level_, tp_type::TAG(), s_.data());
         s_.clear();
     }
 
     estd::streamsize xsputn(const char_type* s, estd::streamsize count)
     {
+        // crude overflow accomodator.  Needs more work
+        if(s_.size() + count > s_.max_size())
+            sync();
+
         // We get no indication whether append is successful.  Also not
         // sure if underlying string handles overflow gracefully (truncate)
         // DEBT: Consider either deviating from spec and returning `expected`

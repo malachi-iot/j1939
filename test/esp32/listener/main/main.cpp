@@ -8,38 +8,26 @@
 #include <estd/string.h>
 #include <estd/sstream.h>
 
-#include <embr/scheduler.hpp>
-#include <embr/platform/freertos/scheduler.hpp>
-
 #include <j1939/cas/diagnostic.hpp>
-#include <j1939/cas/network.hpp>
-#include <j1939/cas/internal/prng_address_manager.h>
-#include <j1939/NAME/name.h>
-
-#include <can/platform/esp-idf/transport.hpp>
 #include <j1939/ca.hpp>
 
+#include "nca.h"
 #include "streambuf.h"
-
-// blocking
-// DEBT: I'd prefer nonblocking one right now... I think
-using transport_type = embr::can::esp_idf::twai_transport<true>;
 
 using ostream_type = estd::experimental::ostringstream<256>;
 
-// DEBT: freertos Scheduler works, but its innards are sloppy
-using scheduler_type = embr::scheduler::freertos::Scheduler<10>;
-
 // DEBT: impl vs non impl here
-// DEBT: default address manager should be something better than 'void'
 using dca_type = embr::j1939::diagnostic_ca<transport_type, ostream_type>;
-using nca_type = embr::j1939::impl::network_ca<transport_type, scheduler_type,
-    embr::j1939::internal::prng_address_manager>;
 
 static estd::detail::basic_ostream<esp_idf::impl::log_ostreambuf<estd::char_traits<char> >> clog;
 
 void twai_init()
 {
+    // Oddly, at the moment, if in TWAI_MODE_LISTENER_ONLY we receive from M4:
+    // - 6x of OEL or AC pdu
+    // - infinite CM1 pdu (observe even when re-flashing ESP32)
+    // Feels like a wiring issue.  Not sure.
+
     static twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(
         (gpio_num_t)CONFIG_GPIO_TWAI_TX,
         (gpio_num_t)CONFIG_GPIO_TWAI_RX,
@@ -54,6 +42,9 @@ void twai_init()
 
     ESP_ERROR_CHECK(twai_driver_install(&g_config, &t_config, &f_config));
     ESP_ERROR_CHECK(twai_start());
+
+    // We want all alerts since this is a diagnostic app
+    ESP_ERROR_CHECK(twai_reconfigure_alerts(0xFFFF, nullptr));
 }
 
 extern "C" void app_main(void)
@@ -68,36 +59,14 @@ extern "C" void app_main(void)
     }
     ESP_ERROR_CHECK(ret);
 
+    // DEBT: 'household' project twai service would come in handy here
     twai_init();
-
-    // Oddly, at the moment, we receive from M4:
-    // - 6x of OEL or AC pdu
-    // - infinite CM1 pdu (observe even when re-flashing ESP32)
-    // Feels like a wiring issue.  Not sure.
-
-    twai_reconfigure_alerts(0xFFFF, nullptr);
-
-    static scheduler_type scheduler;
-    
-    using proto_name = embr::j1939::layer0::NAME<true,
-        embr::j1939::industry_groups::process_control,
-        embr::j1939::vehicle_systems::ig5_not_available, // DEBT: Change to a better IG/Veh Sys,
-        embr::j1939::function_fields::ig5_not_available>;
-
-    // DEBT: Can't inint this name with proto_name::sparse.
-    // Not important for this test app, but important overall
-    //static embr::j1939::layer1::NAME name;
-
-    static nca_type nca(proto_name::sparse(1, 0, 0), scheduler);
-
-    // Kicks off its own FreeRTOS task.
-    scheduler.start();
 
     // DEBT: Just to satisfy process_incoming signature & friends, actually an empty struct
     transport_type t;
 
-    // NOTE: Works great, but this is not a "listener" role
-    //nca.start(t);
+    // NOTE: Works great, but this is app is not a "listener" role
+    //nca_init(t);
 
     uint32_t prev_alerts = 0;
 
