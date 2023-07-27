@@ -88,11 +88,16 @@ struct network_ca_base : ca_base,
         // claiming state
         waiting,            ///< Waiting period (250ms) after we emit a claim address
         contending,         ///< Evaluation period after we receive a contending address
+        reclaim_waiting,    ///< Waiting period of 0-153ms preceding re-transmit of claim [1] 4.4.4.3
         bus_off,
         bus_off_recover,
 
         // claimed state
         expired,            ///< Claim waiting period expired with no incident, meaning we succeeded
+
+        // claim failed state
+        failed,             ///< Root substate when we've given up trying to get SA
+        cannot_claim_waiting,   ///< Waiting period of 0-153ms preceding the emit of "cannot claim" [1] 4.2.2.3
     };
 
     states state = states::unstarted;
@@ -248,6 +253,8 @@ struct network_ca : impl::controller_application<TTransport>,
 
         // DEBT: May not want to do this IN emitter method itself
         timeout = scheduler.impl().now() + address_claim_timeout();
+
+        // TODO: Turn off CAN transport auto retry as per 4.4.4.3
     }
 
     void send_claim(transport_type& t)

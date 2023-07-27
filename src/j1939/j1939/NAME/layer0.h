@@ -37,7 +37,7 @@ struct NAME
             vehicle_system == (vehicle_systems)n.vehicle_system() &&
                 (manufacturer_code == manufacturer_codes::not_applicable ||
                 manufacturer_code == (manufacturer_codes)n.manufacturer_code().value()) &&
-                (identity_number == -1 || identity_number == n.identity_number().value()) &&
+                (identity_number == -1 || ((uint32_t)identity_number) == n.identity_number().value()) &&
             function == (function_fields)n.function().value();
     }
 

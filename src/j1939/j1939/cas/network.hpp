@@ -82,6 +82,7 @@ void network_ca<TTransport, TScheduler, TAddressManager>::scheduled_claiming(
             schedule_address_claim_timeout(wake);
             break;
 
+        // Waiting to finish our own claim address phase
         case substates::waiting:
             if(current >= timeout)
             {
@@ -97,6 +98,9 @@ void network_ca<TTransport, TScheduler, TAddressManager>::scheduled_claiming(
                 // this effectively elongates the 'waiting' period so we reschedule
                 *wake = timeout;
             }
+            break;
+
+        case substates::cannot_claim_waiting:
             break;
 
         default:
