@@ -21,6 +21,31 @@ namespace embr { namespace j1939 {
 namespace impl {
 
 
+template <class TTransport, class TScheduler, class TAddressManager>
+void network_ca<TTransport, TScheduler, TAddressManager>::send_claim(
+    transport_type& t, pdu<pgns::address_claimed>& p, uint8_t sa)
+{
+    // DEBT: Not sure if claim ALWAYS is a BAM but I think so
+    p.can_id().destination_address(address_traits::global);
+    p.payload() = name_;
+    p.can_id().source_address(sa);
+
+    // Turn off CAN transport auto retry as per [1] 4.4.4.3
+    //t.one_shot(true);
+    _transport_traits::send(t, p);
+    //t.one_shot(false);
+
+    // DEBT: May not want to do this IN emitter method itself
+    timeout = scheduler.impl().now() + address_claim_timeout();
+
+    if(t.good() == false)
+    {
+        // TODO:
+        // If a bus error, schedule our own retry as per [1] 4.4.4.3
+    }
+}
+
+
 // See [1] Figure A5, A6, A7
 template <class TTransport, class TScheduler, class TAddressManager>
 void network_ca<TTransport, TScheduler, TAddressManager>::send_request_for_address_claimed(

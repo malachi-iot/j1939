@@ -115,6 +115,10 @@ next claim message is transmitted" [1.5] 4.4.4.3
 * [the 250ms timeout](#1122-scenario-2-delayed-communication)
 * CAN bus idle state
 
+"After transmitting any claim message [...if] a bus error has occurred, [...] retransmission attempts by the CAN peripheral should be canceled" [1.5] 4.4.4.3
+
+Though the verbiage says "after transmitting", it is equally viable they mean JUST BEFORE transmitting to enable any kind of one-shot mode, since zero automatic retransmission is desired.
+
 Furthermore, no rule indicates to cease retransmissionn attempts, implying they SHOULD be infinite for the duration of a bus error condition.
 
 ### 1.2. PGN: Request (Address Claim)
