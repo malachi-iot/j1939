@@ -98,16 +98,24 @@ If address is contended, see [Contention Rules](#111-contention-rules)
 
 #### 1.1.4. Transport Rules
 
-For just this PGN, one SHOULD turn off physical transport
-retry mechanisms and instead schedule a 0-153ms pseudo random delay per
-retransmission [1.5] 4.4.4.3
+For just this PGN, one SHOULD turn off physical transport retry mechanisms.  The goal is to reduce colliding claim traffic.
+
+While a bus error is present, repeat the following steps:
+
+1. wait 0-153ms pseudo random delay after EOF
+2. retransmit address claim [1.5] 4.4.4.3
 
 ##### 1.1.4.1. Implied Behaviors
 
 "The transmit delay will be added to the normal idle period before the 
 next claim message is transmitted" [1.5] 4.4.4.3
 
-"idle period" is unclear here, but it probably referes to [the 250ms timeout](#1122-scenario-2-delayed-communication)
+"idle period" is unclear here, it may refer to:
+
+* [the 250ms timeout](#1122-scenario-2-delayed-communication)
+* CAN bus idle state
+
+Furthermore, no rule indicates to cease retransmissionn attempts, implying they SHOULD be infinite for the duration of a bus error condition.
 
 ### 1.2. PGN: Request (Address Claim)
 
