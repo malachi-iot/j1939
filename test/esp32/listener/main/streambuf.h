@@ -5,7 +5,10 @@
 #include <estd/streambuf.h>
 #include <estd/string.h>
 
-namespace esp_idf { namespace impl {
+namespace esp_idf {
+
+
+namespace impl {
 
 // DEBT: Use value_evaporator for tag provider
 
@@ -24,6 +27,26 @@ struct tag_provider
     const char* TAG_;
 
     constexpr const char* TAG() { return TAG_; }
+};
+
+template <class Traits>
+class log_ostreambuf;
+
+struct setlevel : estd::internal::ostream_functor_tag
+{
+    const esp_log_level_t log_level_;
+
+    constexpr setlevel(esp_log_level_t v) : log_level_{v} {}
+
+    // DEBT: Should filter by proper stream here, but does work
+    template <class TStreambuf, class TBase>
+    void operator()(estd::detail::basic_ostream<TStreambuf, TBase>& out) const
+    {
+        auto rdbuf = out.rdbuf();
+
+        rdbuf->pubsync();
+        rdbuf->log_level_ = log_level_;
+    }
 };
 
 template <class Traits>
@@ -51,14 +74,17 @@ protected:
     // DEBT: Make all this protected too
 public:
     esp_log_level_t log_level_;
+    bool header_emitted_ = false;
 
-    void sync()
+    int sync()
     {
-        if(s_.empty()) return;
+        if(s_.empty()) return 0;
 
         // DEBT: Should probably use esp_log_writev here        
         esp_log_write(log_level_, tp_type::TAG(), s_.data());
         s_.clear();
+
+        return 0;
     }
 
     estd::streamsize xsputn(const char_type* s, estd::streamsize count)
@@ -77,10 +103,11 @@ public:
         // DEBT: Make an s_.full() since layer1-layer3 that makes a lot of sense
         // where a std::string it wouldn't.  That way we wouldn't have to do
         // an underlying strlen each time for this
-        if(s_.size() == s_.max_size())
-
-        return 0;
+        //if(s_.size() == s_.max_size())
+        //    return 0;
         //return underlying().write((const uint8_t*)s, count);
+
+        return count;
     }
 
     int_type sputc(char_type ch)
@@ -90,4 +117,46 @@ public:
     }
 };
 
-}}
+template <class Traits>
+using _log_ostreambuf = estd::internal::streambuf<log_ostreambuf<Traits> >;
+
+}
+
+template <class CharT, class Traits = estd::char_traits<CharT>>
+using log_ostreambuf = impl::_log_ostreambuf<Traits>;
+
+
+template <class CharT, class Traits = estd::char_traits<CharT>>
+using basic_log_ostream = estd::detail::basic_ostream<esp_idf::log_ostreambuf<CharT, Traits>>;
+
+using log_ostream = basic_log_ostream<char>;
+
+constexpr impl::setlevel level_set(esp_log_level_t log_level)
+{
+    return { log_level };
+}
+
+template <class Traits>
+constexpr estd::detail::basic_ostream<impl::_log_ostreambuf<Traits>>& info(
+    estd::detail::basic_ostream<impl::_log_ostreambuf<Traits>>& out)
+{
+    return out << level_set(ESP_LOG_INFO);
+}
+
+template <class Traits>
+constexpr estd::detail::basic_ostream<impl::_log_ostreambuf<Traits>>& verbose(
+    estd::detail::basic_ostream<impl::_log_ostreambuf<Traits>>& out)
+{
+    return out << level_set(ESP_LOG_VERBOSE);
+}
+
+
+template <class Traits>
+constexpr estd::detail::basic_ostream<impl::_log_ostreambuf<Traits> >& warn(
+    estd::detail::basic_ostream<impl::_log_ostreambuf<Traits> >& out)
+{
+    return out << level_set(ESP_LOG_WARN);
+}
+
+
+}
