@@ -1,5 +1,8 @@
 #pragma once
 
+// NOTE: This is for the seemingly-obsoleted https://github.com/adafruit/arduino-CAN
+// and NOT the maintained https://github.com/adafruit/Adafruit_CAN 
+
 #include <CAN.h>
 
 #include <estd/algorithm.h>
@@ -38,6 +41,13 @@ struct adafruit_transport : embr::can::reference::transport
 
         return false;
     }
+
+    // mimicing ios pattern, this indicates no bus errors.
+    // this lib doesn't seem to indicate error conditions :(
+    static constexpr const bool good() { return true; }
+
+    // TODO: See if lib supports one shot mode or not
+    void one_shot(bool v) { }
 };
 
 }}

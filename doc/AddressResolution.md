@@ -197,6 +197,8 @@ This is similar to [address claim rules](#114-transport-rules) but differs in th
 
 [1.5] 4.4.4.4 indicates that response rules are actually identical to (#114-transport-rules) which among other things means transport level retry is disabled.
 
+This would actually make sense since cannot claim is subject to colliding claim traffic as per 1.1.4.
+
 #### 1.5.4. Transport Rules
 
 No special physical transport behavior is required, as [stated above](#153-response-rules)

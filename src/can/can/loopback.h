@@ -15,7 +15,11 @@ struct loopback_transport
 {
     typedef estd::layer1::vector<uint8_t, 8> message_type;
 
-    bus_state state() const { return bus_state::online; }
+    bus_state state_ = bus_state::online;
+
+    constexpr bus_state state() const { return state_; }
+    constexpr bool good() const { return state() == bus_state::online; }
+    void one_shot(bool) {}
 
 #if UNUSED
     // DEBT: Use reference frame here instead

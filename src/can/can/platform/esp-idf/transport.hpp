@@ -20,6 +20,10 @@ struct twai_transport
 {
     using frame = twai_message_t;
 
+    bool single_shot_ = false;
+
+    void one_shot(bool v) { single_shot_ = v; }
+
     // DEBT: I really hate doing this.  I'd rather have a
     // specialized class or error handler so that we can
     // utilize native error codes.  That said, this has
@@ -40,6 +44,18 @@ struct twai_transport
             default:
                 return status::fail;
         }
+    }
+
+
+    // mimicing ios pattern, this indicates no bus errors.
+    static bool good()
+    {
+        twai_status_info_t status_info;
+
+        if(twai_get_status_info(&status_info) == ESP_OK)
+            return status_info.state == TWAI_STATE_RUNNING;
+
+        return false;
     }
 
     // FIX: Name collision with enum
@@ -80,12 +96,20 @@ struct twai_transport
         return block_tx ? portMAX_DELAY : 0;
     }
 
-    static bool send(const frame& f)
+    static bool send_ll(const frame& f)
     {
-        //ESP_ERROR_CHECK(twai_transmit(&f, portMAX_DELAY));
-        return ESP_ERROR_CHECK_WITHOUT_ABORT(
-            twai_transmit(&f, tx_ticks())) == ESP_OK;
-        //return twai_transmit(&f, portMAX_DELAY) == ERR_OK;
+        return ESP_ERROR_CHECK_WITHOUT_ABORT(twai_transmit(&f, tx_ticks())) == ESP_OK;
+    }
+
+    bool send(const frame& f)
+    {
+        if(single_shot_ == false)   return send_ll(f);
+
+        frame copied_f = f;
+
+        copied_f.ss = true;
+
+        return send_ll(copied_f);
     }
 
     twai_message_t rx_msg;

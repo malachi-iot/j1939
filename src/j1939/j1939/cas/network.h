@@ -250,12 +250,20 @@ struct network_ca : impl::controller_application<TTransport>,
         p.can_id().destination_address(address_traits::global);
         p.payload() = name_;
         p.can_id().source_address(sa);
+
+        // Turn off CAN transport auto retry as per [1] 4.4.4.3
+        //t.one_shot(true);
         _transport_traits::send(t, p);
+        //t.one_shot(false);
 
         // DEBT: May not want to do this IN emitter method itself
         timeout = scheduler.impl().now() + address_claim_timeout();
 
-        // TODO: Turn off CAN transport auto retry as per 4.4.4.3
+        if(t.good() == false)
+        {
+            // TODO:
+            // If a bus error, schedule our own retry as per [1] 4.4.4.3
+        }
     }
 
     void send_claim(transport_type& t)

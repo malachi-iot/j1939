@@ -1,5 +1,8 @@
 #pragma once
 
+// https://registry.platformio.org/libraries/autowp/autowp-mcp2515
+// https://github.com/autowp/arduino-mcp2515/tree/v1.0.3
+
 #include <SPI.h>
 #include <mcp2515.h>
 
@@ -17,6 +20,10 @@ struct autowp_transport
     MCP2515 mcp2515;
     // DEBT: Artifact of not-really-HAL CAN layer
     MCP2515::ERROR last_error;
+
+    // TODO: Would like to access one shot mode (OSM) but feature not yet in
+    // the lib https://github.com/autowp/arduino-mcp2515/pull/65 
+    void one_shot(bool v) { }
 
     autowp_transport(int cs) : mcp2515(cs) {}
 
@@ -36,6 +43,14 @@ struct autowp_transport
         last_error = e;
 
         return e == MCP2515::ERROR_OK;
+    }
+
+    // mimicing ios pattern, this indicates no bus errors.
+    constexpr const bool good() const
+    {
+        // Adapted 'checkError' function, but ERRORMASK is private
+        //return (const_cast<MCP2515&>(mcp2515).getErrorFlags() & MCP2515::EFLG_ERRORMASK) == 0; 
+        return const_cast<MCP2515&>(mcp2515).checkError() == false;
     }
 };
 
