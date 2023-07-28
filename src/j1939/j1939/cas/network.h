@@ -89,8 +89,9 @@ struct network_ca_base : ca_base,
         // claiming state
         waiting,            ///< Waiting period (250ms) after we emit a claim address
         contending,         ///< Evaluation period after we receive a contending address
+        claim_send_error,   ///< Same as 'waiting' but bus/send error occurred [3] 1.1.4
         reclaim_waiting,    ///< Waiting period of 0-153ms preceding re-transmit of claim [1] 4.4.4.3
-        bus_off,
+        bus_off,            ///< FIX: These bus_off states appear to be in conflict with reclaim_waiting
         bus_off_recover,
 
         // claimed state
@@ -208,6 +209,8 @@ struct network_ca : impl::controller_application<TTransport>,
     time_point timeout;
 
     transport_type* t;
+
+    estd::chrono::milliseconds get_send_claim_defer();
 
     address_type find_new_address()
     {

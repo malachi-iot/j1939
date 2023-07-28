@@ -14,7 +14,14 @@ namespace embr { namespace j1939 { namespace internal {
 
 struct psuedo_random_generator
 {
-    uint32_t seed = 0;
+    int seed = 0;
+
+    void reset()
+    {
+        seed = 0;
+        rotate();
+    }
+
 
     // The most pseudo of psuedo random!
     void rotate()
@@ -23,15 +30,11 @@ struct psuedo_random_generator
         seed ^= 123456789;
     }
 
-    uint8_t peek_candidate() const
-    {
-        unsigned v = seed % 256;
-        return (uint8_t)v;
-    }
+    constexpr unsigned peek_candidate() const { return seed; }
 
-    uint8_t get()
+    unsigned get()
     {
-        const uint8_t v = peek_candidate();
+        const unsigned v = peek_candidate();
         rotate();
         return v;
     }
@@ -40,9 +43,9 @@ struct psuedo_random_generator
 
 struct random_generator
 {
-    static uint8_t get()
+    static unsigned get()
     {
-        return rand() % 256;    // NOLINT
+        return rand();    // NOLINT
     }
 };
 

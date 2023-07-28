@@ -11,6 +11,8 @@
 #include <j1939/cas/transport_protocol.hpp>
 #include <j1939/cas/diagnostic.hpp>
 
+#include <j1939/cas/internal/prng_address_manager.h>
+
 #include "test-data.h"
 
 #include "macro/push.h"
@@ -227,8 +229,9 @@ TEST_CASE("Controller Applications")
     SECTION("experimental")
     {
         embr::internal::layer1::Scheduler<5, FunctorImpl> scheduler;
-        using nca_type = embr::j1939::impl::network_ca<decltype(t), decltype(scheduler), estd::monostate>;
-        using proto_name = embr::j1939::layer0::NAME<true,
+        using address_manager = j1939::internal::prng_address_manager;
+        using nca_type = j1939::impl::network_ca<decltype(t), decltype(scheduler), address_manager>;
+        using proto_name = j1939::layer0::NAME<true,
             industry_groups::process_control,
             vehicle_systems::ig5_not_available, // DEBT: Change to a better IG/Veh Sys,
             function_fields::ig5_not_available>;

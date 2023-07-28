@@ -208,7 +208,7 @@ TEST_CASE("Controller Applications (network)")
         }
         SECTION("CA contends claim (fully synthetic)")
         {
-            impl.address_manager().reset();
+            impl.address_manager().prng.reset();
 
             p_claim.source_address(*impl.address());
 

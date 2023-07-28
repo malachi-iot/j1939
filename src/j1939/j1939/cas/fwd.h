@@ -22,3 +22,8 @@ struct transport_protocol_ca;
 }
 
 }}
+
+// DEBT: Move feature flags elsewhere
+
+// Turns on (default) [1] 4.4.4.3 manual retry mode
+#define FEATURE_EMBR_J1939_AC_COLLISION_MANAGEMENT 1

@@ -1,13 +1,10 @@
 #pragma once
 
-// DEBT: For 'rand'
-// DEBT: Would be nicer to use c++11 proper random number features, but that would be
-// a huge chore for AVR
-#include <estd/cstdlib.h>
-
 // DEBT: Do this in bitset itself
 #include <estd/internal/macro/push.h>
 #include <embr/internal/bitset.h>
+
+#include "rng.h"
 
 // DEBT: Not quite right namespace, 'impl'
 namespace embr { namespace j1939 { namespace impl {
@@ -54,6 +51,10 @@ struct address_tracker2
 
 struct random_address_manager
 {
+    using rng_type = j1939::internal::random_generator;
+
+    static rng_type rng() { return {}; }
+
     // DEBT: Decouple tracker portion from manager somehow
     address_tracker2 tracker;
 
@@ -72,7 +73,7 @@ struct random_address_manager
 // DEBT: Return uint8_t, made 'unsigned' just to aid in debugging
 inline unsigned random_address_manager::get_candidate()
 {
-    const unsigned r = rand();    // NOLINT
+    const unsigned r = rng_type::get();    // NOLINT
 
     if(tracker.tracked.none() || tracker.tracked.all())
     {

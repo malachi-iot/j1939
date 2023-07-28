@@ -159,4 +159,14 @@ TEST_CASE("units")
             REQUIRE(out_s == "50.0 percent");
         }
     }
+    SECTION("misc")
+    {
+        // outlier tests that belong in embr/estd
+        typedef estd::chrono::duration<uint8_t, estd::ratio<6, 10000>> type1;
+
+        type1 d1(0), d2(255);
+
+        REQUIRE(d1 == estd::chrono::milliseconds(0));
+        REQUIRE(d2 == estd::chrono::milliseconds(153));
+    }
 }

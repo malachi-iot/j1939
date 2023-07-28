@@ -20,6 +20,15 @@ namespace embr { namespace j1939 {
 
 namespace impl {
 
+template <class TTransport, class TScheduler, class TAddressManager>
+estd::chrono::milliseconds network_ca<TTransport, TScheduler, TAddressManager>::
+    get_send_claim_defer()
+{
+    uint8_t v = address_manager().rng().get() % 256;
+    estd::chrono::duration<uint8_t, estd::ratio<6, 10000>> d(v);
+    return d;
+}
+
 
 template <class TTransport, class TScheduler, class TAddressManager>
 void network_ca<TTransport, TScheduler, TAddressManager>::send_claim(
@@ -31,18 +40,28 @@ void network_ca<TTransport, TScheduler, TAddressManager>::send_claim(
     p.can_id().source_address(sa);
 
     // Turn off CAN transport auto retry as per [1] 4.4.4.3
-    //t.one_shot(true);
-    _transport_traits::send(t, p);
-    //t.one_shot(false);
+#if FEATURE_EMBR_J1939_AC_COLLISION_MANAGEMENT
+    t.one_shot(true);
+#endif
+    bool send_result = _transport_traits::send(t, p);
+#if FEATURE_EMBR_J1939_AC_COLLISION_MANAGEMENT
+    t.one_shot(false);
+#endif
 
     // DEBT: May not want to do this IN emitter method itself
     timeout = scheduler.impl().now() + address_claim_timeout();
 
-    if(t.good() == false)
+#if FEATURE_EMBR_J1939_AC_COLLISION_MANAGEMENT
+    // DEBT: Do this pseudo asynchronously, since 'send' may not register an error
+    // right away
+    if(!t.good() || !send_result)
     {
-        // TODO:
-        // If a bus error, schedule our own retry as per [1] 4.4.4.3
+        // If a bus error, schedule our own retry after "idle" 250ms
+        // as per [1] 4.4.4.3 and [3] 1.1.4.
+        // As per [3] 1.1.4.1 - "idle" MIGHT mean CAN idle - that will require a code change
+        substate = substates::claim_send_error;
     }
+#endif
 }
 
 
@@ -125,6 +144,23 @@ void network_ca<TTransport, TScheduler, TAddressManager>::scheduled_claiming(
             }
             break;
 
+        // While waiting 250ms after address claim, a bus/send error occurred.
+        // We intentionally reach here at the 250ms expiry
+        case substates::claim_send_error:
+            timeout += get_send_claim_defer();
+            *wake = timeout;
+            substate = substates::reclaim_waiting;
+            break;
+
+        // Reach here after deferred waiting period for retransmission of claim
+        // Manually retry as per [3] 1.1.4
+        case substates::reclaim_waiting:
+            // Optimistically go back to 'waiting', presuming a good bus awaits us
+            substate = substates::waiting;
+            send_claim(*t);
+            break;
+
+
         case substates::cannot_claim_waiting:
             break;
 
@@ -182,7 +218,7 @@ bool network_ca<TTransport, TScheduler, TAddressManager>::process_incoming(
             return false;
     }
 
-    // [1] 4.4.3.3
+    // Is our address in contest? [1] 4.4.3.3
     if(sa == address_)
     {
         const embr::j1939::layer1::NAME& incoming_name = p.payload();
@@ -194,6 +230,9 @@ bool network_ca<TTransport, TScheduler, TAddressManager>::process_incoming(
             // we have the higher priority name
             // transmit our own address, basically re-announce our claim
             send_claim(t);
+
+            // If we're currently claiming, this extends the 250ms timeout
+            // If we're fully claimed, this has no followup scheduled
 
             // DEBT: Do we need to schedule a followup here?
         }
@@ -362,6 +401,7 @@ void network_ca<TTransport, TScheduler, TAddressManager>::send_claim_and_schedul
             // unstarted = no actions
             // cannot_claim = no point in attempting
             // requesting = undefined behavior (address claim WITHOUT followup appropriate here [3] 1.2.1.1. )
+            // claim_send_error, reclaim_waiting = no action because whole different process emitting its own claims
             break;
     }
 }

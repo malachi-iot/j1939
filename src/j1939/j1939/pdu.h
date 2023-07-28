@@ -180,6 +180,7 @@ struct transport_traits
     using transport_type = TTransport;
     using frame_type = typename transport_type::frame;
 
+    // DEBT: Consider a translated/specialized/more informative return code
     template <pgns pgn>
     inline static bool send(transport_type& t, const pdu<pgn>& p)
     {
