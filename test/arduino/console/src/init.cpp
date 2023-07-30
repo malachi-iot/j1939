@@ -16,13 +16,20 @@ bool can_online = false;
 extern arduino_ostream cout;
 extern arduino_istream cin;
 
+void twai_init();
+
 void init_can(transport& t)
 {
     // TODO: Consider using https://github.com/adafruit/Adafruit_CAN
     // because https://github.com/adafruit/arduino-CAN aka 
     // https://registry.platformio.org/libraries/adafruit/CAN%20Adafruit%20Fork seems to be obsolete
 
-#ifdef AUTOWP_LIB
+#ifdef ESP_PLATFORM
+    cout << F("ESP32 native CAN mode: ");
+
+    twai_init();
+
+#elif defined(AUTOWP_LIB)
     cout << F("AUTOWP/MCP2515 mode: ");
     
     //SPI.begin();

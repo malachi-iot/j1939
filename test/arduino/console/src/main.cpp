@@ -239,7 +239,7 @@ void testOut()
 
     //t.send(frame2);
 
-#ifndef AUTOWP_LIB
+#if !defined(AUTOWP_LIB) && !defined(ESP_PLATFORM)
     CAN.beginPacket(0x123);
     CAN.endPacket();
 #endif
