@@ -483,43 +483,50 @@ void nca_report()
     }
 }
 
+
+bool on_frame_received(transport::frame& frame)
+{
+    bool r;
+#if FEATURE_AGGREGATED_CA
+    r = process_incoming(app_ca, t, frame);
+#else
+    r = process_incoming(dca, t, frame);
+    process_incoming(nca, t, frame);
+#endif
+
+    return r;
+}
+
+
 void loop() 
 {
     bool r = false;
+    transport::frame frame;
 
 #ifdef AUTOWP_LIB
-    struct can_frame canMsg;
-    MCP2515::ERROR e = t.mcp2515.readMessage(&canMsg);
+    MCP2515::ERROR e = t.mcp2515.readMessage(&frame);
 
     if (e == MCP2515::ERROR_OK)
     {
 #if EXPLICIT_CAN_LOG
         // DEBT: Adapt and move this into the diagnostic fallback code - mostly done now
         // keeping this around just incase diagnostic code has issues
-        cout << F("id: ") << hex << canMsg.can_id << ' ' << canMsg.can_dlc << ' ';
+        cout << F("id: ") << hex << frame.can_id << ' ' << frame.can_dlc << ' ';
 
-        for (int i = 0; i<canMsg.can_dlc; i++)
+        for (int i = 0; i<frame.can_dlc; i++)
         {  // print the data
-            Serial.print(canMsg.data[i],HEX);
+            Serial.print(frame.data[i],HEX);
             Serial.print(" ");
         }
 
         cout << endl;
 #endif
 
-#if FEATURE_AGGREGATED_CA
-        process_incoming(app_ca, t, canMsg);
-#else
-        r = process_incoming(dca, t, canMsg);
-        process_incoming(nca, t, canMsg);
-#endif
+        r = on_frame_received(frame);
 
         cout << endl;
     }
 #else
-    // try to parse packet
-    transport::frame frame;
-
     if (can_online && t.receive(&frame))
     {
 #if EXPLICIT_CAN_LOG
@@ -534,8 +541,7 @@ void loop()
         cout << endl;
 #endif
 
-        r = process_incoming(dca, t, frame);
-        process_incoming(nca, t, frame);
+        r = on_frame_received(frame);
     }
 
     //testOut();
