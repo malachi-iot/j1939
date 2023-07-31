@@ -2,6 +2,7 @@
 
 #include <embr/platform/guard-in.h>
 
+#include "aai.hpp"
 #include "amb.hpp"
 #include "bjm1.hpp"
 #include "bm.hpp"

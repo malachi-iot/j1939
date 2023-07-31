@@ -31,7 +31,7 @@ enum class spns
     alternator_current = 115,                       // [5]
     brake_application_pressure = 116,               // [13]
     key_switch_battery_potential = 158,             // [5]
-    alternator_potential = 167,                     // [11]
+    charging_system_potential  = 167,               // [13]
     battery_potential = 168,                        // [5]
     power_input_1 = 168,                            // [5]
     cargo_ambient_temperature = 169,                // [13]
@@ -45,6 +45,7 @@ enum class spns
     software_identification = 234,                  // [11]
     vehicle_identification_number = 237,            // [11] ASCII VIN
     engine_oil_life_remaining = 355,                // [5]
+    auxiliary_temperature_1 = 441,                  // [13]
     drivers_demand_engine_percent_torque = 512,     // [5]
     actual_engine_percent_torque = 513,             // [5]
     brake_pedal_position = 521,                     ///< "Ratio of brake pedal position to maximum pedal position.  Used for electric brake applications. 0% means no braking.
@@ -228,6 +229,10 @@ enum class spns
     ecu_type = 2904,                                // [7]
     halt_brake_swith = 2911,                        // [13]
     engine_multi_unit_sync_state = 2890,            // [13]
+    strobe_activation_control_status = 3082,        // [13]
+    transmit_door_enable = 3083,                    // [13]
+    vehicle_id = 3085,                              // [13]
+    auxiliary_level = 3087,                         // [13]
     tp_address_ack = 3290,                          // [14] Table D1
     tp_address_nack = 3291,                         // [14] Table D1
     tp_address_access_denied = 3292,                // [14] Table D1

@@ -30,11 +30,23 @@ constexpr descriptor get_descriptor<spns::alternator_current>()
 template <>
 constexpr descriptor get_descriptor<spns::battery_potential>()
 {
+    return descriptor{5, 1, 16};
+}
+
+template <>
+constexpr descriptor get_descriptor<spns::charging_system_potential>()
+{
     return descriptor{3, 1, 16};
 }
 
 template <>
 struct type_traits<spns::battery_potential> : internal::slot_type_traits<slots::SAEev01>
+{
+};
+
+
+template <>
+struct type_traits<spns::charging_system_potential> : internal::slot_type_traits<slots::SAEev01>
 {
 };
 
@@ -63,6 +75,8 @@ struct data_field<pgns::vehicle_electrical_power_1, TContainer> :
     {
         battery_potential(v.count());
     }
+
+    EMBR_J1939_PROPERTY(charging_system_potential)
 };
 
 }}

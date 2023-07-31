@@ -17,6 +17,10 @@ template <>
 struct type_traits<spns::cab_interior_temperature_command> :
     internal::slot_type_traits<slots::SAEtp02> {};
 
+template <>
+struct type_traits<spns::battery_main_switch_hold_request> :
+    internal::measured_type_traits {};
+
 template<>
 constexpr descriptor get_descriptor<spns::requested_percent_fan_speed>()
 {

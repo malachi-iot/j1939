@@ -35,7 +35,7 @@ enum class slots
     SAEtm05 = 64,
     SAEcw01 = 65,
     SAEcy01 = 66,
-    SAEtp01 = 67,
+    SAEtp01 = 67,           ///< -40 to 210 deg C
     SAEtp02 = 68,
     SAEtq01 = 69,
     SAEev01 = 80,
