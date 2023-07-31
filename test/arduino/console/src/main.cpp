@@ -524,8 +524,13 @@ void loop()
     {
 #if EXPLICIT_CAN_LOG
         // DEBT: See above EXPLICIT_CAN_LOG debt
-        cout << F("Received packet with id 0x") << hex << frame.id;
+        cout << F("Received packet with id 0x") << hex;
+#ifdef ESP_PLATFORM
+        cout << frame.identifier;
+#else
+        cout << frame.id;
         cout << ' ' << frame.dlc;
+#endif
         cout << endl;
 #endif
 

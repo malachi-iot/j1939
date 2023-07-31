@@ -29,6 +29,9 @@ void init_can(transport& t)
 
     twai_init();
 
+    // We'll abort if CAN is not online
+    can_online = true;
+
 #elif defined(AUTOWP_LIB)
     cout << F("AUTOWP/MCP2515 mode: ");
     
