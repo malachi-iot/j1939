@@ -143,5 +143,41 @@ struct data_field<pgns::lighting_command, TContainer> :
     EMBR_J1939_PROPERTY_ALIAS(left_stop_lights_cmd, left_stop);
 };
 
+namespace pgn {
+
+template <>
+struct traits<pgns::lighting_command>
+{
+    using s = embr::j1939::spns;
+
+    using spns = internal::spns_list<
+        s::alternate_headlights_cmd,
+        s::low_beam_headlight_cmd,
+        s::high_beam_headlight_cmd,
+        s::right_turn_signal_lights_cmd,
+        s::left_turn_signal_lights_cmd,
+        s::backup_lights_and_alarm_horn_cmd,
+        s::center_stop_lights_cmd,
+        s::right_stop_lights_cmd,
+        s::left_stop_lights_cmd,
+        s::rear_fog_lights_cmd
+    >;
+
+    static constexpr const char* name()
+    {
+        return "Lighting Command";
+    }
+
+    static constexpr const char* description()
+    {
+        return "Message from the tractor to all lighting controllers on the tractor and attached implements";
+    }
+
+    static constexpr const char* abbrev() { return "LCMD"; }
+};
+
+
+}
+
 
 }}

@@ -61,4 +61,34 @@ struct data_field<pgns::lighting_data, TContainer> :
     EMBR_J1939_PROPERTY_ALIAS(right_turn_signal_lights, right_turn_signal);
 };
 
+namespace pgn {
+
+template <>
+struct traits<pgns::lighting_data> : internal::traits_base
+{
+    using spns = internal::spns_list<
+        s::running_light,
+        s::right_turn_signal_lights,
+        s::left_turn_signal_lights,
+        s::center_stop_lights,
+        s::right_stop_lights,
+        s::left_stop_lights,
+        s::right_stop_lights>;
+
+    static constexpr const char* name()
+    {
+        return "Lighting Data";
+    }
+
+    static constexpr const char* description()
+    {
+        return "A response to the request for lighting data in the lighting command message.";
+    }
+
+    static constexpr const char* abbrev() { return "LD"; }
+};
+
+
+}
+
 }}
