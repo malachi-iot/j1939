@@ -66,6 +66,7 @@ struct loopback_transport
     {
         frame frame_;
         void* sender_;
+        int count_;     // number of receivers to distribute to
 
         // DEBT: layer1::queue should probably use uninitialized array
         item() = default;
@@ -76,9 +77,16 @@ struct loopback_transport
     // where 'sent' messages go to just be read back by 'receive'
     estd::layer1::queue<item, N> queue;
 
-    bool send(const frame& f)
+    item* peek()
     {
-        const item& emplaced = queue.emplace(f, nullptr);
+        if(queue.empty()) return nullptr;
+
+        return &queue.front();
+    }
+
+    bool send(const frame& f, void* sender = nullptr)
+    {
+        const item& emplaced = queue.emplace(f, sender);
         bool dequeue = false;
 
         if (static_cast<bool>(receive_callback))
@@ -137,9 +145,34 @@ struct loopback_transport
 
 // This holds on to particular sender, and filters out receive by said sender
 template <size_t N, class Frame = can::reference::transport::frame>
-struct loopback_transport_wrapper
+struct filtered_loopback_transport
 {
-    loopback_transport<N, Frame>& transport;
+    using transport_type = loopback_transport<N, Frame>;
+    transport_type& transport;
+    void* identity;
+    using frame = typename transport_type::frame;
+
+    constexpr filtered_loopback_transport(
+        transport_type& t,
+        void* identity) :
+        transport{t},
+        identity(identity)
+    {}
+
+    bool send(const frame& f)
+    {
+        return transport.send(f, identity);
+    }
+
+    bool receive(frame* f)
+    {
+        typename transport_type::item* i = transport.peek();
+
+        if(i == nullptr) return false;
+        if(i->sender_ == identity) return false;
+
+        return transport.receive(f);
+    }
 };
 
 
