@@ -163,6 +163,8 @@ struct traits<pgns::lighting_command>
         s::rear_fog_lights_cmd
     >;
 
+    static constexpr unsigned priority = 3;
+
     static constexpr const char* name()
     {
         return "Lighting Command";

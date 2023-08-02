@@ -68,12 +68,16 @@ struct traits<pgns::lighting_data> : internal::traits_base
 {
     using spns = internal::spns_list<
         s::running_light,
+        s::low_beam_headlight_data,
+        s::high_beam_headlight_data,
         s::right_turn_signal_lights,
         s::left_turn_signal_lights,
         s::center_stop_lights,
         s::right_stop_lights,
         s::left_stop_lights,
         s::right_stop_lights>;
+
+    static constexpr unsigned priority = 6;
 
     static constexpr const char* name()
     {
