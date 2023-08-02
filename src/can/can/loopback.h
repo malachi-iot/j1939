@@ -62,16 +62,27 @@ struct loopback_transport
 
     estd::detail::function<bool(const frame&)> receive_callback;
 
+    struct item
+    {
+        frame frame_;
+        void* sender_;
+
+        // DEBT: layer1::queue should probably use uninitialized array
+        item() = default;
+
+        constexpr item(const frame& f, void* s = nullptr) : frame_{f}, sender_{s} {}
+    };
+
     // where 'sent' messages go to just be read back by 'receive'
-    estd::layer1::queue<frame, N> queue;
+    estd::layer1::queue<item, N> queue;
 
     bool send(const frame& f)
     {
-        const frame& emplaced = queue.emplace(f);
+        const item& emplaced = queue.emplace(f, nullptr);
         bool dequeue = false;
 
         if (static_cast<bool>(receive_callback))
-            dequeue = receive_callback(emplaced);
+            dequeue = receive_callback(emplaced.frame_);
 
         if (dequeue) queue.pop();
 
@@ -89,11 +100,11 @@ struct loopback_transport
         //queue.emplace(id, data);
         //queue.push(message{id, data});
 
-        const frame& emplaced = queue.emplace(id, data);
+        const item& emplaced = queue.emplace(frame{id, data}, nullptr);
         bool dequeue = true;
 
         if (static_cast<bool>(receive_callback))
-            dequeue = receive_callback(emplaced);
+            dequeue = receive_callback(emplaced.frame_);
 
         if (dequeue) queue.pop();
     }
@@ -104,7 +115,7 @@ struct loopback_transport
     {
         if (queue.empty()) return nullptr;
 
-        const frame& front = queue.front();
+        const frame& front = queue.front().frame_;
 
         queue.pop();
 
@@ -115,13 +126,22 @@ struct loopback_transport
     {
         if (queue.empty()) return false;
 
-        *f = queue.front();
+        *f = queue.front().frame_;
 
         queue.pop();
 
         return true;
     }
 };
+
+
+// This holds on to particular sender, and filters out receive by said sender
+template <size_t N, class Frame = can::reference::transport::frame>
+struct loopback_transport_wrapper
+{
+    loopback_transport<N, Frame>& transport;
+};
+
 
 }
 
