@@ -1,9 +1,9 @@
 #include "nca.h"
 
 using proto_name = embr::j1939::layer0::NAME<true,
-    embr::j1939::industry_groups::process_control,
-    embr::j1939::vehicle_systems::ig5_not_available, // DEBT: Change to a better IG/Veh Sys,
-    embr::j1939::function_fields::ig5_not_available>;
+    embr::j1939::industry_groups::construction,
+    embr::j1939::vehicle_systems::non_specific,
+    embr::j1939::function_fields::joystick_control>;
 
 static scheduler_type scheduler;
 

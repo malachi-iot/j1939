@@ -8,20 +8,19 @@
 #include <estd/string.h>
 #include <estd/sstream.h>
 
-#include <j1939/cas/diagnostic.hpp>
 #include <j1939/ca.hpp>
+
+#include "app.h"
 
 #include "nca.h"
 #include "streambuf.h"
 
-using ostream_type = estd::experimental::ostringstream<256>;
-
-// DEBT: impl vs non impl here
-using dca_type = embr::j1939::diagnostic_ca<transport_type, ostream_type>;
-
 static esp_idf::log_ostream clog;   // Coming along well, almost ready
 
 extern void twai_init();
+
+
+App app;
 
 extern "C" void app_main(void)
 {
@@ -31,7 +30,7 @@ extern "C" void app_main(void)
     twai_init();
 
     // DEBT: Just to satisfy process_incoming signature & friends, actually an empty struct
-    transport_type t;
+    transport_type& t = app.transport();
 
     nca_init(t);
 
