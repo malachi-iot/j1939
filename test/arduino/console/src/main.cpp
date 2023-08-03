@@ -204,6 +204,7 @@ struct CanPGNActionImpl<pgns::cab_message1>
     }
 };
 
+
 template <pgns pgn>
 void send(pdu<pgn>& p, arduino_ostream* out = nullptr)
 {
@@ -245,6 +246,70 @@ void testOut()
 #endif
 
 }
+
+
+
+#include <time.h>
+
+template <>
+struct CanPGNActionImpl<pgns::time_date>
+{
+    using this_type = CanPGNActionImpl<pgns::time_date>;
+    bool is_scheduled = false;
+
+    // DEBT: Instead, expose impl_type directly from sechduler_type
+    typedef estd::remove_reference_t<decltype(scheduler.impl())> scheduler_impl_type;
+    typedef typename scheduler_impl_type::time_point time_point;
+    using function_type = typename scheduler_impl_type::function_type;
+
+    // NOTE: Looks like we could do a regular innate non-captured lambda functor here
+    // since we don't really seem to use this_ at all.  Keeping so that we can dogfood
+    // and try to refine stateful functor approach
+    struct wake_functor
+    {
+        this_type& this_;
+
+        void operator()(time_point* wake, time_point current)
+        {
+            time_t timer = time(nullptr);
+            struct tm* buf = gmtime(&timer);
+
+            pdu<pgns::time_date> message;
+
+            message.minutes(buf->tm_min);
+            message.seconds(buf->tm_sec);
+
+            send(message);
+
+            *wake += estd::chrono::seconds(10);
+
+            cout << F("Emitting: ") << message.seconds().count() << estd::endl;
+        }
+    };
+
+    typename function_type::template model<wake_functor> wake_model{wake_functor{*this}};
+
+    template <class TStreambuf>
+    void action(detail::basic_ostream<TStreambuf>& out)
+    {
+        if(is_scheduled)
+        {
+            out << F("already scheduled");
+        }
+        else
+        {
+            out << F("Emitting time/date every 10s");
+
+            scheduler.schedule_now(&wake_model);
+            is_scheduled = true;
+        }
+    }
+
+    void prep(pdu<pgns::time_date>& p)
+    {
+    }
+};
+
 
 
 template <pgns pgn>
@@ -431,6 +496,7 @@ SyntheticMenuAction item1{0}, item2{1};
 menu::Navigator nav(&topLevel);
 CanPGNAction<pgns::oel> item4;
 CanPGNAction<pgns::cab_message1> item5;
+CanPGNAction<pgns::time_date> item6;
 menu::MenuAction subitem1(&nav, &submenu);
 
 InitiateNetworkCAAction subitem1_1;
@@ -444,6 +510,7 @@ void setup()
     topLevel.items.push_back(&subitem1);
     topLevel.items.push_back(&item4);
     topLevel.items.push_back(&item5);
+    topLevel.items.push_back(&item6);
 
     submenu.items.push_back(&subitem1_1);
 

@@ -184,4 +184,24 @@ struct data_field<pgns::time_date_adjust, TContainer> : internal::data_field_bas
 };
 
 
+namespace internal {
+
+template <>
+struct payload_put<pgns::time_date> : estd::internal::ostream_functor_tag
+{
+    const data_field<pgns::time_date>& payload;
+
+    constexpr explicit payload_put(const data_field<pgns::time_date>& payload) : payload{payload} {}
+
+    template <class TStreambuf, class TBase>
+    void operator()(estd::detail::basic_ostream<TStreambuf, TBase>& out) const
+    {
+        // DEBT: We'd prefer not to have to reach into count() here
+        out << payload.minutes().count() << ':' << payload.seconds().count();
+    }
+};
+
+}
+
+
 }}
