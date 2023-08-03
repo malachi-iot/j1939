@@ -33,9 +33,9 @@ struct PduDecomposer
 
     estd::span<const uint8_t> payload;
 
-    j1939::layer1::NAME name()
+    j1939::layer1::NAME name() const
     {
-        return { payload.data() };
+        return j1939::layer1::NAME(payload.data());
     }
 
     PduDecomposer(unsigned can_id) :

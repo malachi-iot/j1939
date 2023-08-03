@@ -636,7 +636,7 @@ CONFIG_RTC_CLK_CAL_CYCLES=1024
 #
 # Peripheral Control
 #
-# CONFIG_PERIPH_CTRL_FUNC_IN_IRAM is not set
+CONFIG_PERIPH_CTRL_FUNC_IN_IRAM=y
 # end of Peripheral Control
 
 #

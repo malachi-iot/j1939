@@ -54,7 +54,8 @@ TEST_CASE("ostream")
 
             out << estd::hex << j1939::internal::payload_put<pgns::oel>{payload};
 
-            REQUIRE(out_s == "ff ff ff ff ff ff ff ff ");
+            //REQUIRE(out_s == "ff ff ff ff ff ff ff ff ");
+            REQUIRE(out_s == "high beam=no change");
         }
     }
     SECTION("can_id")

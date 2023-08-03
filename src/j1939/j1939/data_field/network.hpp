@@ -81,6 +81,14 @@ struct data_field<pgns::address_claimed, TContainer> :
     typedef NAME<TContainer> base_type;
 
     ESTD_CPP_FORWARDING_CTOR(data_field)
+
+    // A tiny bit of a downcast - explicit forward ctor necessitates explicit one of these
+    template <class Container2>
+    data_field& operator=(const NAME<Container2>& copy_from)
+    {
+        base_type::operator=(copy_from);
+        return *this;
+    }
 };
 
 /*
@@ -101,6 +109,14 @@ struct data_field<pgns::commanded_address, TContainer> :
     void source_address(uint8_t v)
     {
         base_type::template set<spns::address_assignment>(v);
+    }
+
+    // A tiny bit of a downcast - explicit forward ctor necessitates explicit one of these
+    template <class Container2>
+    data_field& operator=(const NAME<Container2>& copy_from)
+    {
+        base_type::operator=(copy_from);
+        return *this;
     }
 };
 

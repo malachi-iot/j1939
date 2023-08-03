@@ -10,6 +10,8 @@
 
 #include <j1939/ca.hpp>
 
+#include <embr/platform/esp-idf/service/gpio.hpp>
+
 #include "app.h"
 
 #include "nca.h"
