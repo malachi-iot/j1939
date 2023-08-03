@@ -10,7 +10,9 @@
 
 #include <j1939/ca.hpp>
 
+#include <embr/platform/esp-idf/service/diagnostic.h>
 #include <embr/platform/esp-idf/service/gpio.hpp>
+#include <embr/platform/esp-idf/service/twai.hpp>
 
 #include "app.h"
 
@@ -21,8 +23,24 @@ static esp_idf::log_ostream clog;   // Coming along well, almost ready
 
 extern void twai_init();
 
+namespace app_domain {
 
 App app;
+
+using Diagnostic = embr::esp_idf::service::v1::Diagnostic;
+
+typedef estd::integral_constant<App*, &app> app_singleton;
+typedef embr::layer0::subject<Diagnostic, app_singleton> filter_observer;
+
+App::GPIO::runtime<filter_observer> gpio;
+App::TWAI::runtime<filter_observer> twai;
+
+}
+
+void gpio_init()
+{
+
+}
 
 extern "C" void app_main(void)
 {
@@ -30,9 +48,10 @@ extern "C" void app_main(void)
 
     // DEBT: 'household' project twai service would come in handy here
     twai_init();
+    gpio_init();
 
     // DEBT: Just to satisfy process_incoming signature & friends, actually an empty struct
-    transport_type& t = app.transport();
+    transport_type& t = app_domain::app.transport();
 
     nca_init(t);
 

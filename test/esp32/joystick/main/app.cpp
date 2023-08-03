@@ -1,6 +1,6 @@
 #include "app.h"
 
-void App::on_notify()
+void App::on_notify(GPIO::event::gpio gpio)
 {
 
 }
