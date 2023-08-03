@@ -73,6 +73,23 @@ struct type_traits<spns::high_low_beam_switch>
     typedef enum_type value_type;
 };
 
+
+inline const char* to_string(type_traits<spns::high_low_beam_switch>::enum_type v)
+{
+    using enum_type = type_traits<spns::high_low_beam_switch>::enum_type;
+
+    switch(v)
+    {
+        case enum_type::low_beam_selected:  return "low beam";
+        case enum_type::high_beam_selected: return "high beam";
+        case enum_type::error:              return "error";
+        case enum_type::no_change:          return "no change";
+        default:                            return "undefined";
+    }
+}
+
+
+
 template <>
 constexpr descriptor get_descriptor<spns::high_low_beam_switch>()
 {
@@ -242,7 +259,14 @@ struct data_field<pgns::oel, TContainer> :
 
 namespace internal {
 
-/* Almost there, just not ready for testing yet
+template <class Streambuf, class Base>
+estd::detail::basic_ostream<Streambuf, Base>& operator<<(
+    estd::detail::basic_ostream<Streambuf, Base>& out,
+    spn::type_traits<spns::high_low_beam_switch>::enum_type v)
+{
+    return out << to_string(v);
+}
+
 template <>
 struct payload_put<pgns::oel> : estd::internal::ostream_functor_tag
 {
@@ -255,7 +279,7 @@ struct payload_put<pgns::oel> : estd::internal::ostream_functor_tag
     {
         out << "high beam=" << payload.high_low_beam_switch();
     }
-}; */
+};
 
 }
 
