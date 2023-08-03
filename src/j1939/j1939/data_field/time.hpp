@@ -5,6 +5,8 @@
  */
 #pragma once
 
+#include <estd/iomanip.h>
+
 #include "base.hpp"
 #include "../slots/time.hpp"
 
@@ -197,7 +199,12 @@ struct payload_put<pgns::time_date> : estd::internal::ostream_functor_tag
     void operator()(estd::detail::basic_ostream<TStreambuf, TBase>& out) const
     {
         // DEBT: We'd prefer not to have to reach into count() here
-        out << payload.minutes().count() << ':' << payload.seconds().count();
+        // DEBT: We'd prefer to use the std time/date formatter put_time if possible,
+        // though that's specific to ISO 9899 struct tm
+        out << estd::dec << estd::setfill('0');
+        out << estd::setw(2) << payload.hours().count() << ':';
+        out << estd::setw(2) << payload.minutes().count() << ':';
+        out << estd::setw(2) << payload.seconds().count();
     }
 };
 

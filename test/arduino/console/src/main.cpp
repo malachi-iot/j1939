@@ -276,6 +276,7 @@ struct CanPGNActionImpl<pgns::time_date>
 
             pdu<pgns::time_date> message;
 
+            message.hours(buf->tm_hour);
             message.minutes(buf->tm_min);
             message.seconds(buf->tm_sec);
 
@@ -283,7 +284,7 @@ struct CanPGNActionImpl<pgns::time_date>
 
             *wake += estd::chrono::seconds(10);
 
-            cout << F("Emitting: ") << message.seconds().count() << estd::endl;
+            //cout << F("Emitting: ") << message.seconds().count() << estd::endl;
         }
     };
 
