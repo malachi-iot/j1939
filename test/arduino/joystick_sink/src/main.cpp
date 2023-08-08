@@ -42,8 +42,8 @@ void setup()
 
     init_can(t);
 
-    pinMode(CONFIG_GPIO_BUTTON1, OUTPUT);
-    digitalWrite(CONFIG_GPIO_BUTTON1, CONFIG_BUTTON1_INVERTED ? HIGH : LOW);
+    pinMode(CONFIG_GPIO_BJM1_BUTTON1_SINK, OUTPUT);
+    digitalWrite(CONFIG_GPIO_BJM1_BUTTON1_SINK, CONFIG_BUTTON1_INVERTED ? HIGH : LOW);
 }
 
 
@@ -56,4 +56,10 @@ void loop()
         process_incoming(dca, t, f);
         process_incoming(ca, t, f);
     }
+
+    /*
+    delay(500);
+    digitalWrite(CONFIG_GPIO_BUTTON1, HIGH);
+    delay(500);
+    digitalWrite(CONFIG_GPIO_BUTTON1, LOW); */
 }
