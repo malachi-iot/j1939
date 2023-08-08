@@ -1,4 +1,4 @@
-menu "J1939 Listener"
+menu "J1939 Joystick"
 
         config GPIO_TWAI_TX
                 int "Pin for TWAI/CAN TX"
@@ -7,5 +7,9 @@ menu "J1939 Listener"
         config GPIO_TWAI_RX
                 int "Pin for TWAI/CAN TX"
 		default 4
+
+        config GPIO_BUTTON1
+                int "Pin for Button #1"
+                default 0
 
 endmenu
