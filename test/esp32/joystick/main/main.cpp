@@ -39,7 +39,7 @@ App::Timer::runtime<filter_observer> timer;
 
 }
 
-void twai_init2()
+void twai_init()
 {
     static twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(
         (gpio_num_t)CONFIG_GPIO_TWAI_TX,
@@ -52,9 +52,24 @@ void twai_init2()
     app_domain::twai.autorx(false);
 }
 
+#define GPIO_INPUT_IO_0     CONFIG_GPIO_BUTTON1
+#define GPIO_INPUT_PIN_SEL  (1ULL<<GPIO_INPUT_IO_0)
+
 void gpio_init()
 {
+    gpio_config_t io_conf = {};
 
+    io_conf.intr_type = GPIO_INTR_ANYEDGE;
+    io_conf.pin_bit_mask = GPIO_INPUT_PIN_SEL;
+    io_conf.mode = GPIO_MODE_INPUT;
+    io_conf.pull_up_en = GPIO_PULLUP_ENABLE;
+    io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
+
+    // DEBT: Service is specifically ISR-based GPIO input, reflect that
+    // in naming
+    // DEBT: We prefer debouncer in which case gpio service is not wanted at all,
+    // but the io config still is
+    app_domain::gpio.start(&io_conf);
 }
 
 
@@ -88,68 +103,18 @@ extern "C" void app_main(void)
 {
     static const char* TAG = "app_main";
 
-    twai_init2();
+    twai_init();
     gpio_init();
     timer_init();
 
-    // DEBT: Just to satisfy process_incoming signature & friends, actually an empty struct
-    transport_type& t = app_domain::app.transport();
-
-    nca_init(t);
-
-    uint32_t prev_alerts = 0;
-
-    ostream_type out;
-    dca_type dca(out);
+    ESP_LOGI(TAG, "start: sizeof(App)=%u", sizeof(App));
 
     for(;;)
     {
-        // TODO: This does work, but it eats the alert so don't activate it yet
-        //app_domain::twai.poll(0);
+        // DEBT: Find a way to satisfy watchdog/yield requirements so that we
+        // can have a 0 tick timeout
 
-        out.rdbuf()->clear();
-        const auto& out_s = out.rdbuf()->str();
-
-        uint32_t alerts = 0;
-
-        twai_read_alerts(&alerts, 0);
-
-        if(alerts != prev_alerts)
-        {
-            ESP_LOGD(TAG, "alerts: %" PRIx32, alerts);
-            prev_alerts = alerts;
-        }
-
-        if(alerts & TWAI_ALERT_RX_DATA)
-        {
-            transport_type::frame frame;
-
-            // NOTE: Occasionally we are getting RX overflow.  That's kind of odd.
-            // Perhaps bus error is causing a lot of quick retries?
-            bool result = transport_type::receive(&frame);
-
-            if(!result)
-            {
-                ESP_LOGW(TAG, "receive timed out");
-                continue;
-            }
-
-            // Prefer not aggregating them since as a diagnostic app we prefer
-            // any glitches to be easier to diagnose
-            embr::j1939::process_incoming(dca, t, frame);
-            embr::j1939::process_incoming(nca, t, frame);
-
-            // TODO: Could be interesting to make an 'out' which uses esp-idf's low level
-            // log output facility and/or low level serial output
-
-            // diagnostic_ca emits eol into 'out'
-            esp_log_write(ESP_LOG_INFO, TAG, out_s.data());
-
-            // This just clears format/error flags, we need an out.rdbuf()->clear();
-            //out.clear();
-        }
-        else
-            // Just in case of problems, wait a little to avoid overly spamming
-            vTaskDelay(500 / portTICK_PERIOD_MS);
+        app_domain::app.poll();
+        app_domain::twai.poll(100 / portTICK_PERIOD_MS);
     }
 }

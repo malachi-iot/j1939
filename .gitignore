@@ -43,5 +43,6 @@ build-*/
 .pio/
 
 # esp-idf
+sdkconfig
 sdkconfig.old
 
