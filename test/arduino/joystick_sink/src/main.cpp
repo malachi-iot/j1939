@@ -13,6 +13,7 @@
 #include <j1939/ostream.h>
 
 #include "transport.h"
+#include "ca.h"
 
 using namespace estd;
 using namespace embr::j1939;
@@ -28,6 +29,9 @@ static transport t;
 
 
 diagnostic_ca<transport, arduino_ostream> dca(cout);
+ArduinoJoystickSink ca;
+
+// Inverted = active low
 
 
 void setup()
@@ -37,6 +41,9 @@ void setup()
     while(!Serial);
 
     init_can(t);
+
+    pinMode(CONFIG_GPIO_BUTTON1, OUTPUT);
+    digitalWrite(CONFIG_GPIO_BUTTON1, CONFIG_BUTTON1_INVERTED ? HIGH : LOW);
 }
 
 
@@ -47,5 +54,6 @@ void loop()
     if(t.receive(&f))
     {
         process_incoming(dca, t, f);
+        process_incoming(ca, t, f);
     }
 }
