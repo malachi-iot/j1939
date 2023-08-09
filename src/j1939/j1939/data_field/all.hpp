@@ -12,6 +12,7 @@
 #include "cl.hpp"
 #include "cm1.hpp"
 #include "cm3.hpp"
+#include "dm01.hpp"
 #include "ecuid.hpp"
 #include "eec1.hpp"
 #include "ejm1.hpp"

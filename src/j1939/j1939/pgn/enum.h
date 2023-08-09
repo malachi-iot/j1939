@@ -22,6 +22,7 @@
  * 16. J1939-21 (DEC2006)
  * 17. J1939-71 (MAR2011)
  * 18. J1939 (2007)
+ * 19. Lista_PGN-ova.xls
  */
 #pragma once
 
@@ -105,6 +106,7 @@ enum class pgns : uint32_t
     vehicle_electrical_power_2 = 65165,         ///< Voltage data for the main vehicle Power Distribution system.  [11], [18]
     trip_fan_information = 65211,               // [12]
     fan_drive_1 = 65213,                        // [17]
+    active_diagnostic_trouble_codes = 65226,    // [19]
     auxiliary_input_output_status_1 = 65241,    // [18]
     shutdown = 65252,                           // [13]
     time_date = 65254,                          // [13]

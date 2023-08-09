@@ -6,6 +6,7 @@
 
 #include <j1939/data_field/cm1.hpp>
 #include <j1939/data_field/cm3.hpp>
+#include <j1939/data_field/dm01.hpp>
 #include <j1939/data_field/fd.hpp>
 #include <j1939/data_field/htr.hpp>
 #include <j1939/data_field/oel.hpp>
@@ -72,6 +73,10 @@ TEST_CASE("pdu")
         unsigned v2 = p.data_[1];
 
         REQUIRE(v2 == 0b11110111);
+    }
+    SECTION("dm01")
+    {
+        pdu<pgns::active_diagnostic_trouble_codes> p;
     }
     SECTION("oel")
     {
