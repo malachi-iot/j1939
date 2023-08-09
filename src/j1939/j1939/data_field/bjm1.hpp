@@ -126,4 +126,23 @@ struct data_field<pgns::basic_joystick_message_1, TContainer> :
     EMBR_J1939_PROPERTY_ALIAS(joystick1_button2_pressed_status, button4_pressed)
 };
 
+namespace internal {
+
+template <>
+struct payload_put<pgns::basic_joystick_message_1> : estd::internal::ostream_functor_tag
+{
+    const data_field<pgns::basic_joystick_message_1>& payload;
+
+    constexpr explicit payload_put(const data_field<pgns::basic_joystick_message_1>& payload) :
+        payload{payload} {}
+
+    template <class Streambuf, class Base>
+    void operator()(estd::detail::basic_ostream<Streambuf, Base>& out) const
+    {
+        out << "b1=" << (unsigned)payload.button1_pressed();
+    }
+};
+
+}
+
 }}
