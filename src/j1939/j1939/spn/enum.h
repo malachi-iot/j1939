@@ -16,6 +16,8 @@
  * 12. J1939-81
  * 13. J1939-71 (REV. MAR2011)
  * 14. J1939-21 (DEC2006)
+ * 15. J1939 (2007)
+ * 16. Lista_PGN-ova.xls
  */
 #pragma once
 
@@ -237,6 +239,7 @@ enum class spns
     tp_address_nack = 3291,                         // [14] Table D1
     tp_address_access_denied = 3292,                // [14] Table D1
     tp_address_busy = 3293,                         // [14] Table D1
+    brake_light_relay = 3541,                       // [15], [16]
     auxiliary_io_17 = 3840,                         // [13]
     aftertreatment_1_atomization_air_actuator = 3491, // [13]
     aftertreatment_1_air_system_relay = 3492,       // [13]
@@ -250,6 +253,22 @@ enum class spns
     sensor_supply_voltage_5 = 3513,                 // [13]
     sensor_supply_voltage_6 = 3514,                 // [13]
     auxiliary_io_112 = 3935,                        // [13]
+    cab_dome_light_1 = 3976,                        // [16]
+    cab_dome_light_2 = 3977,                        // [16]
+    cab_dome_light_2_switch = 3978,                 // [16]
+    cab_floor_light = 3979,                         // [16]
+    cab_floor_light_switch = 3980,                  // [16]
+    fog_light_2 = 4008,                             // [16]
+    headlight_1_high_beam = 4011,                   // [16]
+    headlight_2_high_beam = 4012,                   // [16]
+    high_current_auxiliary_load_switch_1 = 4014,    // [16]
+    high_current_auxiliary_load_switch_2 = 4015,    // [16]
+    high_current_auxiliary_power_relay_1 = 4016,    // [16]
+    high_current_auxiliary_power_relay_2 = 4016,    // [16]
+    marker_light_interrupt_switch = 4024,           // [16]
+    power_inverter_enable_switch = 4027,            // [16]
+    software_loop_time_exceeded = 4041,             // [16]
+    cab_dome_light_1_switch = 4058,                 // [16]
     actual_engine_percent_torque_fractional = 4154, // [5]
     auxiliary_io_channel_3 = 4158,                  // [13]
     message_counter = 4206,                         ///< The message counter is used to detect situations where the transmitting ECU malfunction repeats the same frame all the time. [13]
@@ -270,6 +289,8 @@ enum class spns
     joystick10_x_axis_neutral_position_status = 4713, // [13]
     voltage_monitor_active_status = 5006,           // [13]
     generator_current_boost_active_status = 5012,   // [13]
+    vehicle_battery_voltage_low_lamp_command = 5087,// [13]
+    vehicle_battery_charging_lamp_command = 5091,   // [13]
     low_voltage_disconnect_output_3_state = 5144,   // [13]
     lift_relay_control = 5402,                      // [13]
     drop_relay_control = 5403,                      // [13]
