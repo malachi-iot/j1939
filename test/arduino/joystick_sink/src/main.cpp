@@ -42,6 +42,8 @@ void setup()
 
     init_can(t);
 
+    cout << F("GPIO sink: ") << CONFIG_GPIO_BJM1_BUTTON1_SINK << estd::endl;
+
     pinMode(CONFIG_GPIO_BJM1_BUTTON1_SINK, OUTPUT);
     digitalWrite(CONFIG_GPIO_BJM1_BUTTON1_SINK, CONFIG_BUTTON1_INVERTED ? HIGH : LOW);
 }
