@@ -26,21 +26,11 @@ void App::on_notify(Timer::event::callback)
 }
 
 
-void App::on_notify(TWAI::event::rx)
+void App::on_notify(TWAI::event::autorx e)
 {
-    ESP_LOGV(TAG, "on_notify: TWAI::event::rx");
+    ESP_LOGV(TAG, "on_notify: TWAI::event::autorx");
 
-    transport_type::frame frame;
-
-    // DEBT: Make a while loop, and probably go into polling mode -- OR --
-    // use autorx
-    bool result = transport_type::receive(&frame);
-
-    if(!result)
-    {
-        ESP_LOGW(TAG, "receive timed out");
-        return;
-    }
+    const transport_type::frame& frame = e.message;
 
     out.rdbuf()->clear();
     const auto& out_s = out.rdbuf()->str();
@@ -69,22 +59,11 @@ void App::on_notify(changed<Service::id::substate> e, const TWAI& svc)
     }
 }
 
-// DEBT: This is a wrapper because major state events do NOT emit substate
-// events.  There was a method to that madness, but now it feels like an oversight.
-// Document why we WANT that behavior, or, revise it
 // DEBT: Have to pass in TWAI& instead of const TWAI& because PropertyChanged
 // for some reason wants a non-const pointer
+/*
 void App::on_notify(changed<Service::id::state> e, TWAI& svc)
-{
-    switch(e.value)
-    {
-        case Service::Started:
-            on_notify(changed<Service::id::substate>{&svc, svc.substate()}, svc);
-            break;
-
-        default: break;
-    }
-}
+*/
 
 
 
