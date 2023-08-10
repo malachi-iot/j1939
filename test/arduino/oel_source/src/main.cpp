@@ -18,6 +18,7 @@
 
 #include <j1939/data_field/oel.hpp>
 
+#include "ca.h"
 #include "conf.h"
 
 #include "transport.h"
@@ -66,6 +67,8 @@ static transport t;
 #if CONFIG_DIAGNOSTIC_CA
 diagnostic_ca<transport, arduino_ostream> dca(cout);
 #endif
+
+ArduinoLightingCommandSink ca;
 
 using States = embr::debounce::v1::States;
 using clock = estd::chrono::arduino_clock;
@@ -125,14 +128,15 @@ void loop()
 
     pdu<pgns::oel> pdu;
 
-#if CONFIG_DIAGNOSTIC_CA
     transport::frame f;
 
     if(t.receive(&f))
     {
+#if CONFIG_DIAGNOSTIC_CA
         process_incoming(dca, t, f);
-    }
 #endif
+        process_incoming(ca, t, f);
+    }
 
     // if we haven't yet reached timeout to check debounce status, abort
     // and re-loop

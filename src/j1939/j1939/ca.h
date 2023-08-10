@@ -22,19 +22,9 @@ namespace embr { namespace j1939 {
 
 namespace impl {
 
-/// This is a noop reference type.  Only useful for testing and learning
-/// how to make a different impl
-/// @tparam TTransport
-template <class TTransport>
-class controller_application
+class controller_application_base
 {
 protected:
-    typedef TTransport transport_type;
-    using frame_type = typename transport_type::frame;
-    //using endpoint_type = typename transport_type::endpoint_type;
-    //using message_type = typename transport_type::message_type;
-    using frame_traits = can::frame_traits<frame_type>;
-
     using pgns = embr::j1939::pgns;
     using spns = embr::j1939::spns;
 
@@ -44,14 +34,31 @@ public:
     template <pgns pgn>
     using data_field = const embr::j1939::layer1::data_field<pgn>;
 
-    template <pgns pgn>
-    constexpr bool process_incoming(transport_type&, pdu<pgn>) const { return false; }
-
     // Effectively undefined/unhandled CAN frame.  Otherwise, you'll want to add to the switch/data_field mapper
-    constexpr bool process_incoming_default(transport_type&, const frame_type&) const
+    template <class Transport, class Frame>
+    static constexpr bool process_incoming_default(const Transport&, const Frame&)
     {
         return false;
     }
+};
+
+/// This is a noop reference type.  Only useful for testing and learning
+/// how to make a different impl
+/// @tparam TTransport
+template <class TTransport>
+class controller_application : public controller_application_base
+{
+protected:
+    typedef TTransport transport_type;
+    using frame_type = typename transport_type::frame;
+    //using endpoint_type = typename transport_type::endpoint_type;
+    //using message_type = typename transport_type::message_type;
+    using frame_traits = can::frame_traits<frame_type>;
+
+public:
+
+    template <pgns pgn>
+    constexpr bool process_incoming(transport_type&, pdu<pgn>) const { return false; }
 };
 
 // DEBT: Move aggregator to its own .h/.hpp file
