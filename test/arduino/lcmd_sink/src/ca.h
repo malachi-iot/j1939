@@ -3,7 +3,8 @@
 #include <estd/ostream.h>
 
 #include <j1939/pdu.h>
-#include <j1939/data_field/bjm1.hpp>
+#include <j1939/data_field/lighting_command.hpp>
+#include <j1939/data_field/lighting_data.hpp>
 
 #include "conf.h"
 
@@ -20,56 +21,45 @@ struct ArduinoLightingCommandSink
         return false;
     }
 
+    using status = j1939::spn::status;
+    using measured = j1939::spn::measured;
+
+    void digital_write(unsigned pin, status);
+
+    j1939::pdu<j1939::pgns::lighting_data> lighting_data_;
+
+    template <class Transport>
+    bool process_incoming(
+        Transport& transport,
+        const j1939::pdu<j1939::pgns::lighting_data>& pdu)
+    {
+        using traits = j1939::transport_traits<Transport>;
+
+        traits::send(transport, lighting_data_);
+
+        return false;
+    }
+
     template <class Transport>
     bool process_incoming(
         Transport&,
         const j1939::pdu<j1939::pgns::lighting_command>& pdu)
     {
-        using status = j1939::spn::status;
-
+        status s;
 #if CONFIG_GPIO_LEFT_BLINKER
-        switch(pdu.left_turn_signal())
-        {
-            case status::enable:
-                digitalWrite(CONFIG_GPIO_LEFT_BLINKER, HIGH);
-                break;
-
-            case status::disable:
-                digitalWrite(CONFIG_GPIO_LEFT_BLINKER, LOW);
-                break;
-
-            default: break;
-        }
+        s = pdu.left_turn_signal();
+        digital_write(CONFIG_GPIO_LEFT_BLINKER, s);
+        lighting_data_.left_turn_signal((measured)s);
 #endif
 #if CONFIG_GPIO_RIGHT_BLINKER
-        switch(pdu.right_turn_signal())
-        {
-            case status::enable:
-                digitalWrite(CONFIG_GPIO_RIGHT_BLINKER, HIGH);
-                break;
-
-            case status::disable:
-                digitalWrite(CONFIG_GPIO_RIGHT_BLINKER, LOW);
-                break;
-
-            default: break;
-        }
+        s = pdu.right_turn_signal();
+        digital_write(CONFIG_GPIO_RIGHT_BLINKER, s);
 #endif
 #if CONFIG_GPIO_CENTER_STOP_LIGHT
-        switch(pdu.center_stop())
-        {
-            case status::enable:
-                digitalWrite(CONFIG_GPIO_CENTER_STOP_LIGHT, HIGH);
-                break;
-
-            case status::disable:
-                digitalWrite(CONFIG_GPIO_CENTER_STOP_LIGHT, LOW);
-                break;
-
-            default: break;
-        }
+        s = pdu.center_stop();
+        digital_write(CONFIG_GPIO_CENTER_STOP_LIGHT, s);
+        lighting_data_.center_stop((measured)s);
 #endif
-
         return true;
     }
 

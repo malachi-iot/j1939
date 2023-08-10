@@ -47,6 +47,12 @@ constexpr descriptor get_descriptor<spns::left_turn_signal_lights>()
     return descriptor{ 2, 7, 2};
 }
 
+template <>
+constexpr descriptor get_descriptor<spns::center_stop_lights>()
+{
+    return { 3, 3, 2 };
+}
+
 }
 
 template <class TContainer>
@@ -59,6 +65,7 @@ struct data_field<pgns::lighting_data, TContainer> :
 
     EMBR_J1939_PROPERTY_ALIAS(left_turn_signal_lights, left_turn_signal);
     EMBR_J1939_PROPERTY_ALIAS(right_turn_signal_lights, right_turn_signal);
+    EMBR_J1939_PROPERTY_ALIAS(center_stop_lights, center_stop);
 };
 
 namespace pgn {
