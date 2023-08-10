@@ -14,7 +14,6 @@ bool can_online = false;
 //extern uint8_t source_address;
 
 extern arduino_ostream cout;
-extern arduino_istream cin;
 
 void twai_init();
 

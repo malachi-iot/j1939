@@ -33,17 +33,15 @@ static transport t;
 #endif
 
 
+scheduler_type scheduler;
+
 #if CONFIG_DIAGNOSTIC_CA
 diagnostic_ca<transport, arduino_ostream> dca(cout);
 #endif
 
-ArduinoLightingCommandCa ca;
+ArduinoLightingCommandCa ca(scheduler);
 
 using clock = estd::chrono::arduino_clock;
-
-
-// next scheduled debounce check
-static clock::time_point next;
 
 
 void setup()
@@ -54,16 +52,16 @@ void setup()
     while(!Serial);
 #endif
 
-    init_can(t);
-
-    next = clock::now();
-
     cout << F("LCMD CA") << estd::endl;
+
+    init_can(t);
 }
 
 
 void loop()
 {
+    scheduler.process();
+
     transport::frame f;
 
     if(t.receive(&f))
@@ -71,6 +69,6 @@ void loop()
 #if CONFIG_DIAGNOSTIC_CA
         process_incoming(dca, t, f);
 #endif
-        //process_incoming(ca, t, f);
+        process_incoming(ca, t, f);
     }
 }
