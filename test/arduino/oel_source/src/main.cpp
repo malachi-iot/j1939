@@ -40,6 +40,13 @@ template <unsigned pin_, bool inverted = false>
 using Debouncer = embr::arduino::debounce::v1::ultimate::Debouncer<pin_, inverted>;
 
 
+#if !CONFIG_GPIO_LEFT_BLINKER_SWITCH && \
+    !CONFIG_GPIO_RIGHT_BLINKER_SWITCH && \
+    !CONFIG_GPIO_MAIN_LIGHT_SWITCH && \
+    !CONFIG_GPIO_HAZARD_SWITCH
+#error No switches defined
+#endif
+
 estd::tuple<
     Debouncer<CONFIG_GPIO_LEFT_BLINKER_SWITCH>,
     Debouncer<CONFIG_GPIO_RIGHT_BLINKER_SWITCH>,
