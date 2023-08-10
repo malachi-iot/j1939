@@ -63,6 +63,8 @@ struct data_field<pgns::lighting_data, TContainer> :
 
     ESTD_CPP_FORWARDING_CTOR(data_field)
 
+    EMBR_J1939_PROPERTY(running_light);
+    
     EMBR_J1939_PROPERTY_ALIAS(left_turn_signal_lights, left_turn_signal);
     EMBR_J1939_PROPERTY_ALIAS(right_turn_signal_lights, right_turn_signal);
     EMBR_J1939_PROPERTY_ALIAS(center_stop_lights, center_stop);
