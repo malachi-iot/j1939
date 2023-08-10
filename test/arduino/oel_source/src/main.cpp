@@ -31,6 +31,7 @@ enum Switches
     SWITCH_LEFT_TURN = 0,
     SWITCH_RIGHT_TURN,
     SWITCH_MAIN,
+    SWITCH_HAZARD,
 
     SWITCH_MAX
 };
@@ -121,7 +122,7 @@ struct Visitor
     template <unsigned I>
     void operator()(embr::arduino::debounce::v1::ultimate::Event<I> e)
     {
-
+        changed.set(I);
     }
 };
 
@@ -147,16 +148,9 @@ void loop()
 
     next += 10ms;
 
-    bool v = false;
-    Visitor v2;
+    Visitor v;
 
-    switches.visit(embr::arduino::debounce::v1::ultimate::Visitor{},
-        [&](embr::debounce::v1::Event)
-    {
-        v = true;
-    });
-        // FIX: Odd, can't dedeuce template I
-        //v2);
+    switches.visit(embr::arduino::debounce::v1::ultimate::Visitor{}, v);
 
     /*
     bool v = get<SWITCH_LEFT_TURN>(switches).eval();
@@ -164,7 +158,7 @@ void loop()
     v |= get<SWITCH_RIGHT_TURN>(switches).eval();
     v |= get<SWITCH_MAIN>(switches).eval(); */
 
-    if(v)
+    if(v.changed.any())
     {
         using et = enum_type<spns::turn_signal_switch>;
         using et2 = enum_type<spns::main_light_switch>;
@@ -172,6 +166,7 @@ void loop()
         States left_state = get<SWITCH_LEFT_TURN>(switches).state();
         States right_state = get<SWITCH_RIGHT_TURN>(switches).state();
         States main_state = get<SWITCH_MAIN>(switches).state();
+        States hazard_state = get<SWITCH_HAZARD>(switches).state();
 
         if(left_state == States::On && right_state == States::On)
         {
@@ -186,8 +181,8 @@ void loop()
         pdu.main_light_switch(main_state == States::On ?
             et2::headlight_on : et2::off);
 
-        // TODO
-        pdu.hazard_light_switch(spn::measured::off);
+        pdu.hazard_light_switch(hazard_state == States::On ?
+            spn::measured::off : spn::measured::on);
 
         traits::send(t, pdu);
     }

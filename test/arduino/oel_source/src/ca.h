@@ -12,13 +12,18 @@
 
 // This is a dashboard-specific lighting command sink - rather than
 // output to actual headlight, etc. this is for indicators in the cabin
+// Nearly identical to "big boy" version, but doesn't interact with lighting_data
+// command
 
 struct ArduinoLightingCommandSink : embr::j1939::impl::controller_application_base
 {
-    using status = embr::j1939::spn::status;
-
     template <class Transport, class PDU>
     static constexpr bool process_incoming(Transport, PDU) { return false; }
+
+    using status = embr::j1939::spn::status;
+    using measured = embr::j1939::spn::measured;
+
+    void digital_write(unsigned pin, status);
 
     template <class Transport>
     bool process_incoming(
@@ -26,18 +31,10 @@ struct ArduinoLightingCommandSink : embr::j1939::impl::controller_application_ba
         const embr::j1939::pdu<pgns::lighting_command>& pdu)
     {
 #if CONFIG_GPIO_LEFT_BLINKER_INDICATOR != -1
-        switch(pdu.left_turn_signal())
-        {
-            case status::enable: break;
-            default: break;
-        }
+        digital_write(CONFIG_GPIO_LEFT_BLINKER_INDICATOR, pdu.left_turn_signal());
 #endif
 #if CONFIG_GPIO_RIGHT_BLINKER_INDICATOR != -1
-        switch(pdu.right_turn_signal())
-        {
-            case status::enable: break;
-            default: break;
-        }
+        digital_write(CONFIG_GPIO_RIGHT_BLINKER_INDICATOR, pdu.right_turn_signal());
 #endif
 
         return false;
