@@ -37,14 +37,14 @@ enum Switches
 
 namespace debounce = embr::debounce::v1::ultimate;
 
-template <unsigned pin_, bool inverted = false>
-using Debouncer = embr::arduino::debounce::v1::ultimate::Debouncer<pin_, inverted>;
+template <int pin_, bool inverted = false>
+using Debouncer = embr::arduino::debounce::v1::ultimate::Debouncer<(unsigned)pin_, inverted>;
 
 
-#if !CONFIG_GPIO_LEFT_BLINKER_SWITCH && \
-    !CONFIG_GPIO_RIGHT_BLINKER_SWITCH && \
-    !CONFIG_GPIO_MAIN_LIGHT_SWITCH && \
-    !CONFIG_GPIO_HAZARD_SWITCH
+#if CONFIG_GPIO_LEFT_BLINKER_SWITCH == -1 && \
+    CONFIG_GPIO_RIGHT_BLINKER_SWITCH == -1 && \
+    CONFIG_GPIO_MAIN_LIGHT_SWITCH == -1 && \
+    CONFIG_GPIO_HAZARD_SWITCH == -1
 #error No switches defined
 #endif
 
@@ -92,10 +92,13 @@ void setup()
 
     cout << F("OEL source") << estd::endl;
 
-    pinMode(CONFIG_GPIO_LEFT_BLINKER_SWITCH, OUTPUT);
-    pinMode(CONFIG_GPIO_RIGHT_BLINKER_SWITCH, OUTPUT);
-    pinMode(CONFIG_GPIO_MAIN_LIGHT_SWITCH, OUTPUT);
-    pinMode(CONFIG_GPIO_HAZARD_SWITCH, OUTPUT);
+    pinMode(CONFIG_GPIO_LEFT_BLINKER_SWITCH, INPUT);
+    pinMode(CONFIG_GPIO_RIGHT_BLINKER_SWITCH, INPUT);
+    pinMode(CONFIG_GPIO_MAIN_LIGHT_SWITCH, INPUT);
+    pinMode(CONFIG_GPIO_HAZARD_SWITCH, INPUT);
+
+    pinMode(CONFIG_GPIO_LEFT_BLINKER_INDICATOR, OUTPUT);
+    pinMode(CONFIG_GPIO_RIGHT_BLINKER_INDICATOR, OUTPUT);
 }
 
 
