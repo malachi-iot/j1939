@@ -4,7 +4,9 @@
 #include <estd/string.h>
 #include <estd/tuple.h>
 
-#include <embr/internal/debounce/ultimate.h>
+#undef max
+#include <embr/internal/bitset.h>
+#include <embr/platform/arduino/debounce.h>
 
 #include <j1939/pdu.h>
 #include <j1939/pgn.h>
@@ -22,41 +24,28 @@
 
 using namespace estd;
 using namespace embr::j1939;
-using namespace embr::units::literals;
 
-enum class switches
+enum Switches
 {
-    left_turn = 0,
-    right_turn = 1,
-    brake = 2,
+    SWITCH_LEFT_TURN = 0,
+    SWITCH_RIGHT_TURN,
+    SWITCH_MAIN,
 
-    MAX
+    SWITCH_MAX
 };
 
 namespace debounce = embr::debounce::v1::ultimate;
 
 template <unsigned pin_, bool inverted = false>
-struct ArduinoTracker : debounce::Tracker<uint16_t, inverted>
-{
-    using base_type = debounce::Tracker<uint16_t, inverted>;
-
-    static constexpr const unsigned pin = pin_;
-
-    bool eval()
-    {
-        // DEBT: We might prefer a more variadic/compile time exclusion here,
-        // though I expect this will optimize nicely
-        if(pin == 0) return false;
-
-        return base_type::eval(digitalRead(pin));
-    }
-};
+using Debouncer = embr::arduino::debounce::v1::ultimate::Debouncer<pin_, inverted>;
 
 
 estd::tuple<
-    ArduinoTracker<CONFIG_GPIO_LEFT_BLINKER_SWITCH>,
-    ArduinoTracker<CONFIG_GPIO_RIGHT_BLINKER_SWITCH>,
-    ArduinoTracker<CONFIG_GPIO_MAIN_LIGHT_SWITCH>> switches;
+    Debouncer<CONFIG_GPIO_LEFT_BLINKER_SWITCH>,
+    Debouncer<CONFIG_GPIO_RIGHT_BLINKER_SWITCH>,
+    Debouncer<CONFIG_GPIO_MAIN_LIGHT_SWITCH>,
+    Debouncer<CONFIG_GPIO_HAZARD_SWITCH>
+    > switches;
 
 arduino_ostream cout(Serial);
 
@@ -67,8 +56,9 @@ static transport t;
 #endif
 
 
+#if CONFIG_DIAGNOSTIC_CA
 diagnostic_ca<transport, arduino_ostream> dca(cout);
-
+#endif
 
 using States = embr::debounce::v1::States;
 using clock = estd::chrono::arduino_clock;
@@ -82,11 +72,20 @@ void setup()
 {
     Serial.begin(115200);
 
+#if CONFIG_SERIAL_WAIT
     while(!Serial);
+#endif
 
     init_can(t);
 
     next = clock::now();
+
+    cout << F("OEL source") << estd::endl;
+
+    pinMode(CONFIG_GPIO_LEFT_BLINKER_SWITCH, OUTPUT);
+    pinMode(CONFIG_GPIO_RIGHT_BLINKER_SWITCH, OUTPUT);
+    pinMode(CONFIG_GPIO_MAIN_LIGHT_SWITCH, OUTPUT);
+    pinMode(CONFIG_GPIO_HAZARD_SWITCH, OUTPUT);
 }
 
 
@@ -102,18 +101,31 @@ spn::measured convert_to_measured(embr::debounce::v1::States s)
     }
 }
 
+struct Visitor
+{
+    estd::bitset<SWITCH_MAX> changed;
+
+    template <unsigned I>
+    void operator()(embr::arduino::debounce::v1::ultimate::Event<I> e)
+    {
+
+    }
+};
 
 void loop()
 {
-    transport::frame f;
     using traits = transport_traits<transport>;
 
     pdu<pgns::oel> pdu;
+
+#if CONFIG_DIAGNOSTIC_CA
+    transport::frame f;
 
     if(t.receive(&f))
     {
         process_incoming(dca, t, f);
     }
+#endif
 
     // if we haven't yet reached timeout to check debounce status, abort
     // and re-loop
@@ -121,18 +133,31 @@ void loop()
 
     next += 10ms;
 
-    // FIX: estd has a bug where get<1> and down the line are ambiguous
+    bool v = false;
+    Visitor v2;
 
-    bool v = get<0>(switches).eval();
-    //get<1>(switches).eval();
-    //get<2>(switches).eval();
+    switches.visit(embr::arduino::debounce::v1::ultimate::Visitor{},
+        [&](embr::debounce::v1::Event)
+    {
+        v = true;
+    });
+        // FIX: Odd, can't dedeuce template I
+        //v2);
+
+    /*
+    bool v = get<SWITCH_LEFT_TURN>(switches).eval();
+    
+    v |= get<SWITCH_RIGHT_TURN>(switches).eval();
+    v |= get<SWITCH_MAIN>(switches).eval(); */
 
     if(v)
     {
         using et = enum_type<spns::turn_signal_switch>;
+        using et2 = enum_type<spns::main_light_switch>;
 
-        States left_state = get<0>(switches).state();
-        States right_state = States::Undefined; // get<1>(switches).state();
+        States left_state = get<SWITCH_LEFT_TURN>(switches).state();
+        States right_state = get<SWITCH_RIGHT_TURN>(switches).state();
+        States main_state = get<SWITCH_MAIN>(switches).state();
 
         if(left_state == States::On && right_state == States::On)
         {
@@ -143,6 +168,12 @@ void loop()
             pdu.turn_signal_switch(et::left_turn_to_be_flashing);
         else if(right_state == States::On)
             pdu.turn_signal_switch(et::right_turn_to_be_flashing);
+
+        pdu.main_light_switch(main_state == States::On ?
+            et2::headlight_on : et2::off);
+
+        // TODO
+        pdu.hazard_light_switch(spn::measured::off);
 
         traits::send(t, pdu);
     }
