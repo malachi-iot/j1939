@@ -41,6 +41,7 @@ enum class pgns : uint32_t
     auth21 = 0x6F,                              // [8] "Authentication Client to Authentication Server"
     ctpc = 0x71,                                // [8] "Configurable Transmit PGNs Command"
     NAME_mgmtmsg_experimental = 0x93,           // Unknown, I believe this goes here
+    proprietary_method_identification = 0x9B,   // [17]
     text_display = 0xA8,                        // [13]
     request2 = 0xC9,                            // [16]
     transfer_experimental = 0xCA,               // Unknown, I believe this goes here
@@ -114,6 +115,7 @@ enum class pgns : uint32_t
     vehicle_direction_speed = 65256,            // [13]
     //component_identification = 65259,           // [18]
     engine_temperature = 65262,
+    vehicle_position = 65267,                   // [17]
     vehicle_electrical_power_1 = 65271,         // [8], [18]
     operator_indicators = 65279,                ///<   J1939DA [8]
     direct_lamp_control_data2 = 0xFD04,         // [17]
@@ -136,8 +138,8 @@ enum class pgns : uint32_t
     brakes = 0xFEFA,                            // [17]
     dash_display = 0xFEFC,                      // [17]
 
-    mf2_start = 0xFF00,                         // [2]
-    mf2_end = 0xFFFF,                           // [2]
+    mf2_start = 0xFF00,                         // [2] aka "proprietary B" [16]
+    mf2_end = 0xFFFF,                           // [2] aka "proprietary B" [16]
 
     // NOTE: Following not necessarily j1939, may be NMEA 2000 only
     // +++ NMEA 2000 soft boundary

@@ -83,6 +83,9 @@ bool process_incoming(internal::app_state<TTransport, TImpl, TContext> state, co
         case pgns::commanded_address:
             return state.template invoker<pgns::commanded_address>(id, payload);
 
+        case pgns::proprietary_method_identification:
+            return state.template invoker<pgns::proprietary_method_identification>(id, payload);
+
         case pgns::direct_lamp_control_data1:
             return state.template invoker<pgns::direct_lamp_control_data1>(id, payload);
 
@@ -113,6 +116,15 @@ bool process_incoming(internal::app_state<TTransport, TImpl, TContext> state, co
         case pgns::lighting_command:
             return state.template invoker<pgns::lighting_command>(id, payload);
 
+        // manufacturer-specific.  THere's also mf2 and mf3, but those are a whole pgn
+        // range so it makes more sense for those to cascade out to 'default'
+        // Note also that if one is careful one can specialize payload for mf0/mf1
+        case pgns::mf0:
+            return state.template invoker<pgns::mf0>(id, payload);
+
+        case pgns::mf1:
+            return state.template invoker<pgns::mf1>(id, payload);
+
         case pgns::NAME_management_message:
             return state.template invoker<pgns::NAME_management_message>(id, payload);
 
@@ -124,6 +136,9 @@ bool process_incoming(internal::app_state<TTransport, TImpl, TContext> state, co
 
         case pgns::shutdown:
             return state.template invoker<pgns::shutdown>(id, payload);
+
+        case pgns::software_identification:
+            return state.template invoker<pgns::software_identification>(id, payload);
 
         case pgns::switch_bank_control:
             return state.template invoker<pgns::switch_bank_control>(id, payload);
@@ -145,6 +160,9 @@ bool process_incoming(internal::app_state<TTransport, TImpl, TContext> state, co
 
         case pgns::vehicle_electrical_power_1:
             return state.template invoker<pgns::vehicle_electrical_power_1>(id, payload);
+
+        case pgns::vehicle_position:
+            return state.template invoker<pgns::vehicle_position>(id, payload);
 
         default:
             // NOTE: Would use the same 'process_incoming' name, but inheritance member hiding

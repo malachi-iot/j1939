@@ -55,15 +55,17 @@ enum class spns
     brake_pedal_position = 521,                     ///< "Ratio of brake pedal position to maximum pedal position.  Used for electric brake applications. 0% means no braking.
                                                     ///<  Also when there are two brake pedals on the machine (Left Brake Pedal Position SPN 3033 and Right Brake Pedal
                                                     ///< Position SPN 3032) the maximum of the two should be transmitted for Brake Pedal Position." [7]
+    latitude = 584,                                 // [13]
+    longitude = 585,                                // [13]
     make = 586,                                     ///< "Make of the component" [11] ATA/VMRS code
     model = 587,                                    ///< "Model of the component" [11] ASCII
     serial_number = 588,                            ///< "Serial number of the component" [11] ASCII
     brake_switch = 597,                             // [5]
     red_stop_lamp = 623,                            // [16]
     amber_warning_lamp = 624,                       // [16]
-    left_turn_lamp_circuit = 0x36F,                 // [4], [6]
-    stop_turn_lamp_circuit = 0x370,                 // [4]
-    right_turn_lamp_circuit = 0x371,                // [4]
+    left_turn_lamp_circuit = 0x36F,                 // [4], [6], [15]
+    stop_turn_lamp_circuit = 0x370,                 // [4], [15]
+    right_turn_lamp_circuit = 0x371,                // [4], [15]
     headway_controller_right_turn_signal_monitor = 891,     // [6]
     headway_controller_left_turn_signal_monitor = 892,      // [6]
     engine_torque_mode = 899,                       // [5]
@@ -259,6 +261,7 @@ enum class spns
     tp_address_nack = 3291,                         // [14] Table D1
     tp_address_access_denied = 3292,                // [14] Table D1
     tp_address_busy = 3293,                         // [14] Table D1
+    prop_a2_pdu1 = 3328,                            // [15]
     brake_light_relay = 3541,                       // [15], [16]
     auxiliary_io_17 = 3840,                         // [13]
     aftertreatment_1_atomization_air_actuator = 3491, // [13]
@@ -294,6 +297,8 @@ enum class spns
     cab_dome_light_1_switch = 4058,                 // [16]
     actual_engine_percent_torque_fractional = 4154, // [5]
     auxiliary_io_channel_3 = 4158,                  // [13]
+    data_dictionary_manufacturer_code = 4180,       // [13]
+    data_dictionary_method = 4181,                  // [13]
     message_counter = 4206,                         ///< The message counter is used to detect situations where the transmitting ECU malfunction repeats the same frame all the time. [13]
     message_checksum = 4207,                        // [13]
     ecu_manufacturer_name = 4304,                   // [7]
