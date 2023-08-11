@@ -71,6 +71,9 @@ bool process_incoming(internal::app_state<TTransport, TImpl, TContext> state, co
         case pgns::basic_joystick_message_1:
             return state.template invoker<pgns::basic_joystick_message_1>(id, payload);
 
+        case pgns::brakes:
+            return state.template invoker<pgns::brakes>(id, payload);
+
         case pgns::cab_illumination_message:
             return state.template invoker<pgns::cab_illumination_message>(id, payload);
 
@@ -82,9 +85,6 @@ bool process_incoming(internal::app_state<TTransport, TImpl, TContext> state, co
 
         case pgns::commanded_address:
             return state.template invoker<pgns::commanded_address>(id, payload);
-
-        case pgns::proprietary_method_identification:
-            return state.template invoker<pgns::proprietary_method_identification>(id, payload);
 
         case pgns::direct_lamp_control_data1:
             return state.template invoker<pgns::direct_lamp_control_data1>(id, payload);
@@ -131,8 +131,17 @@ bool process_incoming(internal::app_state<TTransport, TImpl, TContext> state, co
         case pgns::oel:
             return state.template invoker<pgns::oel>(id, payload);
 
+        case pgns::proprietary_method_identification:
+            return state.template invoker<pgns::proprietary_method_identification>(id, payload);
+
         case pgns::request:
             return state.template invoker<pgns::request>(id, payload);
+
+        case pgns::sensor_electrical_power_1:
+            return state.template invoker<pgns::sensor_electrical_power_1>(id, payload);
+
+        case pgns::sensor_electrical_power_2:
+            return state.template invoker<pgns::sensor_electrical_power_2>(id, payload);
 
         case pgns::shutdown:
             return state.template invoker<pgns::shutdown>(id, payload);

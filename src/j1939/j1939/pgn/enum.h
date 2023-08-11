@@ -117,6 +117,7 @@ enum class pgns : uint32_t
     engine_temperature = 65262,
     vehicle_position = 65267,                   // [17]
     vehicle_electrical_power_1 = 65271,         // [8], [18]
+    brakes = 65274,                             // [17]
     operator_indicators = 65279,                ///<   J1939DA [8]
     direct_lamp_control_data2 = 0xFD04,         // [17]
     direct_lamp_control_data1 = 0xFD05,         // [17]
@@ -135,7 +136,6 @@ enum class pgns : uint32_t
     ccvs = 0xFEF1,                              // [5]
     ambient_conditions = 0xFEF5,                // [17]
     axle_information = 0xFEF9,                  // [17]
-    brakes = 0xFEFA,                            // [17]
     dash_display = 0xFEFC,                      // [17]
 
     mf2_start = 0xFF00,                         // [2] aka "proprietary B" [16]
