@@ -49,6 +49,7 @@ enum class spns
     trip_distance = 244,                            // [16]
     engine_oil_life_remaining = 355,                // [5]
     auxiliary_temperature_1 = 441,                  // [13]
+    vehicle_control_head_keyboard_message = 505,    // [15]
     drivers_demand_engine_percent_torque = 512,     // [5]
     actual_engine_percent_torque = 513,             // [5]
     brake_pedal_position = 521,                     ///< "Ratio of brake pedal position to maximum pedal position.  Used for electric brake applications. 0% means no braking.
@@ -229,6 +230,7 @@ enum class spns
     fms_diagnostic_supported = 2804,                // [13]
     fms_requests_supported = 2805,                  // [13]
     fms_sw_supported = 2806,                        // [11]
+    keypad = 2808,                                  // [15]
     NAME_of_working_set_member = 2845,              ///<  [12] 4.2.4.5
     address_assignment = 2847,                      ///<  "new source address" [5], [12] Section 4.2.3.3
     NAME_of_controller_application = 2848,          // [5], [12] Section 4.1.1

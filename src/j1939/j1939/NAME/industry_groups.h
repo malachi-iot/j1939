@@ -14,7 +14,7 @@ enum class industry_groups : uint8_t
 {
     global = 0,
     on_highway,
-    agricultrual_and_forestry,
+    agricultural_and_forestry,
     construction,
     marine,
     industrial = 5,

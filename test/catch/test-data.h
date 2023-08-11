@@ -45,7 +45,7 @@ template <bool arbitrary_address,
     int32_t id = -1>
 using NAME_agrigultural_planter = embr::j1939::layer0::NAME<
     arbitrary_address,
-    embr::j1939::industry_groups::agricultrual_and_forestry,
+    embr::j1939::industry_groups::agricultural_and_forestry,
     embr::j1939::vehicle_systems::secondary_tillage,
     embr::j1939::function_fields::section_on_off_control,
     id, mc>;

@@ -43,6 +43,7 @@ enum class function_fields
     // [1] Table B12 portion, overlapping
 
     // IG=0, VehSys=0
+    on_board_data_logger = 130,
     pc_keyboard = 131,
     keypad = 135,
 
@@ -61,7 +62,9 @@ enum class function_fields
     section_on_off_control = 129,
 
     // IG=3, VehSys=0
+    supplemental_sensor_processing_units = 138,
     joystick_control = 141,
+    rotation_sensor = 142,
     
     // IG=4, VehSys=30 (Power Management)
     pm_switch = 130,
