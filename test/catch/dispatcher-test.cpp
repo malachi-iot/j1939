@@ -42,7 +42,7 @@ TEST_CASE("dispatcher")
 
         dispatch(id, blinker_on, s);
 
-        auto& o = s.get<0>();
+        auto& o = estd::get<0>(s.observers());
 
         int counter = o.counters[pgns::oel];
 

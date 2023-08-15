@@ -23,6 +23,7 @@
 #include "nmea.hpp"
 #include "oel.hpp"
 #include "request.hpp"
+#include "sep1.hpp"
 #include "software.hpp"
 #include "switch_bank.hpp"
 #include "time.hpp"

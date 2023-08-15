@@ -46,6 +46,7 @@ enum class slots
     SAEpg00 = 116,          ///< PGN
     SAEpc04 = 128,
     SAEds02 = 142,
+    SAEev02 = 145,
     SAEec04 = 146,          ///< Electrical Current
     SAEpw01 = 147,
     SAEpa01 = 148,          ///< Apparent Power
@@ -55,6 +56,7 @@ enum class slots
     SAEca01 = 211,          ///< Battery Capacity
     SAESP00 = 214,          ///< SPN
     SAEOC00 = 216,
+    SAEev03 = 221,
     SAEvm02 = 222,          ///< Volume
     SAEtm14 = 224,
     SAEct09 = 230,          ///< Count
