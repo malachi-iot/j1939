@@ -9,6 +9,7 @@
 #include <estd/sstream.h>
 
 #include <j1939/ca.hpp>
+#include <j1939/cas/internal/time_date.h>
 
 #include <embr/platform/esp-idf/board.h>
 
@@ -112,6 +113,10 @@ extern "C" void app_main(void)
     twai_init();
     gpio_init();
     timer_init();
+
+    // DEBT: Doesn't belong in joystick per se but just fleshing it out for now
+    embr::j1939::internal::emit_time_date_functor<transport_type>
+        emit_td{app_domain::app.transport(), *nca.address() };
 
     ESP_LOGI(TAG, "start: sizeof(App)=%u", sizeof(App));
 
