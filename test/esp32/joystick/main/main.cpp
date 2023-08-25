@@ -106,6 +106,25 @@ void timer_init()
     app_domain::timer.start(&config, &alarm_config);
 }
 
+
+void time_date_emitter_init()
+{
+    // DEBT: Doesn't belong in joystick per se but just fleshing it out for now
+    embr::j1939::internal::emit_time_date_functor<transport_type>
+        emit_td{app_domain::app.transport(), app_domain::app.source_address() };
+
+    using function_type = scheduler_type::function_type;
+
+    // DEBT: Pretty sure we (theoretically) don't have to do a move here,
+    // although make_model does demand it.  That said, it's convenient to do
+    // so so that we can put emit_td on the stack and model itself bears
+    // full allocation responsibility
+    static auto model = function_type::make_model(std::move(emit_td));
+
+    // TODO: Needs that magical estd::detail::function / model glue here
+    app_domain::app.scheduler().schedule_now(&model);
+}
+
 extern "C" void app_main(void)
 {
     static const char* TAG = "app_main";
@@ -113,10 +132,7 @@ extern "C" void app_main(void)
     twai_init();
     gpio_init();
     timer_init();
-
-    // DEBT: Doesn't belong in joystick per se but just fleshing it out for now
-    embr::j1939::internal::emit_time_date_functor<transport_type>
-        emit_td{app_domain::app.transport(), *nca.address() };
+    time_date_emitter_init();
 
     ESP_LOGI(TAG, "start: sizeof(App)=%u", sizeof(App));
 
@@ -125,7 +141,7 @@ extern "C" void app_main(void)
         // DEBT: Find a way to satisfy watchdog/yield requirements so that we
         // can have a 0 tick timeout
 
-        app_domain::app.poll();
+        app_domain::app.poll();     // Notice any ISR-sourced button presses
         app_domain::twai.poll(100 / portTICK_PERIOD_MS);
     }
 }

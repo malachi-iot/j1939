@@ -38,7 +38,7 @@ struct emit_time_date_functor
             message.size());
 
         // DEBT: Need to pay attention to send failures
-        transport.send(frame)
+        transport.send(frame);
 
         *wake += estd::chrono::seconds(10);
 

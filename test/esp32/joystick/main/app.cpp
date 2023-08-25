@@ -51,7 +51,7 @@ void App::on_notify(changed<Service::id::substate> e, const TWAI& svc)
     switch(e.value)
     {
         case Service::Running:
-            nca_init(transport());
+            nca.start(transport());
             break;
 
         default:
@@ -78,7 +78,7 @@ void App::poll()
         j1939::pdu<j1939::pgns::basic_joystick_message_1> pdu;
 
         if(nca.address().has_value())
-            pdu.source_address(nca.address().value());
+            pdu.source_address(source_address());
 
         pdu.button1_pressed(event.state == debounce::v1::States::On ?
             j1939::spn::discrete_parameters::on : 

@@ -15,10 +15,12 @@
 // DEBT: there's a v2-ish flavor on the way, try that one out
 using scheduler_type = embr::scheduler::freertos::Scheduler<10>;
 
+// DEBT: Easily collided and confusing type name
+using proto_name = embr::j1939::layer0::NAME<true,
+    embr::j1939::industry_groups::construction,
+    embr::j1939::vehicle_systems::non_specific,
+    embr::j1939::function_fields::joystick_control>;
+
 // DEBT: default address manager should be something better than 'void'
 using nca_type = embr::j1939::impl::network_ca<transport_type, scheduler_type,
     embr::j1939::internal::prng_address_manager>;
-
-void nca_init(transport_type& t);
-
-extern nca_type nca;
