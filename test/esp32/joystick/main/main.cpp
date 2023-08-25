@@ -65,10 +65,15 @@ void gpio_init()
     io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
 
     // DEBT: Service is specifically ISR-based GPIO input, reflect that
-    // in naming
+    // in naming.
+    // DEBT: We'd prefer to use esp-idf's driver-based gpio here rather than straight ISR
     // DEBT: We prefer debouncer in which case gpio service is not wanted at all,
     // but the io config still is
-    app_domain::gpio.start(&io_conf);
+    // DEBT: A bit magical to know that ESP_INTR_FLAG_LEVEL1 the default used by both our GPIO
+    // handler as well as TWAI.  That's why we specify the not-ideal level 2 here (higher priority
+    // interrupt on a human oriented ISR) - note we only hit this on ESP32S3, but leaving the
+    // change in for others.  I keep thinking timer itself is also involved in this, but can't prove it
+    app_domain::gpio.start(&io_conf, ESP_INTR_FLAG_LEVEL2);
 }
 
 
