@@ -10,6 +10,8 @@
 
 #include <j1939/ca.hpp>
 
+#include <embr/platform/esp-idf/board.h>
+
 #include <embr/platform/esp-idf/service/diagnostic.h>
 #include <embr/platform/esp-idf/service/gpio.hpp>
 #include <embr/platform/esp-idf/service/gptimer.hpp>
