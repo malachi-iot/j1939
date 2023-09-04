@@ -1,13 +1,5 @@
 menu "J1939 Joystick"
 
-        config GPIO_TWAI_TX
-                int "Pin for TWAI/CAN TX"
-		default 5
-		
-        config GPIO_TWAI_RX
-                int "Pin for TWAI/CAN RX"
-		default 4
-
         config GPIO_BUTTON1
                 int "Pin for Button #1"
                 default 0

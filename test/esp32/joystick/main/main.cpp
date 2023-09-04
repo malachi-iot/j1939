@@ -44,13 +44,7 @@ App::Timer::runtime<filter_observer> timer;
 
 void twai_init()
 {
-    constexpr twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(
-        (gpio_num_t)CONFIG_GPIO_TWAI_TX,
-        (gpio_num_t)CONFIG_GPIO_TWAI_RX,
-        TWAI_MODE_NORMAL);
-    constexpr twai_timing_config_t t_config = TWAI_TIMING_CONFIG_125KBITS();
-
-    app_domain::twai.start(&g_config, &t_config);
+    app_domain::twai.start();
     app_domain::twai.autorx(true);
 }
 
