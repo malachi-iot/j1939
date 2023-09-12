@@ -21,3 +21,9 @@ add_library(malachi-iot::embr::j1939 ALIAS ${PROJECT_NAME})
 target_include_directories(${PROJECT_NAME} PUBLIC .)
 
 target_link_libraries(${PROJECT_NAME} malachi-iot::estd malachi-iot::embr can)
+
+# 12SEP23 DEBT: WiFi in here was always an experiment, and now it's only used by Chariot
+# project who itself is phasing it out
+if(ESP_PLATFORM)
+    target_link_libraries(${PROJECT_NAME} idf::esp_wifi)
+endif()
