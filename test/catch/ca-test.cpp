@@ -10,6 +10,7 @@
 #include <j1939/cas/network.hpp>
 #include <j1939/cas/transport_protocol.hpp>
 #include <j1939/cas/diagnostic.hpp>
+#include <j1939/cas/oel_source.h>
 
 #include <j1939/cas/internal/prng_address_manager.h>
 
@@ -249,6 +250,16 @@ TEST_CASE("Controller Applications")
 
         // TODO: Won't work yet because tuple doesn't yet have converting constructor
         //impl::controller_application_aggregator<nca_type> app_ca(nca_init2);
+    }
+    SECTION("sources")
+    {
+        // CA sources here are platform independent, which means they are largely a helper wrapper
+        // around CAN Transport itself since the IO of the platform does most of the work
+
+        SECTION("oel")
+        {
+            embr::j1939::ca::source::oel<can::loopback_transport> ca;
+        }
     }
 }
 
