@@ -5,7 +5,7 @@
 
 #include <embr/bits/bits.hpp>
 
-#include <embr/services.hpp>
+//#include <embr/services.hpp>
 
 #include "test-data.h"
 
@@ -35,9 +35,11 @@ TEST_CASE("experimental")
             REQUIRE(sg.s == "hi2u");
         }
     }
+    /*
+     * obsolete
     SECTION("services")
     {
         const int id = 0;
         services::manager.get(id);
-    }
+    }   */
 }
