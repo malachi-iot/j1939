@@ -82,6 +82,13 @@ struct type_traits<spns::month> : internal::slot_type_traits<slots::SAEcm01>
 
 };
 
+
+template <>
+struct type_traits<spns::year> : internal::slot_type_traits<slots::SAEcy01>
+{
+
+};
+
 template <>
 struct type_traits<spns::local_minute_offset> : internal::slot_type_traits<slots::SAEtm07>
 {
@@ -201,7 +208,11 @@ struct payload_put<pgns::time_date> : estd::internal::ostream_functor_tag
         // DEBT: We'd prefer not to have to reach into count() here
         // DEBT: We'd prefer to use the std time/date formatter put_time if possible,
         // though that's specific to ISO 9899 struct tm
+        // In the meantime, whipping up ISO 8601 flavor
         out << estd::dec << estd::setfill('0');
+        out << estd::setw(4) << payload.year().count() << '-';
+        out << estd::setw(2) << payload.month().count() << '-';
+        out << estd::setw(2) << payload.day().count() << 'T';
         out << estd::setw(2) << payload.hours().count() << ':';
         out << estd::setw(2) << payload.minutes().count() << ':';
         out << estd::setw(2) << payload.seconds().count();

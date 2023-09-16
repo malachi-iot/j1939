@@ -4,6 +4,8 @@
 
 #include "test-data.h"
 
+#include <j1939/data_field/time.hpp>
+
 using ostringstream = estd::detail::basic_ostream<estd::layer1::stringbuf<128>>;
 
 using namespace embr;
@@ -56,6 +58,23 @@ TEST_CASE("ostream")
 
             //REQUIRE(out_s == "ff ff ff ff ff ff ff ff ");
             REQUIRE(out_s == "high beam=no change");
+        }
+        SECTION("time_data")
+        {
+            data_field<pgns::time_date> payload;
+            embr::units::years<uint16_t> year(1990);
+
+            payload.year(5);    // DEBT: Year is 1985+ this value.  Make year truly take human readable value
+            //payload.year(year);
+            payload.month(12);
+            payload.day(25);
+            payload.hours(10);
+            payload.minutes(30);
+            payload.seconds(55);
+
+            out << j1939::internal::payload_put<pgns::time_date>{payload};
+
+            REQUIRE(out_s == "1990-12-25T10:30:55");
         }
     }
     SECTION("can_id")

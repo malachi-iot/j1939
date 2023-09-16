@@ -11,6 +11,7 @@
 #include <j1939/data_field/htr.hpp>
 #include <j1939/data_field/oel.hpp>
 #include <j1939/data_field/network.hpp>
+#include <j1939/data_field/time.hpp>
 
 using namespace embr::j1939;
 
@@ -98,6 +99,10 @@ TEST_CASE("pdu")
     SECTION("time_date")
     {
         pdu<pgns::time_date> p;
+
+        p.year(5);
+
+        REQUIRE(p.year().count() == 1990);
     }
     SECTION("commanded_address")
     {

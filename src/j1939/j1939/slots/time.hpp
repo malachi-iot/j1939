@@ -126,7 +126,8 @@ struct slot_traits<slots::SAEtm18> : spn::ranges::valid_signal<uint16_t>
 template <>
 struct slot_traits<slots::SAEcy01> : spn::ranges::valid_signal<uint8_t>
 {
-    using type = embr::units::years<uint8_t>;
+    using h = slot_traits_helper<int16_t, 1985>;
+    using type = embr::units::years<uint8_t, h::offset>;
 };
 
 
