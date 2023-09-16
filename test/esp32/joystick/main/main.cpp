@@ -27,6 +27,8 @@ static esp_idf::log_ostream clog;   // Coming along well, almost ready
 
 extern void twai_init();
 
+using board_traits = embr::esp_idf::board_traits;
+
 namespace app_domain {
 
 App app;
@@ -47,6 +49,32 @@ void twai_init()
     app_domain::twai.start();
     app_domain::twai.autorx(true);
 }
+
+namespace embr_R = embr::esp_idf::R;
+
+using status_leds = board_traits::io::selector<
+        embr::R::traits_selector<
+            embr_R::led,
+            embr_R::trait::status> >;
+
+template <class Selected, class Return>
+constexpr Return single_or_default(Return def = {})
+{
+    if constexpr(Selected::size())
+        return Selected::single::type::pin;
+    else
+        return def;
+}
+
+constexpr gpio_num_t status_led_pin()
+{
+    return single_or_default<status_leds>((gpio_num_t)-1);
+}
+
+// DEBT: Can't do this because no constexpr destructor
+//constexpr estd::optional<int> tester() { return 0; }
+
+constexpr embr::esp_idf::gpio led(status_led_pin());
 
 #define GPIO_INPUT_IO_0     CONFIG_GPIO_BUTTON1
 #define GPIO_INPUT_PIN_SEL  (1ULL<<GPIO_INPUT_IO_0)
@@ -71,6 +99,8 @@ void gpio_init()
     // interrupt on a human oriented ISR) - note we only hit this on ESP32S3, but leaving the
     // change in for others.  I keep thinking timer itself is also involved in this, but can't prove it
     app_domain::gpio.start(&io_conf, ESP_INTR_FLAG_LEVEL2);
+
+    if(status_leds::size()) led.set_direction(GPIO_MODE_OUTPUT);
 }
 
 
@@ -123,6 +153,10 @@ extern "C" void app_main(void)
 {
     static const char* TAG = "app_main";
 
+    ESP_LOGD(TAG, "start: vendor=%s board=%s",
+        board_traits::vendor,
+        board_traits::name);
+
     twai_init();
     gpio_init();
     timer_init();
@@ -130,12 +164,17 @@ extern "C" void app_main(void)
 
     ESP_LOGI(TAG, "start: sizeof(App)=%u", sizeof(App));
 
+    unsigned counter = 0;
+
     for(;;)
     {
+        
         // DEBT: Find a way to satisfy watchdog/yield requirements so that we
         // can have a 0 tick timeout
 
         app_domain::app.poll();     // Notice any ISR-sourced button presses
         app_domain::twai.poll(100 / portTICK_PERIOD_MS);
+
+        if(status_leds::size()) led.level(++counter % 2);
     }
 }
