@@ -11,7 +11,7 @@ struct emit_time_date_functor
 {
     Transport& transport;
 
-    // DEBT: Prefer a bit more interaction with notifies, but this ought
+    // DEBT: Prefer a bit more interaction via notifies, but this ought
     // to do in the short term
     const uint8_t& source_address;
 

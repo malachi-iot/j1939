@@ -43,6 +43,11 @@ void App::on_notify(TWAI::event::autorx e)
 }
 
 
+void App::on_notify(TWAI::event::alert e)
+{
+    ESP_LOGV(TAG, "on_notify: TWAI::event:alert");
+}
+
 // DEBT: Move nca & associated scheduler to self-contain inside of App
 void App::on_notify(changed<Service::id::substate> e, const TWAI& svc)
 {

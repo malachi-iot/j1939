@@ -52,7 +52,7 @@ void twai_init()
 
 namespace embr_R = embr::esp_idf::R;
 
-using status_leds = board_traits::io::selector<
+using status_leds = board_traits::io::where<
         embr::R::traits_selector<
             embr_R::led,
             embr_R::trait::status> >;
@@ -134,6 +134,8 @@ void timer_init()
 void time_date_emitter_init()
 {
     // DEBT: Doesn't belong in joystick per se but just fleshing it out for now
+    // DEBT: Not obvious that source_address is a reference and therefore auto updates
+    // into the functor
     embr::j1939::internal::emit_time_date_functor<transport_type>
         emit_td{app_domain::app.transport(), app_domain::app.source_address() };
 
@@ -165,6 +167,9 @@ extern "C" void app_main(void)
     ESP_LOGI(TAG, "start: sizeof(App)=%u", sizeof(App));
 
     unsigned counter = 0;
+
+    // NOTE: If CAN bus isn't physically online, the transmits will eventually hang for ~3 minutes
+    // Oddly I didn't see any alert events before then.
 
     for(;;)
     {

@@ -52,6 +52,7 @@ public:
 
     void on_notify(GPIO::event::gpio);
     void on_notify(TWAI::event::autorx);
+    void on_notify(TWAI::event::alert);
     void on_notify(Timer::event::callback);
 
     void on_notify(changed<embr::Service::id::substate> e, const TWAI&);
