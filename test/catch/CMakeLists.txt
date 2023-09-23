@@ -10,13 +10,24 @@ endif()
 
 add_definitions(-DUNIT_TESTING)
 
-set(ROOT_DIR ../..)
-set(EXT_DIR ${ROOT_DIR}/ext)
+
+include(../../tools/cmake/setvars.cmake)
 set(SRC_DIR ${ROOT_DIR}/src)
 
-add_subdirectory(${EXT_DIR}/embr/ext/estdlib/ext/Catch2 catch2)
 add_subdirectory(${SRC_DIR}/can can)
 add_subdirectory(${SRC_DIR}/j1939 j1939)
+
+Set(FETCHCONTENT_QUIET FALSE)
+
+FetchContent_Declare(
+    Catch2
+    GIT_REPOSITORY  https://github.com/catchorg/Catch2.git
+    GIT_TAG         v2.13.10
+    GIT_PROGRESS    TRUE
+    GIT_SHALLOW     TRUE
+)
+
+FetchContent_MakeAvailable(Catch2)
 
 set(SOURCE_FILES
     main.cpp
