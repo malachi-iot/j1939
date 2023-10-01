@@ -179,6 +179,7 @@ TEST_CASE("slots")
         //traits::type v1{traits::max()};
         traits::type v1{5}, v2{10};
         embr::units::years<uint16_t> v{1990};
+        embr::units::years<uint8_t> v_x{8};
 
         // FIX: We really want this to work
         //traits::type v3{v};
@@ -186,9 +187,17 @@ TEST_CASE("slots")
         REQUIRE(v.count() == 1990);
         REQUIRE(v1.count() == 1990);
 
+        // FIX: This isn't right, there shouldn't be an offset
+        // when coming direct from other years
+        traits::type v4{v_x};
+        REQUIRE(v4.count() == 1993);
+
         v = v2;
 
         REQUIRE(v.count() == 1995);
+
+        using h = slot_traits_helper<int16_t, 1985>;
+        using type = embr::units::years<uint8_t, h::offset>;
     }
     SECTION("internal")
     {
