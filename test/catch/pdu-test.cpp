@@ -103,6 +103,10 @@ TEST_CASE("pdu")
         p.year(5);
 
         REQUIRE(p.year().count() == 1990);
+
+        //embr::units::years<uint16_t> y(1996);
+
+        //p.year(y);
     }
     SECTION("commanded_address")
     {
