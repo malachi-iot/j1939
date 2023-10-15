@@ -52,6 +52,10 @@ void twai_init()
 
 namespace embr_R = embr::esp_idf::R;
 
+using leds = board_traits::io::where<
+        embr::R::traits_selector<
+            embr_R::led> >;
+
 using status_leds = board_traits::io::where<
         embr::R::traits_selector<
             embr_R::led,
@@ -60,10 +64,36 @@ using status_leds = board_traits::io::where<
 template <class Selected, class Return>
 constexpr Return single_or_default(Return def = {})
 {
-    if constexpr(Selected::size())
-        return Selected::single::type::pin;
+    if constexpr(Selected::size() == 1)
+        return Selected::single::pin;
     else
         return def;
+}
+
+template <class GPIO>
+void led_off(GPIO)
+{
+    static constexpr const char* TAG = "led_off";
+
+    constexpr embr::esp_idf::gpio led(GPIO::pin);
+
+    led.set_direction(GPIO_MODE_OUTPUT);
+    led.level(0);
+
+    ESP_LOGD(TAG, "pin = %u", (gpio_num_t)led);
+}
+
+
+template <class... Selected>
+void leds_off2(Selected ... selected)
+{
+    (led_off(selected), ...);
+}
+
+template <class... Selected>
+void leds_off(estd::variadic::types<Selected...>)
+{
+    leds_off2(Selected{}...);
 }
 
 constexpr gpio_num_t status_led_pin()
@@ -81,6 +111,10 @@ constexpr embr::esp_idf::gpio led(status_led_pin());
 
 void gpio_init()
 {
+    // Succeeds in turning off LEDs, but main ESP32 devkit has same GPIO for an LED as
+    // default CAN TX pin, so not doing this just yet
+    //leds_off(leds{});
+
     gpio_config_t io_conf = {};
 
     io_conf.intr_type = GPIO_INTR_ANYEDGE;
@@ -100,7 +134,12 @@ void gpio_init()
     // change in for others.  I keep thinking timer itself is also involved in this, but can't prove it
     app_domain::gpio.start(&io_conf, ESP_INTR_FLAG_LEVEL2);
 
-    if(status_leds::size()) led.set_direction(GPIO_MODE_OUTPUT);
+    if constexpr(status_leds::size())
+    {
+        // Sometimes LED is on same pin as button, in which case don't use it
+        if constexpr (led != GPIO_INPUT_IO_0)
+            led.set_direction(GPIO_MODE_OUTPUT);
+    }
 }
 
 
@@ -167,6 +206,7 @@ extern "C" void app_main(void)
     ESP_LOGI(TAG, "start: sizeof(App)=%u", sizeof(App));
 
     unsigned counter = 0;
+    bool led_on = false;
 
     // NOTE: If CAN bus isn't physically online, the transmits will eventually hang for ~3 minutes
     // Oddly I didn't see any alert events before then.
@@ -180,6 +220,11 @@ extern "C" void app_main(void)
         app_domain::app.poll();     // Notice any ISR-sourced button presses
         app_domain::twai.poll(100 / portTICK_PERIOD_MS);
 
-        if(status_leds::size()) led.level(++counter % 2);
+        ++counter;
+
+        if(counter % 50 == 0) ESP_LOGV(TAG, "counter: %u", counter);
+
+        if((counter % 10 == 0) && led != -1)
+            led.level(led_on = !led_on);
     }
 }
