@@ -49,7 +49,7 @@ struct NAME : internal::data_field_base<TContainer>
         { return spn::descriptor{1, 1, 21}; }
 
         static constexpr spn::descriptor ecu_instance()
-        { return spn::descriptor{5, 1, 5}; }
+        { return spn::descriptor{5, 1, 3}; }
 
         static constexpr spn::descriptor function()
         { return spn::descriptor{6, 1, 8}; }

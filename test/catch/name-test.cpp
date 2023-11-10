@@ -152,10 +152,9 @@ TEST_CASE("j1939-81 NAME")
 
             j1939::layer1::NAME name;
 
-            //sparse.populate(name);
-            name.function_instance(sparse.function_instance_);
-            // FIX: This ecu_instance setter somehow wipes out above value
-            name.ecu_instance(0);
+            sparse.populate(name);
+            //name.function_instance(sparse.function_instance_);
+            //name.ecu_instance(0);
 
             REQUIRE(name.function_instance().value() == 1);
         }
