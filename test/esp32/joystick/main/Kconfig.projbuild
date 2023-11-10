@@ -1,7 +1,21 @@
 menu "J1939 Joystick"
 
-        config GPIO_BUTTON1
-                int "Pin for Button #1"
-                default 0
+    config GPIO_BUTTON1
+        int "Pin for Button #1"
+        default 9 if IDF_TARGET_ESP32C3
+        default 0
+
+    config J1939_VEHICLE_SYSTEM_INSTANCE
+        int "NAME vehicle system instance"
+        default 2
+
+    config J1939_FUNCTION_INSTANCE
+        int "NAME function instance"
+        default 1 if IDF_TARGET_ESP32C3
+        default 0
+
+    config J1939_ECU_INSTANCE
+        int "NAME ecu instance"
+        default 0
 
 endmenu

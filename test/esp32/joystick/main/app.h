@@ -37,7 +37,10 @@ class App : transport_type
 public:
     App() :
         dca(out),
-        nca(proto_name::sparse(1, 0, 0), scheduler_)
+        nca(proto_name::sparse(
+            CONFIG_J1939_VEHICLE_SYSTEM_INSTANCE,
+            CONFIG_J1939_FUNCTION_INSTANCE,
+            CONFIG_J1939_ECU_INSTANCE), scheduler_)
     {
         // Kicks off its own FreeRTOS task.
         // DEBT: We'd prefer to do this in an on_notify startup somewhere
