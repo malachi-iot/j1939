@@ -4,6 +4,9 @@
 #include <nvs_flash.h>
 #include <driver/twai.h>
 
+// DEBT: Rework this to use EMBR specified values.  We don't sacrifice simplicity
+// since code can otherwise stay the same
+
 void twai_init()
 {
     // Oddly, at the moment, if in TWAI_MODE_LISTENER_ONLY we receive from M4:

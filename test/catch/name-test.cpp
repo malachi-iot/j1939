@@ -121,20 +121,44 @@ TEST_CASE("j1939-81 NAME")
     }
     SECTION("layer0")
     {
-        test::names::trailer_brake<true>::sparse name1;
-        j1939::layer1::NAME name2;
+        SECTION("trailer brake")
+        {
+            test::names::trailer_brake<true>::sparse name1;
+            j1939::layer1::NAME name2;
 
-        name1.populate(name2);
+            name1.populate(name2);
 
-        REQUIRE(name2.arbitrary_address_capable());
-        //REQUIRE(embr::get<j1939::industry_groups>(name2) ==
-        REQUIRE((j1939::industry_groups)name2.industry_group().cvalue() ==
+            REQUIRE(name2.arbitrary_address_capable());
+            //REQUIRE(embr::get<j1939::industry_groups>(name2) ==
+            REQUIRE((j1939::industry_groups)name2.industry_group().cvalue() ==
                 j1939::industry_groups::on_highway);
 
-        // Correctly is ambiguous, and qualifying by namespace
-        // fixes that
-        //test::names::synthetic_collider<true>::sparse name3;
-        test::names::ig2::synthetic_collider<true>::sparse name3;
+            // Correctly is ambiguous, and qualifying by namespace
+            // fixes that
+            //test::names::synthetic_collider<true>::sparse name3;
+            test::names::ig2::synthetic_collider<true>::sparse name3;
+        }
+        SECTION("joystick")
+        {
+            using proto_name = embr::j1939::layer0::NAME<true,
+                embr::j1939::industry_groups::construction,
+                embr::j1939::vehicle_systems::non_specific,
+                embr::j1939::function_fields::joystick_control>;
+
+            auto sparse = proto_name::sparse(2, 1, 0);
+
+            REQUIRE(sparse.function_instance_ == 1);
+            REQUIRE(sparse.ecu_instance_ == 0);
+
+            j1939::layer1::NAME name;
+
+            //sparse.populate(name);
+            name.function_instance(sparse.function_instance_);
+            // FIX: This ecu_instance setter somehow wipes out above value
+            name.ecu_instance(0);
+
+            REQUIRE(name.function_instance().value() == 1);
+        }
     }
     SECTION("layer2")
     {
