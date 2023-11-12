@@ -56,6 +56,7 @@ using leds = board_traits::io::where<
         embr::R::traits_selector<
             embr_R::led> >;
 
+// DEBT: Find a way to hang/stack status_leds off above leds finder
 using status_leds = board_traits::io::where<
         embr::R::traits_selector<
             embr_R::led,
@@ -107,7 +108,8 @@ constexpr gpio_num_t status_led_pin()
 constexpr embr::esp_idf::gpio led(status_led_pin());
 
 #define GPIO_INPUT_IO_0     CONFIG_GPIO_BUTTON1
-#define GPIO_INPUT_PIN_SEL  (1ULL<<GPIO_INPUT_IO_0)
+#define GPIO_INPUT_IO_1     CONFIG_GPIO_BUTTON2
+#define GPIO_INPUT_PIN_SEL  ((1ULL<<GPIO_INPUT_IO_0) | (1ULL<<GPIO_INPUT_IO_1))
 
 void gpio_init()
 {

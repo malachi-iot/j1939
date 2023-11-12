@@ -24,6 +24,7 @@ class App : transport_type
     nca_type nca;
 
     embr::esp_idf::debounce::v1::ultimate::Debouncer<CONFIG_GPIO_BUTTON1, true> button1;
+    embr::esp_idf::debounce::v1::ultimate::Debouncer<CONFIG_GPIO_BUTTON2, true> button2;
 
     template <class Property>
     using changed = embr::property::v1::event::PropertyChanged<Property>;

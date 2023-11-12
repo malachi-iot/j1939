@@ -19,10 +19,8 @@ void App::on_notify(GPIO::event::gpio gpio)
 
 void App::on_notify(Timer::event::callback)
 {
-    if(button1.eval())
-    {
-        q.send_from_isr(Event{button1.state(), 0});
-    }
+    if(button1.eval())  q.send_from_isr(Event{button1.state(), 0});
+    if(button2.eval())  q.send_from_isr(Event{button2.state(), 0});
 }
 
 
