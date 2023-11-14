@@ -21,10 +21,10 @@ void App::on_notify(Timer::event::callback)
 {
     if(button1.eval())  q.send_from_isr(Event{button1.state(), 0});
 #if CONFIG_BUTTON2
-    if(button2.eval())  q.send_from_isr(Event{button2.state(), 0});
+    if(button2.eval())  q.send_from_isr(Event{button2.state(), 1});
 #endif
 #if CONFIG_BUTTON3
-    if(button3.eval())  q.send_from_isr(Event{button3.state(), 0});
+    if(button3.eval())  q.send_from_isr(Event{button3.state(), 2});
 #endif
 }
 
@@ -88,9 +88,27 @@ void App::poll()
         if(nca.address().has_value())
             pdu.source_address(source_address());
 
-        pdu.button1_pressed(event.state == debounce::v1::States::On ?
+        j1939::spn::discrete_parameters on_or_off = event.state == debounce::v1::States::On ?
             j1939::spn::discrete_parameters::on : 
-            j1939::spn::discrete_parameters::off);
+            j1939::spn::discrete_parameters::off;
+
+        // DEBT: Sorta abusing 'pin' here, maybe we'd prefer to call it
+        // 'id' or 'user' (userdata) instead?.  We don't *have* to user
+        // reference Event either...
+        switch(event.pin)
+        {
+            case 0:
+                pdu.button1_pressed(on_or_off);
+                break;
+
+            case 1:
+                pdu.button2_pressed(on_or_off);
+                break;
+
+            case 2:
+                pdu.button3_pressed(on_or_off);
+                break;
+        }
 
         transport_traits::send(transport(), pdu);
     }
