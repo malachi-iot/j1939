@@ -23,8 +23,16 @@ class App : transport_type
     scheduler_type scheduler_;
     nca_type nca;
 
-    embr::esp_idf::debounce::v1::ultimate::Debouncer<CONFIG_GPIO_BUTTON1, true> button1;
-    embr::esp_idf::debounce::v1::ultimate::Debouncer<CONFIG_GPIO_BUTTON2, true> button2;
+    template <int gpio, bool invert>
+    using db = embr::esp_idf::debounce::v1::ultimate::Debouncer<gpio, invert>;
+
+    db<CONFIG_GPIO_BUTTON1, CONFIG_ACTIVE_STATE_BUTTON1> button1;
+#if CONFIG_BUTTON2
+    db<CONFIG_GPIO_BUTTON2, CONFIG_ACTIVE_STATE_BUTTON2> button2;
+#endif
+#if CONFIG_BUTTON3
+    db<CONFIG_GPIO_BUTTON3, CONFIG_ACTIVE_STATE_BUTTON3> button3;
+#endif
 
     template <class Property>
     using changed = embr::property::v1::event::PropertyChanged<Property>;

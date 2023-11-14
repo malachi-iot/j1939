@@ -20,7 +20,12 @@ void App::on_notify(GPIO::event::gpio gpio)
 void App::on_notify(Timer::event::callback)
 {
     if(button1.eval())  q.send_from_isr(Event{button1.state(), 0});
+#if CONFIG_BUTTON2
     if(button2.eval())  q.send_from_isr(Event{button2.state(), 0});
+#endif
+#if CONFIG_BUTTON3
+    if(button3.eval())  q.send_from_isr(Event{button3.state(), 0});
+#endif
 }
 
 
