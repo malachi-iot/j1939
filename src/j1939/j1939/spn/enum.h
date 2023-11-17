@@ -113,6 +113,7 @@ enum class spns
     instrument_panel_1_backlighting_driver = 1491,  // [6]
     instrument_panel_2_backlighting_driver = 1492,  // [6]
     armrest_1_switch_1 = 1503,                      // [5]
+    estimated_percent_fan_2_speed = 1550,           // [13]
     front_axle_left_wheel_speed = 1592,             // [7]
     front_axle_right_wheel_speed = 1593,            // [7]
     rear_axle_left_wheel_speed = 1594,              // [7]
