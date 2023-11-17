@@ -100,7 +100,7 @@ void loop()
 
     // meager thinning data - we need the equivelant of a debounce here,
     // perhaps a true blue smoothing/LP filter
-    if(abs(last_read - v) > 2)
+    if(abs(last_read - v) > 10)
     {
         last_read = v;
 
@@ -114,7 +114,8 @@ void loop()
         pdu.destination_address(0xFF);
 
         // FIX: Pushing adc_percent -> regular percent always gives us
-        // 0 - doesn't seem to be overflow
+        // 0 - doesn't seem to be overflow.  Seems to be a glitch in how
+        // percents do 0-100 vs 0-1 like most units
         adc_percent p(v);
         //slot_traits<slots::SAEpc03>::type p2(p);
         embr::units::percent<uint32_t> p3(v2);
@@ -146,5 +147,7 @@ void loop()
 
     //cout << F("reading: ") << embr::put_unit(mv2) << endl;
 
-    this_thread::sleep_for(100ms);
+    // No extra code to thin out CAN output, so theoretically we could spam
+    // the bus with a continuous 100 messages/s
+    this_thread::sleep_for(10ms);
 }
