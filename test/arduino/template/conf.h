@@ -19,3 +19,7 @@
 #ifndef CONFIG_SERIAL_WAIT
 #define CONFIG_SERIAL_WAIT 1
 #endif
+
+#ifndef CONFIG_LOGIC_VOLTAGE
+#define CONFIG_LOGIC_VOLTAGE 5.0
+#endif

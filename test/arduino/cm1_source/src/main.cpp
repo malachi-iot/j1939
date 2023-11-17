@@ -3,6 +3,7 @@
 #include <estd/chrono.h>
 #include <estd/string.h>
 #include <estd/tuple.h>
+#include <estd/thread.h>
 
 #include <j1939/pdu.h>
 #include <j1939/pgn.h>
@@ -13,6 +14,8 @@
 #include <j1939/ostream.h>
 
 #include <j1939/data_field/oel.hpp>
+#include <j1939/units/volts.h>
+#include <j1939/units/si.h>
 
 #include "ca.h"
 #include "conf.h"
@@ -35,14 +38,20 @@ static transport t;
 
 scheduler_type scheduler;
 
+using namespace estd::chrono_literals;
+
+namespace app {
+
+// M4 gets understandably mad, we collide with
+// https://pubs.opengroup.org/onlinepubs/9699919799/functions/clock.html
+// so isolate into app namespace
+using clock = estd::chrono::arduino_clock;
+
 #if CONFIG_DIAGNOSTIC_CA
 diagnostic_ca<transport, arduino_ostream> dca(cout);
 #endif
 
-ArduinoLightingCommandCa ca(scheduler);
-
-using clock = estd::chrono::arduino_clock;
-
+}
 
 void setup()
 {
@@ -52,23 +61,38 @@ void setup()
     while(!Serial);
 #endif
 
-    cout << F("LCMD CA") << estd::endl;
+    cout << F("CM1 Source") << estd::endl;
 
     init_can(t);
 }
+
+// presuming 10-bit resolution and no voltage correction curves
+using adc_volts = embr::units::volts<int16_t,
+    estd::ratio<(int)(CONFIG_LOGIC_VOLTAGE * 10), 1024 * 10> >;
 
 
 void loop()
 {
     scheduler.process();
 
+    int16_t v = analogRead(CM1_IO_FAN_POT);
+
+    // DEBT: doesn't work if I get rid of 'mv' temporary variable
+    adc_volts mv(v);
+    embr::units::millivolts<int16_t> mv2(mv);
+
     transport::frame f;
 
     if(t.receive(&f))
     {
 #if CONFIG_DIAGNOSTIC_CA
-        process_incoming(dca, t, f);
+        process_incoming(app::dca, t, f);
 #endif
-        process_incoming(ca, t, f);
     }
+
+    // Does use about 6 bytes less memory on AVR...
+    //cout << F("reading: ") << mv2.count() << F("mv ") << endl;
+    cout << F("reading: ") << embr::put_unit(mv2) << endl;
+
+    this_thread::sleep_for(100ms);
 }
