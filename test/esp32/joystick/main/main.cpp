@@ -108,8 +108,12 @@ constexpr gpio_num_t status_led_pin()
 constexpr embr::esp_idf::gpio led(status_led_pin());
 
 #define GPIO_INPUT_IO_0     CONFIG_GPIO_BUTTON1
+#ifndef CONFIG_GPIO_BUTTON2
+#define GPIO_INPUT_PIN_SEL  (1ULL<<GPIO_INPUT_IO_0)
+#else
 #define GPIO_INPUT_IO_1     CONFIG_GPIO_BUTTON2
 #define GPIO_INPUT_PIN_SEL  ((1ULL<<GPIO_INPUT_IO_0) | (1ULL<<GPIO_INPUT_IO_1))
+#endif
 
 void gpio_init()
 {

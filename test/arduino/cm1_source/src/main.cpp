@@ -14,6 +14,8 @@
 #include <j1939/ostream.h>
 
 #include <j1939/data_field/oel.hpp>
+
+#include <j1939/units/percent.h>
 #include <j1939/units/volts.h>
 #include <j1939/units/si.h>
 
@@ -69,10 +71,15 @@ void setup()
 // presuming 10-bit resolution and no voltage correction curves
 using adc_volts = embr::units::volts<int16_t,
     estd::ratio<(int)(CONFIG_LOGIC_VOLTAGE * 10), 1024 * 10> >;
+using adc_percent = embr::units::percent<int16_t, estd::ratio<1, 1024> >;
 
 
 void loop()
 {
+    static int16_t last_read = -1;
+
+    using traits = transport_traits<transport>;
+
     scheduler.process();
 
     int16_t v = analogRead(CM1_IO_FAN_POT);
@@ -80,6 +87,22 @@ void loop()
     // DEBT: doesn't work if I get rid of 'mv' temporary variable
     adc_volts mv(v);
     embr::units::millivolts<int16_t> mv2(mv);
+
+
+    // meager thinning data - we need the equivelant of a debounce here,
+    // perhaps a true blue smoothing/LP filter
+    if(last_read != v)
+    {
+        pdu<pgns::cab_message1> pdu;
+
+        adc_percent p(v);
+
+        pdu.requested_percent_fan_speed(p);
+
+        traits::send(t, pdu);
+
+        cout << F("reading: ") << embr::put_unit(mv2) << endl;
+    }
 
     transport::frame f;
 
@@ -92,7 +115,8 @@ void loop()
 
     // Does use about 6 bytes less memory on AVR...
     //cout << F("reading: ") << mv2.count() << F("mv ") << endl;
-    cout << F("reading: ") << embr::put_unit(mv2) << endl;
+
+    //cout << F("reading: ") << embr::put_unit(mv2) << endl;
 
     this_thread::sleep_for(100ms);
 }
