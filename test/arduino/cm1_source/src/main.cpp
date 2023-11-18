@@ -80,7 +80,9 @@ void setup()
 // presuming 10-bit resolution and no voltage correction curves
 using adc_volts = embr::units::volts<int16_t,
     estd::ratio<(int)(CONFIG_LOGIC_VOLTAGE * 10), 1024 * 10> >;
-using adc_percent = embr::units::percent<int16_t, estd::ratio<1, 1024> >;
+
+// i.e. // 512/1024 = 0.5 then we need * 100
+using adc_percent = embr::units::percent<int16_t, estd::ratio<100, 1024> >;
 
 
 void loop()
@@ -104,7 +106,7 @@ void loop()
     {
         last_read = v;
 
-        uint32_t v2 = (int32_t)v * 100 / 1024;
+        const adc_percent p(v);
         
         pdu<pgns::cab_message1> pdu;
 
@@ -113,17 +115,9 @@ void loop()
 
         pdu.destination_address(0xFF);
 
-        // FIX: Pushing adc_percent -> regular percent always gives us
-        // 0 - doesn't seem to be overflow.  Seems to be a glitch in how
-        // percents do 0-100 vs 0-1 like most units
-        adc_percent p(v);
-        //slot_traits<slots::SAEpc03>::type p2(p);
-        embr::units::percent<uint32_t> p3(v2);
-        slot_traits<slots::SAEpc03>::type p2(p3);
+        embr::units::percent<int16_t> p3(p);
 
-        //pdu.requested_percent_fan_speed(p);
-        pdu.requested_percent_fan_speed(p2);
-        //pdu.requested_percent_fan_speed(p3);
+        pdu.requested_percent_fan_speed(p);
 
         traits::send(t, pdu);
 

@@ -27,12 +27,23 @@ constexpr amps<Rep, Period3> operator /(
 
 namespace internal {
 
+// DEBT: Consolidate with all the clever chrono "common_type" versions - for now
+// implementing only the most basic to avoid too much code duplication
+
 template <typename Rep, class Period, class Tag, class F>
-constexpr unit_base<Rep, Period, Tag, F>& operator +(
-    unit_base<Rep, Period, Tag, F>& lhs,
-    unit_base<Rep, Period, Tag, F>& rhs)
+constexpr unit_base<Rep, Period, Tag, F> operator +(
+    const unit_base<Rep, Period, Tag, F>& lhs,
+    const unit_base<Rep, Period, Tag, F>& rhs)
 {
-    return { lhs.root_count() + rhs.root_count() };
+    return unit_base<Rep, Period, Tag, F>{ lhs.root_count() + rhs.root_count() };
+}
+
+template <typename Rep, class Period, class Tag, class F>
+constexpr unit_base<Rep, Period, Tag, F> operator -(
+    const unit_base<Rep, Period, Tag, F>& lhs,
+    const unit_base<Rep, Period, Tag, F>& rhs)
+{
+    return unit_base<Rep, Period, Tag, F>{ lhs.root_count() - rhs.root_count() };
 }
 
 }

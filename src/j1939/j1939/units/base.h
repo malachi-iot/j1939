@@ -98,6 +98,10 @@ class unit_base :
 protected:
     Rep rep_;
 
+#if UNIT_TESTING
+public:
+#endif
+
     // DEBT: Copy/pasted from estd::chrono duration
     // It does work, but it is prone to overflow so be careful.  Also,
     // chrono one is supposed to offer compile time protection against overflow

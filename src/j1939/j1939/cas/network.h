@@ -324,7 +324,7 @@ struct network_ca : impl::controller_application<TTransport>,
     {
         // DEBT: For values at a minimum we shouldn't need to forward
         // here
-        return { std::forward<TLayer0Name>(sparse), scheduler };
+        return init1<TLayer0Name>{ std::forward<TLayer0Name>(sparse), scheduler };
     }
 
     template <class TLayer0Name, estd::enable_if_t<estd::is_base_of<

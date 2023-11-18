@@ -119,6 +119,24 @@ TEST_CASE("units")
 
             REQUIRE(out_s == "50.70 percent");
         }
+        SECTION("conversion")
+        {
+            // Need 100:1024 because ->
+            // 512/1024 = 0.5 then we need * 100
+            percent<int16_t, estd::ratio<100, 1024> > adc1{512};
+            percent<int> p{adc1};
+            percent<double> percent4{adc1};
+
+            REQUIRE(p.count() == 50);
+
+            percent3 = adc1;
+
+            REQUIRE(percent3.count() == 50);
+
+            adc1 = percent1;
+
+            REQUIRE(adc1.count() == 519);
+        }
     }
     SECTION("conversions")
     {
@@ -168,5 +186,25 @@ TEST_CASE("units")
 
         REQUIRE(d1 == estd::chrono::milliseconds(0));
         REQUIRE(d2 == estd::chrono::milliseconds(153));
+    }
+    SECTION("operators")
+    {
+        // DEBT: 55_pct doesn't auto play nice with percent<double>
+
+        percent<int16_t, estd::ratio<100, 1024> >
+            adc_p1(512), adc_p2(100);
+        percent<double> p1(55.0_pct);
+        //percent<float> p2(45.0_pct);
+        percent<float> p2(45.0);
+
+        // would need conversion too, we're not there yet
+        //auto v = p1 + p2;
+        auto v = adc_p1 + adc_p2;
+
+        REQUIRE(v.count() == 612);
+
+        v = adc_p2 - adc_p1;
+
+        REQUIRE(v.count() == -412);
     }
 }
