@@ -87,27 +87,24 @@ using adc_percent = embr::units::percent<int16_t, estd::ratio<100, 1024> >;
 
 void loop()
 {
-    static int16_t last_read = -1;
+    static adc_percent last_read{-1};
 
     using traits = transport_traits<transport>;
 
     scheduler.process();
 
-    int16_t v = analogRead(CM1_IO_FAN_POT);
+    adc_percent v(analogRead(CM1_IO_FAN_POT));
 
     // DEBT: doesn't work if I get rid of 'mv' temporary variable
-    adc_volts mv(v);
+    adc_volts mv(v.count());
     embr::units::millivolts<int16_t> mv2(mv);
-
 
     // meager thinning data - we need the equivelant of a debounce here,
     // perhaps a true blue smoothing/LP filter
-    if(abs(last_read - v) > 10)
+    if(abs(last_read.count() - v.count()) > 10)
     {
         last_read = v;
 
-        const adc_percent p(v);
-        
         pdu<pgns::cab_message1> pdu;
 
         if(app::nca.has_address())
@@ -115,15 +112,15 @@ void loop()
 
         pdu.destination_address(0xFF);
 
-        embr::units::percent<int16_t> p3(p);
-
-        pdu.requested_percent_fan_speed(p);
+        pdu.requested_percent_fan_speed(v);
 
         traits::send(t, pdu);
 
         cout << F("reading: ") << embr::put_unit(mv2) << F("/");
-        cout << p.count() << F("/");
-        cout << embr::put_unit(p3) << endl;
+        cout << v.count() << F("/");
+        // DEBT: Curiously, we can put <double> here but not <float>, estd's
+        // ostream gets confused.  Doing neither just to save a few bytes
+        cout << embr::put_unit(embr::units::percent<int16_t>(v)) << endl;
     }
 
     transport::frame f;
