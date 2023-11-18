@@ -80,6 +80,24 @@ struct compound_unit_helper
     using type = unit_base<rep, period, tag_type>;
 };
 
+// EXPERIMENTAL
+template <class Unit>
+struct unit_traits
+{
+    using value_type = typename Unit::rep;
+    using limits = estd::numeric_limits<value_type>;
+
+    static constexpr value_type min()
+    {
+        return limits::min();
+    }
+
+    static constexpr value_type max()
+    {
+        return limits::max();
+    }
+};
+
 
 // DEBT: Consolidate this with chrono if we can.  Specifically, I don't want disperate
 // scalar bases intermingling with one another, so we need some kind of type lockout/forced
@@ -90,13 +108,15 @@ struct compound_unit_helper
 /// @tparam Tag differentiating tag so as to disallow one unit from automatically converting to another
 /// @tparam F final conversion.  defaults to passhtrough (noop)
 template <typename Rep, class Period, class Tag,
-    EMBR_J1939_CONCEPT(Adder<Rep>) F>
+    ESTD_CPP_CONCEPT(Adder<Rep>) F>
 class unit_base :
     public unit_base_tag,
     public Tag        // Deriving from tag not necessary, but might be useful for is_base_of query
 {
 protected:
     Rep rep_;
+
+    using traits_type = unit_traits<unit_base>;
 
 #if UNIT_TESTING
 public:
@@ -187,6 +207,14 @@ public:
     unit_base& operator +=(const unit_base& v)
     {
         rep_ += v.rep_;
+        return *this;
+    }
+
+    // EXPERIMENTAL - may have diminished/confusing utility especially for
+    // floating point types
+    unit_base& operator ++()
+    {
+        ++rep_;
         return *this;
     }
 };

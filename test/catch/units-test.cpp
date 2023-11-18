@@ -207,4 +207,30 @@ TEST_CASE("units")
 
         REQUIRE(v.count() == -412);
     }
+    SECTION("traits")
+    {
+        // Experimental and clumsy, but could be quite useful say to initialize
+        // a bitrate-limited frequency with a percentage by way of a 'max' trait
+        using traits = embr::units::internal::unit_traits<khz<int> >;
+        auto min = traits::min();
+        REQUIRE(min < 0);
+
+        khz<int> dest = get_from_percent(53_pct, khz<int>(10000));
+
+        REQUIRE(dest.count() == 5300);
+
+        percent<int, estd::ratio<100, 1024>> p(50_pct);
+
+        dest = get_from_percent(p, khz<int>(10000));
+
+        REQUIRE(dest.count() == 5000);
+
+        ++dest;
+
+        REQUIRE(dest.count() == 5001);
+
+        ++p;
+
+        REQUIRE(p == 50.09765625_pct);
+    }
 }
