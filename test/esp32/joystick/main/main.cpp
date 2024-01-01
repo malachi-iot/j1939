@@ -52,6 +52,7 @@ void twai_init()
 
 namespace embr_R = embr::esp_idf::R;
 
+#if CONFIG_STATUS_LED == -1
 using leds = board_traits::io::where<
         embr::R::traits_selector<
             embr_R::led> >;
@@ -106,6 +107,9 @@ constexpr gpio_num_t status_led_pin()
 //constexpr estd::optional<int> tester() { return 0; }
 
 constexpr embr::esp_idf::gpio led(status_led_pin());
+#else
+constexpr embr::esp_idf::gpio led((gpio_num_t)CONFIG_STATUS_LED);
+#endif
 
 #define GPIO_INPUT_IO_0     CONFIG_GPIO_BUTTON1
 #ifndef CONFIG_GPIO_BUTTON2
@@ -140,12 +144,16 @@ void gpio_init()
     // change in for others.  I keep thinking timer itself is also involved in this, but can't prove it
     app_domain::gpio.start(&io_conf, ESP_INTR_FLAG_LEVEL2);
 
+#if CONFIG_STATUS_LED == -1
     if constexpr(status_leds::size())
     {
         // Sometimes LED is on same pin as button, in which case don't use it
         if constexpr (led != GPIO_INPUT_IO_0)
             led.set_direction(GPIO_MODE_OUTPUT);
     }
+#else
+    led.set_direction(GPIO_MODE_OUTPUT);
+#endif
 }
 
 
@@ -156,6 +164,7 @@ void timer_init()
         .clk_src = GPTIMER_CLK_SRC_DEFAULT,
         .direction = GPTIMER_COUNT_UP,
         .resolution_hz = 1 * 1000 * 1000, // 1MHz, 1 tick = 1us
+        .intr_priority = 0,                 // 31DEC23 Added - unsure if esp-idf < 5.1.2 has this
         .flags
         {
             .intr_shared = true

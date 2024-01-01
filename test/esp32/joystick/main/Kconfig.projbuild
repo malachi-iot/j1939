@@ -51,4 +51,12 @@ menu "J1939 Joystick"
         int "NAME ecu instance"
         default 0
 
+    config STATUS_LED
+        int "pin of status LED. -1 means auto-deduce"
+        default -1
+        help
+            Status LED by default is auto-deduced based on selected board.
+            This is overridden to a specific IO based on STATUS_LED
+
+
 endmenu
