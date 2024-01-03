@@ -45,4 +45,4 @@ build-*/
 # esp-idf
 sdkconfig
 sdkconfig.old
-
+dependencies.lock
