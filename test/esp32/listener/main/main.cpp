@@ -77,19 +77,26 @@ extern "C" void app_main(void)
                 continue;
             }
 
-            // Prefer not aggregating them since as a diagnostic app we prefer
-            // any glitches to be easier to diagnose
-            embr::j1939::process_incoming(dca, t, frame);
-            embr::j1939::process_incoming(nca, t, frame);
+            // One RX event might mean many frames available
+            do
+            {
 
-            // TODO: Could be interesting to make an 'out' which uses esp-idf's low level
-            // log output facility and/or low level serial output
+                // Prefer not aggregating them since as a diagnostic app we prefer
+                // any glitches to be easier to diagnose
+                embr::j1939::process_incoming(dca, t, frame);
+                embr::j1939::process_incoming(nca, t, frame);
 
-            // diagnostic_ca emits eol into 'out'
-            esp_log_write(ESP_LOG_INFO, TAG, out_s.data());
+                // TODO: Could be interesting to make an 'out' which uses esp-idf's low level
+                // log output facility and/or low level serial output
 
-            // This just clears format/error flags, we need an out.rdbuf()->clear();
-            //out.clear();
+                // diagnostic_ca emits eol into 'out'
+                esp_log_write(ESP_LOG_INFO, TAG, out_s.data());
+
+                // This just clears format/error flags, we need an out.rdbuf()->clear();
+                //out.clear();
+                out.rdbuf()->clear();
+            }
+            while(transport_type::receive(&frame));
         }
         else
             // Just in case of problems, wait a little to avoid overly spamming
