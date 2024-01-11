@@ -73,6 +73,30 @@ void App::on_notify(changed<Service::id::substate> e, const TWAI& svc)
 void App::on_notify(changed<Service::id::state> e, TWAI& svc)
 */
 
+// None of this works, so going specialization route
+//#define BJM_PASTER(num) j1939::pgns::basic_joystick_message_ ## num
+//#define BJM_PGN    BJM_PASTER(CONFIG_J1939_BJM_NUMBER)
+//#define BJM_NUMBER() CONFIG_J1939_BJM_NUMBER
+//#define BJM_PGN j1939::pgns::basic_joystick_message_## CONFIG_J1939_BJM_NUMBER
+//#define BJM_PGN j1939::pgns::basic_joystick_message_## BJM_NUMBER()
+
+template <int bjm_number>
+struct bjm_pgn_provider;
+
+template <j1939::pgns pgn>
+using pgn_provider = std::integral_constant<j1939::pgns, pgn>;
+
+template <>
+struct bjm_pgn_provider<1> : pgn_provider<j1939::pgns::basic_joystick_message_1> {};
+
+template <>
+struct bjm_pgn_provider<2> : pgn_provider<j1939::pgns::basic_joystick_message_2> {};
+
+template <>
+struct bjm_pgn_provider<3> : pgn_provider<j1939::pgns::basic_joystick_message_3> {};
+
+template <>
+struct bjm_pgn_provider<4> : pgn_provider<j1939::pgns::basic_joystick_message_4> {};
 
 
 void App::poll()
@@ -83,7 +107,9 @@ void App::poll()
     {
         ESP_LOGI(TAG, "poll: event=%s", embr::to_string(event.state));
 
-        j1939::pdu<j1939::pgns::basic_joystick_message_1> pdu;
+        constexpr j1939::pgns bjm_pgn = bjm_pgn_provider<CONFIG_J1939_BJM_NUMBER>::value;
+
+        j1939::pdu<bjm_pgn> pdu;
 
         if(nca.address().has_value())
             pdu.source_address(source_address());

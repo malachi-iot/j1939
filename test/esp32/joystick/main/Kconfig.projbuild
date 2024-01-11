@@ -10,6 +10,12 @@ menu "J1939 Joystick"
         range 0 1
         default 0
 
+    config MOMENTARY_BUTTON1
+        bool "Set true for momentary, false for latching"
+        default true
+        help
+            Not active yet
+
     config BUTTON2
         bool "Enable Button #2"
 
@@ -37,6 +43,9 @@ menu "J1939 Joystick"
             default 0
     endif
 
+    config J1939_BJM_NUMBER
+        int "Which Basic Joystick Message # to emit"
+        default 1
 
     config J1939_VEHICLE_SYSTEM_INSTANCE
         int "NAME vehicle system instance"

@@ -77,6 +77,8 @@ enum class pgns : uint32_t
     evoi1 = 64617,                              ///<  EV Operator Indicators 1 [8]
     armswimc =  64745,                          ///<  Armrest Switch Matrix Commands [8]
     aiso = 64770,                               ///<  All implements stop operations switch state [8]
+    basic_joystick_message_4 = 64816,           // [17]
+    bjm4 = basic_joystick_message_4,
     fan_drive_2 = 64817,                        // [11]
     sae_j2012_dtc_display = 64906,              // [18]
     generator_total_ac_percent_power = 64911,   // [18]
@@ -98,6 +100,10 @@ enum class pgns : uint32_t
     basic_joystick_message_1 = 64982,           // [13]
     bjm1 = basic_joystick_message_1,
     extended_joystick_message_1 = 64983,        // [13]
+    basic_joystick_message_2 = 64984,           // [17]
+    bjm2 = basic_joystick_message_2,
+    basic_joystick_message_3 = 64984,           // [17]
+    bjm3 = basic_joystick_message_3,
     wsmem = 65036,                              ///< "Working Set Master Message" [10] 4.2.4.2
     wsmstr = 65037,                             ///< "Working Set Member Message" [10] 4.2.4.4
     vehicle_electrical_power_3 = 65106,         // [11], [18]
