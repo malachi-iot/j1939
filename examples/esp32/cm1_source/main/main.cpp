@@ -6,7 +6,7 @@
 
 #include <embr/platform/esp-idf/board.h>
 
-using board_traits = embr::esp_idf::board_traits;
+using board_traits = embr::esp_idf::traits::v1::board;
 
 extern "C" void app_main(void)
 {
@@ -15,4 +15,9 @@ extern "C" void app_main(void)
     ESP_LOGD(TAG, "start: board=%s %s",
         board_traits::vendor,
         board_traits::name);
+
+    for(;;)
+    {
+        
+    }
 }
