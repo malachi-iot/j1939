@@ -71,6 +71,9 @@ struct payload_put<pgns::cab_message1> : estd::internal::ostream_functor_tag
         embr::units::percent<short> p = payload.requested_percent_fan_speed();
         embr::units::celsius<short> c = payload.cab_interior_temperature_command();
 
+        // DEBT: Filter out by null/noop values
+
+        out << estd::dec;   // DEBT: Needing to be way too explicit about this guy
         out << "temp=" << put_unit(c) << ' ' << "fan=" << put_unit(p);
     }
 };

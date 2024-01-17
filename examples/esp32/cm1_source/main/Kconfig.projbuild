@@ -1,0 +1,13 @@
+menu "J1939 Example: Cab Message 1"
+
+    config GPIO_BUTTON1
+        int "Pin for Button #1"
+        default 9 if IDF_TARGET_ESP32C3
+        default 0
+
+    config ACTIVE_STATE_BUTTON1
+        int "Set 0 for active low"
+        range 0 1
+        default 0
+
+endmenu

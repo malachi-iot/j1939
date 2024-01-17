@@ -29,7 +29,9 @@ template <>
 struct traits<internal::percent_tag>
 {
     static constexpr const char* name() { return "percent"; }
-    static constexpr const char* abbrev() { return "%%"; }
+    // FIX: Under esp-idf, this gets consumed somehow.  Does not need escaping
+    // under linux.
+    static constexpr const char* abbrev() { return "%"; }
 };
 
 //inline namespace v1 {

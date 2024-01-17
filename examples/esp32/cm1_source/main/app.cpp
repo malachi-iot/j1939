@@ -101,7 +101,11 @@ void App::on_notify(changed<Service::id::substate> e, const TWAI&)
 // Debounce event
 void App::on_notify(Event e)
 {
-    ESP_LOGD(TAG, "on_notify: Debounce event");
+    ESP_LOGV(TAG, "on_notify: Debounce event");
+    if(e.state == embr::debounce::v1::States::Pressed)
+    {
+        bump();
+    }
 }
 
 

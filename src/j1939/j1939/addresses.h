@@ -13,7 +13,7 @@ namespace embr { namespace j1939 {
 // All from [1], [2]
 // See [2] Table B2 for full descriptions
 // "Preferred Addresses Industry Group #0 - Global"
-enum addresses
+enum class addresses
 {
     // NAME Function 0 (engine)
     engine1 = 0,

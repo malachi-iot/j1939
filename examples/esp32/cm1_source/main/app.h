@@ -10,10 +10,6 @@
 
 #include "ca.h"
 
-// FIX: Put these into a Kconfig
-#define CONFIG_GPIO_BUTTON1 0
-#define CONFIG_ACTIVE_STATE_BUTTON1 0
-
 namespace app {
 
 class App
@@ -33,11 +29,14 @@ class App
     nca_type nca_;
     scheduler_type scheduler_;
     transport_type transport_;
+    int index_ = 0;
 
     template <class Property>
     using changed = embr::property::v1::event::PropertyChanged<Property>;
 
     static void debounce_event_handler(void*, esp_event_base_t, int32_t, void* event_data);
+
+    void bump();
 
 public:
     App();

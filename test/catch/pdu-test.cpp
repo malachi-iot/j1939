@@ -53,7 +53,7 @@ TEST_CASE("pdu")
 
         out << embr::put_pdu(p);
 
-        REQUIRE(out_s.starts_with("CM1 SA:0 DA:0 7d"));
+        REQUIRE(out_s.starts_with("CM1 SA:0 DA:0 temp="));
     }
     SECTION("fd")
     {
