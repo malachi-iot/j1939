@@ -1,4 +1,5 @@
 #include <embr/platform/esp-idf/service/diagnostic.h>
+#include <embr/platform/esp-idf/service/event.hpp>
 #include <embr/platform/esp-idf/service/gptimer.hpp>
 #include <embr/platform/esp-idf/service/twai.hpp>
 
@@ -29,6 +30,9 @@ using tier0 = embr::layer0::subject<Diagnostic, Singleton>;
 static App::TWAI::runtime<tier0> twai;
 static App::Timer::runtime<tier0> timer;
 
+// NOTE: This guy is a sparse service, so technically we could use a temporary
+static embr::esp_idf::service::v1::EventLoop::runtime<tier0> event_loop;
+
 using name_type = embr::j1939::layer0::NAME<true,
     embr::j1939::industry_groups::on_highway,
     embr::j1939::vehicle_systems::non_specific,
@@ -49,6 +53,10 @@ void App::start()
 {
     twai.start();
     twai.autorx(true);  // DEBT: Shouldn't he precede start? if no, comment why
+
+    event_loop.start();
+
+    event_loop.handler_register<embr::DEBOUNCE_EVENT>();
 
     init_gpio();
     init_timer();
@@ -87,6 +95,13 @@ void App::on_notify(changed<Service::id::substate> e, const TWAI&)
         default:
             break;
     }
+}
+
+
+// Debounce event
+void App::on_notify(Event e)
+{
+    ESP_LOGD(TAG, "on_notify: Debounce event");
 }
 
 

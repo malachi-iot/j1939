@@ -24,6 +24,7 @@ class App
     using db = embr::esp_idf::debounce::v1::ultimate::Debouncer<gpio, invert>;
 
     using Service = embr::service::v1::Service;
+    using Event = embr::debounce::v1::Event;
 
     db<CONFIG_GPIO_BUTTON1, CONFIG_ACTIVE_STATE_BUTTON1> button1;
 
@@ -35,6 +36,8 @@ class App
 
     template <class Property>
     using changed = embr::property::v1::event::PropertyChanged<Property>;
+
+    static void debounce_event_handler(void*, esp_event_base_t, int32_t, void* event_data);
 
 public:
     App();
@@ -51,6 +54,8 @@ public:
     void on_notify(Timer::event::callback);
 
     void on_notify(changed<Service::id::substate> e, const TWAI&);
+    
+    void on_notify(Event);
 
     void poll();
 };
