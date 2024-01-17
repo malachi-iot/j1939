@@ -18,6 +18,10 @@
 #define FEATURE_EMBR_J1939_OSTREAM_FULL_PAYLOAD 1
 #endif
 
+#ifndef FEATURE_EMBR_J1939_OSTREAM_FULL_CM1
+#define FEATURE_EMBR_J1939_OSTREAM_FULL_CM1 FEATURE_EMBR_J1939_OSTREAM_FULL_PAYLOAD
+#endif
+
 namespace embr { namespace j1939 {
 
 namespace internal {

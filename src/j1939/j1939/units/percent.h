@@ -29,7 +29,7 @@ template <>
 struct traits<internal::percent_tag>
 {
     static constexpr const char* name() { return "percent"; }
-    static constexpr const char* abbrev() { return "%"; }
+    static constexpr const char* abbrev() { return "%%"; }
 };
 
 //inline namespace v1 {

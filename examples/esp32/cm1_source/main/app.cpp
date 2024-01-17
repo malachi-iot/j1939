@@ -2,6 +2,8 @@
 #include <embr/platform/esp-idf/service/gptimer.hpp>
 #include <embr/platform/esp-idf/service/twai.hpp>
 
+#include <j1939/ca.hpp> // for 'process_incoming'
+
 #include "app.h"
 #include "io.h"
 
@@ -33,6 +35,7 @@ using name_type = embr::j1939::layer0::NAME<true,
     embr::j1939::function_fields::cab_climate_control>;
 
 App::App() :
+    dca_(out_),
     nca_(name_type::sparse(
         CONFIG_J1939_VEHICLE_SYSTEM_INSTANCE,
         CONFIG_J1939_FUNCTION_INSTANCE,
@@ -54,14 +57,42 @@ void App::start()
 }
 
 
-void App::on_notify(TWAI::event::autorx)
+void App::on_notify(TWAI::event::autorx e)
 {
+    const transport_type::frame& frame = e.message;
 
+    out_.rdbuf()->clear();
+    const auto& out_s = out_.rdbuf()->str();
+
+    embr::j1939::process_incoming(dca_, transport(), frame);
+    embr::j1939::process_incoming(nca_, transport(), frame);
+
+    // diagnostic_ca emits eol into 'out'
+    esp_log_write(ESP_LOG_INFO, TAG, out_s.data());
 }
 
 void App::on_notify(TWAI::event::alert)
 {
 
+}
+
+void App::on_notify(changed<Service::id::substate> e, const TWAI&)
+{
+    switch(e.value)
+    {
+        case Service::Running:
+            nca_.start(transport());
+            break;
+
+        default:
+            break;
+    }
+}
+
+
+void App::poll()
+{
+    twai.poll(100 / portTICK_PERIOD_MS);
 }
 
 }

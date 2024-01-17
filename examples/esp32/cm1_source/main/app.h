@@ -23,10 +23,12 @@ class App
     template <int gpio, bool invert>
     using db = embr::esp_idf::debounce::v1::ultimate::Debouncer<gpio, invert>;
 
+    using Service = embr::service::v1::Service;
+
     db<CONFIG_GPIO_BUTTON1, CONFIG_ACTIVE_STATE_BUTTON1> button1;
 
-    //ostream_type out_;
-    //dca_type dca_;
+    ostream_type out_;
+    dca_type dca_;
     nca_type nca_;
     scheduler_type scheduler_;
     transport_type transport_;
@@ -48,9 +50,11 @@ public:
     void on_notify(TWAI::event::alert);
     void on_notify(Timer::event::callback);
 
-    void on_notify(changed<embr::Service::id::substate> e, const TWAI&);
+    void on_notify(changed<Service::id::substate> e, const TWAI&);
 
     void poll();
 };
+
+extern App app;
 
 }

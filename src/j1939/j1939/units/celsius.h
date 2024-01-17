@@ -17,7 +17,9 @@ struct traits<internal::celsius_tag>
 {
     static constexpr const char* name() { return "degrees Celsius"; }
 
-    // DEBT: Feature flag in proper degree symbol if we can
+    // DEBT: Feature flag in proper degree symbol if we can.  Quick try of
+    // https://stackoverflow.com/questions/23777226/how-to-display-degree-celsius-in-a-string-in-c
+    // doesn't come through in esp.py terminal
     static constexpr const char* abbrev() { return " deg C"; }
 
     static constexpr si::quantities quanitiy = si::quantities::temperature;
