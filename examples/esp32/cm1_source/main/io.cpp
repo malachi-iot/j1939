@@ -14,6 +14,10 @@ void init_twai()
 
 namespace app {
 
+#ifndef CONFIG_ESP_EVENT_POST_FROM_ISR
+#error "ESP Event from ISR feature is required"
+#endif
+
 // Remember, this is ISR context
 void App::on_notify(Timer::event::callback)
 {
