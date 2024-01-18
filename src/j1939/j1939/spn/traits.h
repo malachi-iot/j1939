@@ -124,13 +124,14 @@ struct ascii_type_traits
 /// value_type and int_type
 /// @tparam slot
 /// @remarks Used to provide a homogenous traits with value_type and int_type
-template <slots slot>
+template <slots slot_>
 #if __cpp_concepts
-    requires SlotTraits<slot_traits<slot> >
+    requires SlotTraits<slot_traits<slot_> >
 #endif
 struct slot_type_traits
 {
-    using slot_traits = embr::j1939::slot_traits<slot>;
+    static constexpr slots slot = slot_;
+    using slot_traits = embr::j1939::slot_traits<slot_>;
     typedef typename slot_traits::type value_type;      ///< Typically an enum or embr::units type by way of SLOT
     typedef typename value_type::root_rep int_type;     ///< Always the root type, typically an unsigned integer
 };
@@ -160,6 +161,7 @@ struct address_type_traits_base : internal::type_traits_base<uint8_t>
 
 }
 
+// TODO: Put a constexpr spn member var in here
 template <spns spn>
 struct traits :
     type_traits<spn>,

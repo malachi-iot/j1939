@@ -26,4 +26,13 @@ struct slot_traits;
 template <slots slot>
 using slot_type = typename slot_traits<slot>::type;
 
+namespace slot { inline namespace v1 {
+
+// EXPERIMENTAL
+
+template <slots slot_>
+struct unit;
+
+}}
+
 }}

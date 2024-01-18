@@ -25,5 +25,14 @@ struct traits<internal::celsius_tag>
     static constexpr si::quantities quanitiy = si::quantities::temperature;
 };
 
+inline namespace literals {
+
+constexpr celsius<unsigned> operator ""_celsius(unsigned long long int v)
+{
+    return celsius<unsigned>(v);
+}
+
+}
+
 
 }}

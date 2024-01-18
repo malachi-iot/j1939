@@ -7,3 +7,4 @@
 #include "slots/pressure.hpp"
 #include "slots/temperature.hpp"
 #include "slots/time.hpp"
+#include "slots/units.h"

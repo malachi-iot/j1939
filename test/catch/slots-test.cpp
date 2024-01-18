@@ -1,5 +1,8 @@
 #include <j1939/slots.hpp>
 
+// DEBT: Only including here while we flesh out spn::unit
+#include <j1939/data_field/cm1.hpp>
+
 #include "test-data.h"
 
 using namespace embr::j1939;
@@ -212,5 +215,28 @@ TEST_CASE("slots")
         v = type{}(v);
 
         REQUIRE(v == -4995);
+    }
+    SECTION("experimental")
+    {
+        slot::unit<slots::SAEtp02> v(0);
+
+        REQUIRE(v.min() == 0);
+        REQUIRE(v.max() == 0xFAFF);
+
+        embr::units::celsius<double> v2(v);
+
+        v += 5_celsius;
+
+        REQUIRE(v.count() == 160);
+
+        REQUIRE(v.offset() == -273);
+
+        v2 = v.range();
+
+        REQUIRE(v2.count() == 2007.96875);
+
+        spn::unit<spns::cab_interior_temperature_command> v3(5_celsius);
+
+        REQUIRE(v3 == v);
     }
 }

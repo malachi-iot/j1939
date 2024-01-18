@@ -7,6 +7,7 @@
 
 #include <estd/ostream.h>       // for put_unit's use of estd::dec (supposed to be in ios and would be nice to fwd in iosfwd)
 #include "../units/ostream.h"   // for put_unit
+#include "../slots/units.h"
 
 namespace embr { namespace j1939 {
 
@@ -51,6 +52,13 @@ struct data_field<pgns::cab_message1, TContainer> :
 
     EMBR_J1939_PROPERTY(requested_percent_fan_speed);
     EMBR_J1939_PROPERTY(cab_interior_temperature_command);
+
+    // EXPERIMENTAL, improved unit_type with lots more compile-time info
+    // about SPN and associated slot
+    spn::unit<spns::cab_interior_temperature_command> test() const
+    {
+        return base_type::template get<spns::cab_interior_temperature_command>();
+    }
 };
 
 #if FEATURE_EMBR_J1939_OSTREAM_FULL_CM1

@@ -43,18 +43,30 @@ TEST_CASE("pdu")
     SECTION("cm1")
     {
         pdu<pgns::cab_message1> p;
-        embr::units::percent<int> percent{50};
 
-        p.requested_percent_fan_speed(percent);
+        SECTION("fan speed")
+        {
+            embr::units::percent<int> percent{50};
 
-        auto v = p.requested_percent_fan_speed();
+            p.requested_percent_fan_speed(percent);
 
-        REQUIRE(v.count() == 125);
+            auto v = p.requested_percent_fan_speed();
 
-        out << embr::put_pdu(p);
+            REQUIRE(v.count() == 125);
 
-        REQUIRE(out_s == "CM1 SA:0 DA:0 temp=noop fan=50.00%");
-        //REQUIRE(out_s.starts_with("CM1 SA:0 DA:0 temp="));
+            out << embr::put_pdu(p);
+
+            REQUIRE(out_s == "CM1 SA:0 DA:0 temp=noop fan=50.00%");
+            //REQUIRE(out_s.starts_with("CM1 SA:0 DA:0 temp="));
+        }
+        SECTION("cab temp")
+        {
+            p.cab_interior_temperature_command(embr::units::celsius<int>(23));
+            spn::unit<spns::cab_interior_temperature_command> v(p.test());
+
+            REQUIRE(v == embr::units::celsius<int>(23));
+            REQUIRE(v.spn() == spns::cab_interior_temperature_command);
+        }
     }
     SECTION("fd")
     {
