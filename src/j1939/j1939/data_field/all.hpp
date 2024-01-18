@@ -4,6 +4,7 @@
 
 #include "aai.hpp"
 #include "amb.hpp"
+#include "auxio1.hpp"
 #include "bjm1.hpp"
 #include "bm.hpp"
 #include "bt1.hpp"

@@ -66,6 +66,8 @@ enum class spns
     left_turn_lamp_circuit = 0x36F,                 // [4], [6], [15]
     stop_turn_lamp_circuit = 0x370,                 // [4], [15]
     right_turn_lamp_circuit = 0x371,                // [4], [15]
+    auxiliary_io_01 = 701,
+    auxiliary_io_02 = 702,
     headway_controller_right_turn_signal_monitor = 891,     // [6]
     headway_controller_left_turn_signal_monitor = 892,      // [6]
     engine_torque_mode = 899,                       // [5]
@@ -95,6 +97,7 @@ enum class spns
     trip_fan_on_time_due_to_manual_switch = 996,    // [7]
     trip_fan_on_time_due_to_ac = 997,               // [7]
     total_ecu_runtime = 1033,                       // [16]
+    auxiliary_io_channel_01 = 1083,                 // [13]
     engine_intercooler_thermostat_opening = 1134,
     anti_theft_encryption_seed_present_indicator = 1194, // [13]
     anti_theft_password_valid_indicator = 1195,     // [13]
@@ -279,6 +282,7 @@ enum class spns
     ecu_power_output_supply_voltage_1 = 3597,       // [16]
     ecu_power_output_supply_voltage_2 = 3598,       // [16]
     ecu_power_output_supply_voltage_3 = 3599,       // [16]
+    auxiliary_io_111 = 3934,                        // [13]
     auxiliary_io_112 = 3935,                        // [13]
     cab_dome_light_1 = 3976,                        // [16]
     cab_dome_light_2 = 3977,                        // [16]

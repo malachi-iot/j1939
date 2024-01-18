@@ -17,6 +17,7 @@ enum class slots
     SAEtm06 = 6,
     SAEad01 = 7,
     SAEad06 = 11,           ///< Angle/Direction
+    SAEct04 = 12,           ///< Count
     SAEds03 = 13,
     SAEds04 = 14,
     SAEpc01 = 30,

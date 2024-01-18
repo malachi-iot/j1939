@@ -2,6 +2,7 @@
 
 #include "slots.h"
 #include "slots/angle-direction.hpp"
+#include "slots/count.hpp"
 #include "slots/electrical.hpp"
 #include "slots/percent.hpp"
 #include "slots/pressure.hpp"
