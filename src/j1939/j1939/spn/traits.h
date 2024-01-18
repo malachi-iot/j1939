@@ -9,21 +9,16 @@
 #include "fwd.h"
 #include "ranges.h"
 #include "../slots/fwd.h"
+#include "../units/fwd.h"
 
 #include <estd/cstdint.h>
+
+#include <estd/internal/macro/push.h>
 
 // Arduino compensators
 // DEBT: Consolidate with estd/embr variety
 #ifdef FEATURE_PRAGMA_PUSH_MACRO
-#pragma push_macro("abs")
-#pragma push_macro("_abs")  // ESP32
-#pragma push_macro("max")
-#pragma push_macro("min")
 #pragma push_macro("word")
-#undef abs
-#undef _abs
-#undef max
-#undef min
 #undef word
 #endif
 
@@ -125,6 +120,10 @@ struct ascii_type_traits
 };
 
 
+/// Reflects both slot_traits as well as slot_traits' contained
+/// value_type and int_type
+/// @tparam slot
+/// @remarks Used to provide a homogenous traits with value_type and int_type
 template <slots slot>
 #if __cpp_concepts
     requires SlotTraits<slot_traits<slot> >
@@ -178,10 +177,30 @@ struct traits :
     {
         return internal::noop<d.length>(v, autoshift ? d.bitpos : 1);
     }
+
+    // EXPERIMENTAL
+    template <typename Rep, class Period, class Tag,
+        ESTD_CPP_CONCEPT(Adder<Rep>) F>
+    //constexpr
+    static bool noop(embr::units::internal::unit_base<Rep, Period, Tag, F> v)
+    {
+        using helper = ranges::not_available<Rep>;
+        // Presumes we're dealing with an embr::units type
+        using unit_type = typename type_traits<spn>::value_type;
+
+        // DEBT: The way we filter here is clumsy.  We'd prefer to do this up at
+        // the function header
+        static_assert(estd::is_same<decltype(v), unit_type>::value, "Queried type must match slot/unit type");
+
+        Rep rc = v.root_count();
+
+        return helper::is_not_available(rc);
+    }
 };
 
 
-// Generic catch-all - reports 8-bit every time
+/// Generic catch-all - reports 8-bit every time
+/// @remarks particular pdu .hpp files are expected to specialize this
 template <spns spn>
 struct type_traits :
     internal::type_traits_base<uint8_t>,
@@ -192,11 +211,8 @@ struct type_traits :
 
 }}}
 
+#include <estd/internal/macro/pop.h>
 
 #ifdef FEATURE_PRAGMA_PUSH_MACRO
-#pragma pop_macro("min")
-#pragma pop_macro("max")
-#pragma pop_macro("abs")
-#pragma pop_macro("_abs")
 #pragma pop_macro("word")
 #endif

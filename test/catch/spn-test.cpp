@@ -52,7 +52,8 @@ TEST_CASE("spn")
             SECTION("cm1")
             {
                 data_field<pgns::cab_message1> payload;
-                typedef slot_traits<slots::SAEtp02> traits;
+                using traits = spn::traits<spns::cab_interior_temperature_command>;
+                //typedef slot_traits<slots::SAEtp02> traits;
 
                 using st = slot_type<slots::SAEtp02>;
                 //using ut = unit_type<spns::cab_interior_temperature_command>();
@@ -62,6 +63,10 @@ TEST_CASE("spn")
                 int v = temp.root_count();
 
                 REQUIRE(v == 0xFFFF);
+
+                bool v2 = traits::noop(temp);
+
+                REQUIRE(v2);
 
                 // although predictable, values are undefined if noop is seen
                 //v = temp.count();

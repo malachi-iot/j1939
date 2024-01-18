@@ -56,6 +56,21 @@ struct data_field<pgns::cab_message1, TContainer> :
 #if FEATURE_EMBR_J1939_OSTREAM_FULL_CM1
 namespace internal {
 
+// EXPERIMENTAL
+template <spns spn_, class Coerce, class Streambuf, class Base>
+estd::detail::basic_ostream<Streambuf, Base>& put_unit_j1939(
+    estd::detail::basic_ostream<Streambuf, Base>& out,
+    typename spn::traits<spn_>::value_type v)
+{
+    if(spn::traits<spn_>::noop(v))
+        out << "noop";
+    else
+        out << put_unit(Coerce(v));
+
+    return out;
+}
+
+
 template <>
 struct payload_put<pgns::cab_message1> : estd::internal::ostream_functor_tag
 {
@@ -67,14 +82,33 @@ struct payload_put<pgns::cab_message1> : estd::internal::ostream_functor_tag
     template <class Streambuf, class Base>
     void operator()(estd::detail::basic_ostream<Streambuf, Base>& out) const
     {
-        // DEBT: Bring in newer estd to get float support here
-        embr::units::percent<short> p = payload.requested_percent_fan_speed();
-        embr::units::celsius<short> c = payload.cab_interior_temperature_command();
+#if FEATURE_EMBR_J1939_OSTREAM_FLOAT
+        // DEBT: Upgrade estd to get real float support here.  embr::units has a pretty
+        // gnarly kludge to do this
+        using precision = double;
+#else
+        using precision = short;
+#endif
 
-        // DEBT: Filter out by null/noop values
+        // DEBT: Filter out further by null/noop values, and make it less verbose
+        // would be nice to wrap embr::units with a embr::j1939::units (or similar)
+        // which brought along spn::traits, convvenience noop, and others, for the ride
+        using c_traits = spn::traits<spns::cab_interior_temperature_command>;
+        const c_traits::value_type c(payload.cab_interior_temperature_command());
 
         out << estd::dec;   // DEBT: Needing to be way too explicit about this guy
-        out << "temp=" << put_unit(c) << ' ' << "fan=" << put_unit(p);
+        out << "temp=";
+
+        if(c_traits::noop(c))
+            out << "noop";
+        else
+            out << put_unit(units::celsius<precision>(c));
+
+        out << ' ' << "fan=";
+
+        put_unit_j1939<
+            spns::requested_percent_fan_speed,
+            units::percent<precision> >(out, payload.requested_percent_fan_speed());
     }
 };
 #endif

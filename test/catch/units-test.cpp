@@ -168,13 +168,13 @@ TEST_CASE("units")
         {
             out << embr::put_unit(p);
 
-            REQUIRE(out_s == "50.0%");
+            REQUIRE(out_s == "50.00%");
         }
         SECTION("non abbrev")
         {
             out << embr::put_unit(p, false);
 
-            REQUIRE(out_s == "50.0 percent");
+            REQUIRE(out_s == "50.00 percent");
         }
     }
     SECTION("misc")

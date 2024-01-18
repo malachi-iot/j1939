@@ -16,9 +16,12 @@ estd::detail::basic_ostream<TStreambuf, TBase>& operator <<(
     auto v_ = (int64_t)v;
     auto v_dec = (int64_t)(v * 100) % 100;
 
+    if(v_dec < 0)   v_dec = -v_dec;
+
     // DEBT: I think ostream is supposed to auto reset to dec, but isn't
     out << estd::dec << v_;
     out << '.';
+    if(v_dec < 10) out << '0';
     out << v_dec;
 
     return out;
@@ -123,7 +126,7 @@ void test(estd::detail::basic_ostream<TStreambuf, TBase>& out,
 }
 
 template <class Rep, class Period, class Tag, class F>
-units::internal::unit_put<
+constexpr units::internal::unit_put<
     units::internal::unit_base<Rep, Period, Tag, F> > put_unit(
     const units::internal::unit_base<Rep, Period, Tag, F>& unit, bool abbrev = true)
 {

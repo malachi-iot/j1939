@@ -53,7 +53,8 @@ TEST_CASE("pdu")
 
         out << embr::put_pdu(p);
 
-        REQUIRE(out_s.starts_with("CM1 SA:0 DA:0 temp="));
+        REQUIRE(out_s == "CM1 SA:0 DA:0 temp=noop fan=50.00%");
+        //REQUIRE(out_s.starts_with("CM1 SA:0 DA:0 temp="));
     }
     SECTION("fd")
     {
