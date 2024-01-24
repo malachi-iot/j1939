@@ -34,7 +34,8 @@ void App::on_notify(Timer::event::callback)
 }
 
 
-static constexpr std::array<short, 4> speeds { 0, 33, 66, 100 };
+// percent x 100
+static constexpr std::array<short, 4> speeds { 0, 3333, 6666, 10000 };
 
 using namespace embr;
 
@@ -45,7 +46,7 @@ void App::bump()
 
     if(++index_ == speeds.size())   index_ = 0;
 
-    units::percent<short> speed(speeds[index_]);
+    units::percent<short, estd::ratio<1, 100> > speed(speeds[index_]);
 
     j1939::pdu<j1939::pgns::cab_message1> pdu;
 
@@ -55,7 +56,7 @@ void App::bump()
 
     pdu.requested_percent_fan_speed(speed);
 
-    ESP_LOGD(TAG, "bump: speed=%d%% (%u)", speed.count(), pdu.requested_percent_fan_speed().count());
+    ESP_LOGD(TAG, "bump: speed=%d%% (%u)", speed.count() / 100, pdu.requested_percent_fan_speed().count());
 
     transport_traits::send(transport(), pdu);
 }
