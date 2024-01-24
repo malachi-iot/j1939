@@ -182,7 +182,7 @@ struct traits :
 
     // EXPERIMENTAL
     template <typename Rep, class Period, class Tag,
-        ESTD_CPP_CONCEPT(Adder<Rep>) F>
+        ESTD_CPP_CONCEPT(embr::units::internal::Adder<Rep>) F>
     //constexpr
     static bool noop(embr::units::internal::unit_base<Rep, Period, Tag, F> v)
     {
