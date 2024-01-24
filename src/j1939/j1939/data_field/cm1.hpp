@@ -23,7 +23,15 @@ struct type_traits<spns::cab_interior_temperature_command> :
 
 template <>
 struct type_traits<spns::battery_main_switch_hold_request> :
-    internal::measured_type_traits {};
+    internal::status_type_traits {};
+
+template <>
+struct type_traits<spns::request_cab_zone_heating> :
+    internal::status_type_traits {};
+
+template <>
+struct type_traits<spns::request_engine_zone_heating> :
+    internal::status_type_traits {};
 
 template<>
 constexpr descriptor get_descriptor<spns::requested_percent_fan_speed>()
@@ -36,6 +44,13 @@ constexpr descriptor get_descriptor<spns::cab_interior_temperature_command>()
 {
     return { 2, 1, 16 };
 }
+
+template<>
+constexpr descriptor get_descriptor<spns::request_cab_zone_heating>()
+{
+    return { 7, 7, 2 };
+}
+
 
 }
 
@@ -52,6 +67,7 @@ struct data_field<pgns::cab_message1, TContainer> :
 
     EMBR_J1939_PROPERTY(requested_percent_fan_speed);
     EMBR_J1939_PROPERTY(cab_interior_temperature_command);
+    EMBR_J1939_PROPERTY(request_cab_zone_heating);
 
     // EXPERIMENTAL, improved unit_type with lots more compile-time info
     // about SPN and associated slot

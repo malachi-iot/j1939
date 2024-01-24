@@ -104,7 +104,22 @@ void App::on_notify(Event e)
     ESP_LOGV(TAG, "on_notify: Debounce event");
     if(e.state == embr::debounce::v1::States::Pressed)
     {
-        bump();
+#if CONFIG_GPIO_BUTTON2 == -1
+        bump_fan();
+#else
+        switch(e.pin)
+        {
+            case CONFIG_GPIO_BUTTON1:
+                bump_fan();
+                break;
+
+            case CONFIG_GPIO_BUTTON2:
+                toggle_heater();
+                break;
+
+            default: break;
+        }
+#endif
     }
 }
 

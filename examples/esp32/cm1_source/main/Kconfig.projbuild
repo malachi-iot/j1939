@@ -6,8 +6,17 @@ menu "J1939 Example: Cab Message 1"
         default 0
 
     config ACTIVE_STATE_BUTTON1
+        int "Set 0 for active low (low = pressed)"
+        range 0 1
+        default 1
+
+    config GPIO_BUTTON2
+        int "Pin for Button #2"
+        default -1
+
+    config ACTIVE_STATE_BUTTON2
         int "Set 0 for active low"
         range 0 1
-        default 0
+        default 1
 
 endmenu

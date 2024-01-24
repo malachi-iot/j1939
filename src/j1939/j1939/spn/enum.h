@@ -141,6 +141,7 @@ enum class spns
     cab_heating_zone = 1680,                        // [11]
     battery_main_switch_hold_request = 1682,        // [13]
     auxiliary_heater_mode_request = 1683,           // [13]
+    request_engine_zone_heating = 1685,             // [13]
     request_cab_zone_heating = 1686,                // [13]
     cab_interior_temperature_command = 1691,        // [13]
     operator_seat_direction_switch = 1714,          // [7]
