@@ -29,6 +29,55 @@ struct unit<spn_,
     static constexpr spns spn() { return spn_; }
 };
 
+
+template <spns spn_>
+struct unit<spn_,
+    estd::enable_if_t<
+        estd::is_base_of<
+            spn::internal::status_type_traits,
+            spn::traits<spn_>
+        >::value
+    >
+>
+{
+    using traits = spn::traits<spn_>;
+
+    using enum_type = spn::internal::status_type_traits::enum_type;
+
+private:
+    enum_type value_;
+
+public:
+    explicit constexpr unit(enum_type value) : value_{value} {}
+    unit() = default;
+    unit(const unit&) = default;
+    unit& operator=(const unit&) = default;
+    unit& operator=(enum_type copy_from)
+    {
+        value_ = copy_from;
+        return *this;
+    }
+
+    constexpr bool operator==(enum_type rhs) const
+    {
+        return value_ == rhs;
+    }
+
+    constexpr operator enum_type() const
+    {
+        return value_;
+    }
+
+    static constexpr spns spn() { return spn_; }
+
+    constexpr bool is_noop() const
+    {
+        return value_ == enum_type::noop;
+    }
+
+    enum_type value() const { return value_; }
+};
+
 }}}}
 
 #include <estd/internal/macro/pop.h>

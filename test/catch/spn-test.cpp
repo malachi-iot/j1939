@@ -98,11 +98,17 @@ TEST_CASE("spn")
 
             REQUIRE(v3 == v);
         }
-        SECTION("status / measured")
+        SECTION("status (control commands)")
         {
+            spn::unit<spns::request_cab_zone_heating> v;
 
+            v = spn::control_commands::enable;
+
+            REQUIRE(v == spn::control_commands::enable);
+
+            spn::control_commands v2 = v;
         }
-        SECTION("command")
+        SECTION("measured")
         {
 
         }
