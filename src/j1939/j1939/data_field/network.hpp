@@ -13,6 +13,7 @@
 
 #include "base.hpp"
 #include "../NAME/name.h"
+#include "../pdu/header.h"
 
 namespace embr { namespace j1939 {
 

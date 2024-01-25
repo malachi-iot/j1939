@@ -12,6 +12,7 @@
 
 #include "../slots/fwd.h"
 #include "../units/fwd.h"
+#include "../pdu/header.h"
 
 #include <estd/cstdint.h>
 
@@ -124,13 +125,10 @@ struct ascii_type_traits
 
 // Maybe relates to SAEsa01
 // See J1939-81 (2003) 4.1.2
-struct address_type_traits_base : internal::type_traits_base<uint8_t>
+struct address_type_traits_base :
+    internal::type_traits_base<uint8_t>,
+    j1939::internal::address_type_traits_base
 {
-    static constexpr uint8_t global = 255;
-    static constexpr uint8_t null = 254;
-
-    // EXPERIMENTAL
-    static constexpr bool assigned(uint8_t v) { return v < 254; }
 };
 
 

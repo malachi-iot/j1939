@@ -113,7 +113,7 @@ TEST_CASE("spn")
             spn::unit<spns::joystick1_button1_pressed_status> v;
 
             v = spn::measured::enabled;
-            
+
             REQUIRE(v == spn::discrete_parameters::enabled);
         }
     }
