@@ -88,12 +88,23 @@ TEST_CASE("spn")
     }
     SECTION("units")
     {
-        slot::unit<slots::SAEtp02> v(0);
+        SECTION("slot")
+        {
+            slot::unit<slots::SAEtp02> v(0);
 
-        v += 5_celsius;
+            v += 5_celsius;
 
-        spn::unit<spns::cab_interior_temperature_command> v3(5_celsius);
+            spn::unit<spns::cab_interior_temperature_command> v3(5_celsius);
 
-        REQUIRE(v3 == v);
+            REQUIRE(v3 == v);
+        }
+        SECTION("status / measured")
+        {
+
+        }
+        SECTION("command")
+        {
+
+        }
     }
 }

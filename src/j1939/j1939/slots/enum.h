@@ -44,6 +44,9 @@ enum class slots
     SAEtm07 = 99,
     SAEec01 = 104,
     SAEpw02 = 107,
+    SAEatad0200 = 108,      ///< ASCII up to 200 bytes, '*' delimited
+    SAEatad0005 = 109,      ///< ASCII up to 5 bytes, '*' delimited
+    SAEatad1728 = 110,      ///< ASCII up to 1728 bytes, '*' delimited
     SAEpg00 = 116,          ///< PGN
     SAEpc04 = 128,
     SAEds02 = 142,
@@ -69,9 +72,11 @@ enum class slots
     SAEpc08 = 256,
     SAEpc10 = 268,
     SAEds15 = 270,
+    SAEatad0025 = 271,      ///< ASCII up to 25 bytes, '*' delimited
     SAEtc01 = 274,          ///< Trouble Code
     SAEmd01 = 283,          ///< Manufacturer Defined
     SAEcy02 = 284,
+    SAEatad0032 = 291,      ///< ASCII up to 32 bytes, '*' delimited
     SAEsg02 = 298,          ///< Signal Gain
     SAEpw04 = 305,
     SAEtm18 = 319,
