@@ -39,6 +39,18 @@ constexpr descriptor get_descriptor<spns::charging_system_potential>()
     return descriptor{3, 1, 16};
 }
 
+
+template <>
+struct type_traits<spns::net_battery_current> : internal::slot_type_traits<slots::SAEec01>
+{
+};
+
+/*
+template <>
+struct type_traits<spns::alternator_current> : internal::slot_type_traits<slots::SAEec03>
+{
+};  */
+
 template <>
 struct type_traits<spns::battery_potential> : internal::slot_type_traits<slots::SAEev01>
 {

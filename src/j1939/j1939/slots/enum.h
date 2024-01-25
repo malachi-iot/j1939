@@ -25,6 +25,7 @@ enum class slots
     SAEr01 = 32,
     SAEsa01 = 35,           ///< Source Address
     SAEec02 = 40,
+    SAEec03 = 41,           ///< 0-250 A
     SAEpc03 = 44,           ///< Percent
     SAEpc05 = 45,
     SAEpc06 = 46,
@@ -50,6 +51,7 @@ enum class slots
     SAEpg00 = 116,          ///< PGN
     SAEpc04 = 128,
     SAEds02 = 142,
+    SAEec06 = 143,          ///< 0-64.255A
     SAEev02 = 145,
     SAEec04 = 146,          ///< Electrical Current
     SAEpw01 = 147,
@@ -57,7 +59,7 @@ enum class slots
     SAEnm01 = 159,          ///< NAME
     SAEpc02 = 205,          ///< Percent
     SAEtm13 = 206,
-    SAEca01 = 211,          ///< Battery Capacity
+    SAEca01 = 211,          ///< Battery Capacity (1 mAhr/bit)
     SAESP00 = 214,          ///< SPN
     SAEOC00 = 216,
     SAEev03 = 221,
