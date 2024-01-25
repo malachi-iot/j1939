@@ -115,6 +115,18 @@ TEST_CASE("spn")
             v = spn::measured::enabled;
 
             REQUIRE(v == spn::discrete_parameters::enabled);
+
+            // Well thank you, implicit operator!
+            switch(v)
+            {
+                case spn::measured::enabled:
+                    break;
+
+                default: FAIL();
+            }
+
+            REQUIRE(v.is_noop() == false);
+            REQUIRE(v.spn() == spns::joystick1_button1_pressed_status);
         }
     }
 }
