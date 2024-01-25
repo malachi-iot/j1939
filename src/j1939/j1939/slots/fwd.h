@@ -28,6 +28,13 @@ using slot_type = typename slot_traits<slot>::type;
 
 namespace slot { inline namespace v1 {
 
+namespace internal {
+
+// Only internal because I am undecided about naming
+struct slot_type_tag {};
+
+}
+
 // EXPERIMENTAL
 
 template <slots slot_>

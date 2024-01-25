@@ -8,6 +8,8 @@
 using namespace embr::j1939;
 using namespace embr::units::literals;
 
+#include "macro/push.h"
+
 TEST_CASE("slots")
 {
     SECTION("SAEec01")
@@ -240,3 +242,5 @@ TEST_CASE("slots")
         REQUIRE(v3 == v);
     }
 }
+
+#include "macro/pop.h"
