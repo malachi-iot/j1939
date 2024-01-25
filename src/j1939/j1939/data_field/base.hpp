@@ -12,6 +12,7 @@
 #include "../spn.h"
 
 #include "../spn/traits.h"
+#include "../spn/units.h"
 
 #if __cpp_concepts
 #include <concepts>

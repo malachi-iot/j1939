@@ -6,10 +6,13 @@
 #include <j1939/spn/descriptors.h>
 
 #include <j1939/data_field/all.hpp>
+#include <j1939/units/celsius.h>
 #include <j1939/spn/units.h>
 
 
 using namespace embr::j1939;
+using namespace embr::units::literals;
+
 
 TEST_CASE("spn")
 {
@@ -82,5 +85,15 @@ TEST_CASE("spn")
     {
         //auto d = spn_traits<pgns::lighting_command, spns::left_turn_signal_lights_cmd>::descriptor();
         auto d = spn::get_descriptor<spns::left_turn_signal_lights_cmd>();
+    }
+    SECTION("units")
+    {
+        slot::unit<slots::SAEtp02> v(0);
+
+        v += 5_celsius;
+
+        spn::unit<spns::cab_interior_temperature_command> v3(5_celsius);
+
+        REQUIRE(v3 == v);
     }
 }

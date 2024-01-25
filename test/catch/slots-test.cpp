@@ -236,10 +236,6 @@ TEST_CASE("slots")
         v2 = v.range();
 
         REQUIRE(v2.count() == 2007.96875);
-
-        spn::unit<spns::cab_interior_temperature_command> v3(5_celsius);
-
-        REQUIRE(v3 == v);
     }
 }
 
