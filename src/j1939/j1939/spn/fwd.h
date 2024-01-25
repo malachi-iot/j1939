@@ -121,6 +121,16 @@ struct not_available;
 // means that type_traits has no special enum_type or other goodies, just a stock standard value_type
 struct intrinsic_tag {};
 
+inline namespace v1 {
+
+// EXPERIMENTAL
+
+template <spns spn_, class Enabled = void>
+struct unit;
+
+}
+
+
 }
 
 // DEBT: value_type might be too generic here - and collides with experimental value_type below,

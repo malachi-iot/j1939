@@ -58,7 +58,14 @@ namespace embr { namespace j1939 { namespace spn { inline namespace v1 {
 
 // DEBT: This demands a slot-based spn
 template <spns spn_>
-struct unit : slot::unit<spn::traits<spn_>::slot>
+struct unit<spn_, 
+    estd::enable_if_t<
+        estd::is_base_of<
+            slot::v1::internal::slot_type_tag,
+            spn::traits<spn_>
+        >::value
+    >
+> : slot::unit<spn::traits<spn_>::slot>
 {
     using traits = spn::traits<spn_>;
     using base_type = slot::unit<traits::slot>;

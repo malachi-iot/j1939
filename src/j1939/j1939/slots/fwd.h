@@ -31,6 +31,8 @@ namespace slot { inline namespace v1 {
 namespace internal {
 
 // Only internal because I am undecided about naming
+// Tag means that particular spn::type_traits is associated with
+// a slot (vs a status, command or raw intrinsic type)
 struct slot_type_tag {};
 
 }

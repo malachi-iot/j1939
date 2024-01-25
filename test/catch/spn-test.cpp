@@ -6,6 +6,7 @@
 #include <j1939/spn/descriptors.h>
 
 #include <j1939/data_field/all.hpp>
+#include <j1939/spn/units.h>
 
 
 using namespace embr::j1939;
