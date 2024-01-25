@@ -34,7 +34,9 @@ template <spns spn_>
 struct unit<spn_,
     estd::enable_if_t<
         estd::is_base_of<
-            spn::internal::status_type_traits,
+            // Interestingly, SFINAE prefers this over a floating 'class Enum' up top.
+            // since we "fail silently" if enum_type isn't present, this causes no issues
+            spn::internal::enum_traits_base<typename spn::traits<spn_>::enum_type>,
             spn::traits<spn_>
         >::value
     >
@@ -42,7 +44,7 @@ struct unit<spn_,
 {
     using traits = spn::traits<spn_>;
 
-    using enum_type = spn::internal::status_type_traits::enum_type;
+    using enum_type = typename traits::enum_type;
 
 private:
     enum_type value_;
