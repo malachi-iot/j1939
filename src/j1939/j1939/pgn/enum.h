@@ -107,10 +107,12 @@ enum class pgns : uint32_t
     wsmem = 65036,                              ///< "Working Set Master Message" [10] 4.2.4.2
     wsmstr = 65037,                             ///< "Working Set Member Message" [10] 4.2.4.4
     vehicle_electrical_power_3 = 65106,         // [11], [18]
+    vep3 = vehicle_electrical_power_3,
     driver_identificationn = 65131,             // [11]
     heater_information = 65133,                 // [11]
     auxiliary_analog_information = 65164,       // [18]
     vehicle_electrical_power_2 = 65165,         ///< Voltage data for the main vehicle Power Distribution system.  [11], [18]
+    vep2 = vehicle_electrical_power_2,
     trip_fan_information = 65211,               // [12]
     fan_drive_1 = 65213,                        // [17]
     active_diagnostic_trouble_codes = 65226,    // [19]
@@ -123,6 +125,7 @@ enum class pgns : uint32_t
     engine_temperature = 65262,
     vehicle_position = 65267,                   // [17]
     vehicle_electrical_power_1 = 65271,         // [8], [18]
+    vep1 = vehicle_electrical_power_1,
     brakes = 65274,                             // [17]
     operator_indicators = 65279,                ///<   J1939DA [8]
     direct_lamp_control_data2 = 0xFD04,         // [17]

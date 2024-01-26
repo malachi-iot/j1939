@@ -12,8 +12,12 @@
 #include <j1939/data_field/oel.hpp>
 #include <j1939/data_field/network.hpp>
 #include <j1939/data_field/time.hpp>
+#include <j1939/data_field/vep1.hpp>
+#include <j1939/data_field/vep2.hpp>
+#include <j1939/data_field/vep3.hpp>
 
 using namespace embr::j1939;
+using namespace embr::units::literals;
 
 #include <j1939/pgn/ostream.h>
 #include <j1939/NAME/ostream.hpp>
@@ -143,6 +147,23 @@ TEST_CASE("pdu")
         out << embr::put_pdu(p);
 
         REQUIRE(out_s == "AC SA:0 DA:0 ig1 vs=2:0 f=9:0 ecu=0 mc=7ff id=1fffff");
+    }
+    SECTION("vep3")
+    {
+        pdu<pgns::vehicle_electrical_power_3> p;
+
+        auto v = p.alternator_current();
+
+        embr::units::milliamps<int> a(v);
+
+        // DEBT: Technically the "noop" value (probably, not verified
+        // but looks about right at -1600A lower boundary)
+        REQUIRE(a.count() == -1600050);
+
+        p.net_battery_current(12.345_amp);
+
+        REQUIRE(p.net_battery_current() ==
+            embr::units::milliamps<int>(12345));
     }
 }
 

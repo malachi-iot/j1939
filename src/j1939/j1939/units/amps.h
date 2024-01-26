@@ -38,6 +38,24 @@ using amp_hours = amp_seconds<Rep, estd::ratio<3600>, F>;
 
 template <class Rep, typename F = internal::passthrough<Rep> >
 using milliamp_hours = amp_seconds<Rep, estd::ratio<1000UL * 3600>, F>;
+
+
+inline namespace literals {
+
+// DEBT: Undecided if these should be plural
+
+constexpr amps<unsigned> operator ""_amp (unsigned long long int v)
+{
+    return amps<unsigned>(v);
+}
+
+constexpr amps<double> operator ""_amp (long double v)
+{
+    return amps<double>(static_cast<double>(v));
+}
+
+}
+
 // --- EXPERIMENTAL
 
 
