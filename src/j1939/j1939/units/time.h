@@ -8,15 +8,13 @@
 // but it won't have the offset/adjuster magic
 #pragma once
 
-#include "base.h"
+#include <embr/units/seconds.h>
 #include <estd/chrono.h>
 
 namespace embr { namespace units {
 
-namespace internal { struct seconds_tag {}; }
-
 template <class Rep, class Period = estd::ratio<1>, typename F = internal::passthrough<Rep> >
-using seconds = internal::unit_base<Rep, Period, internal::seconds_tag, F>;
+using seconds = detail::unit<Rep, Period, internal::seconds_tag, F>;
 
 template <class Rep, typename F = internal::passthrough<Rep> >
 using minutes = seconds<Rep, estd::chrono::minutes::period, F >;

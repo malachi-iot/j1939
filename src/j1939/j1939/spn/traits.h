@@ -16,6 +16,8 @@
 
 #include <estd/cstdint.h>
 
+#include <embr/units/fwd.h>
+
 #include <estd/internal/macro/push.h>
 
 // Arduino compensators
@@ -155,9 +157,9 @@ struct traits :
 
     // EXPERIMENTAL
     template <typename Rep, class Period, class Tag,
-        ESTD_CPP_CONCEPT(embr::units::internal::Adder<Rep>) F>
+        ESTD_CPP_CONCEPT(estd::internal::units::Adder<Rep>) F>
     //constexpr
-    static bool noop(embr::units::internal::unit_base<Rep, Period, Tag, F> v)
+    static bool noop(embr::units::detail::unit<Rep, Period, Tag, F> v)
     {
         using helper = ranges::not_available<Rep>;
         // Presumes we're dealing with an embr::units type

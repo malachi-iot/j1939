@@ -4,7 +4,7 @@
 #include <estd/internal/deduce_fixed_size.h>
 
 #include "fwd.h"
-#include "../units/base.h"
+#include <embr/units/base.h>
 
 namespace embr { namespace j1939 {
 
@@ -30,7 +30,7 @@ struct offset_resolver<TInt, offset_,
 #endif
 
     template <class TPeriod = estd::ratio<1>>
-    using offset = units::internal::adder<
+    using offset = estd::internal::units::adder<
         uint_type,
         offset_ * TPeriod::den / TPeriod::num>;
 };
@@ -46,7 +46,7 @@ struct offset_resolver<TInt, offset_,
 #endif
 
     template <class TPeriod = estd::ratio<1>>
-    using offset = units::internal::subtractor<
+    using offset = estd::internal::units::subtractor<
         uint_type,
         -offset_ * TPeriod::den / TPeriod::num>;
 };

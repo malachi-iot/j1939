@@ -136,7 +136,7 @@ public:
 // DEBT: Move this elsewhere, but it does work
 #if __cpp_concepts
 template <class T>
-concept UnitsType = std::derived_from<T, embr::units::internal::unit_base_tag>;
+concept UnitsType = std::derived_from<T, estd::internal::units::unit_base_tag>;
 
 template <class T>
 concept PropertyType = UnitsType<T> || std::integral<T> || std::is_enum_v<T>;
@@ -145,7 +145,7 @@ concept PropertyType = UnitsType<T> || std::integral<T> || std::is_enum_v<T>;
 // DEBT: Accepting all inputs for name temporarily as we reduce overall
 // unit_type implicit behaviors
 #define EMBR_J1939_PROPERTY(name)   \
-template <EMBR_J1939_CONCEPT(PropertyType) T>                  \
+template <ESTD_CPP_CONCEPT(PropertyType) T>                  \
 void name(const T& v)               \
 {   \
     base_type::template set<spns::name>(unit_type<spns::name>(v));   \

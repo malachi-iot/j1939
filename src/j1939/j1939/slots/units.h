@@ -40,7 +40,7 @@ struct unit : slot_traits<slot_>::type
         return h::get_offset();
     }
 
-    using range_type = embr::units::internal::unit_base<
+    using range_type = estd::internal::units::unit_base<
         typename base_type::root_rep,
         typename base_type::period,
         typename base_type::tag_type>;

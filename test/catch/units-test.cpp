@@ -3,21 +3,20 @@
 #include <estd/sstream.h>
 
 #include <j1939/units/amps.h>
+#include <j1939/units/ostream.h>
 #include <j1939/units/celsius.h>
 #include <j1939/units/distance.h>
 #include <j1939/units/frequency.h>
-#include <j1939/units/fahrenheit.h>
-#include <j1939/units/kelvins.h>
-#include <j1939/units/ostream.h>
 #include <j1939/units/percent.h>
 #include <j1939/units/rpm.h>
-#include <j1939/units/si.h>
 #include <j1939/units/volts.h>
-#include <j1939/units/watts.h>
-
 #include <j1939/units/operators.hpp>
+#include <j1939/units/time.h>
+#include <j1939/units/watts.h>
+#include <j1939/units/si.h>
 
 using namespace embr::units;
+using namespace estd::internal::units::literals;
 
 using ostringstream = estd::detail::basic_ostream<estd::layer1::stringbuf<128>>;
 
@@ -32,7 +31,7 @@ TEST_CASE("units")
     SECTION("celsius")
     {
         // lifted right from SPN 4420
-        celsius<uint8_t, estd::ratio<1>, embr::units::internal::adder<int16_t, -40> > c1{0};
+        celsius<uint8_t, estd::ratio<1>, estd::internal::units::adder<int16_t, -40> > c1{0};
         celsius<int> c2{c1};
 
         REQUIRE(c1.count() == -40);
@@ -138,17 +137,6 @@ TEST_CASE("units")
             REQUIRE(adc1.count() == 519);
         }
     }
-    SECTION("conversions")
-    {
-        volts<uint8_t> v{120};
-        watts<uint16_t> w{1000};
-
-        // EXPERIMENTAL, not ready
-        //milliamps<uint16_t> ma = w / v;
-
-        // FIX: We want to prohibit this
-        //v = a;
-    }
     SECTION("rates/speed")
     {
         SECTION("meters per second")
@@ -166,13 +154,13 @@ TEST_CASE("units")
 
         SECTION("regular")
         {
-            out << embr::put_unit(p);
+            out << put_unit(p);
 
             REQUIRE(out_s == "50.00%");
         }
         SECTION("non abbrev")
         {
-            out << embr::put_unit(p, false);
+            out << put_unit(p, false);
 
             REQUIRE(out_s == "50.00 percent");
         }
@@ -211,7 +199,7 @@ TEST_CASE("units")
     {
         // Experimental and clumsy, but could be quite useful say to initialize
         // a bitrate-limited frequency with a percentage by way of a 'max' trait
-        using traits = embr::units::internal::unit_traits<khz<int> >;
+        using traits = estd::internal::units::unit_traits<khz<int> >;
         auto min = traits::min();
         REQUIRE(min < 0);
 
@@ -231,6 +219,7 @@ TEST_CASE("units")
 
         ++p;
 
+        // FIX: Ambiguous operator
         REQUIRE(p == 50.09765625_pct);
     }
 }

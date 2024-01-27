@@ -1,7 +1,7 @@
 #pragma once
 
 #include "slots.h"
-#include "../units/pascals.h"
+#include <embr/units/pascals.h>
 
 namespace embr { namespace j1939 {
 

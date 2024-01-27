@@ -2,7 +2,7 @@
 
 #include "enum.h"
 #include "slots.h"
-#include "../units/base.h"
+#include <embr/units/base.h>
 
 namespace embr { namespace j1939 {
 
@@ -12,7 +12,7 @@ namespace embr { namespace j1939 {
 template <>
 struct slot_traits<slots::SAEct04>
 {
-    using type = embr::units::internal::unit_base<uint16_t, estd::ratio<1>, void>;
+    using type = embr::units::detail::unit<uint16_t, estd::ratio<1>, void>;
 };
 
 // UNTESTED
@@ -20,7 +20,7 @@ template <>
 struct slot_traits<slots::SAEct09>
 {
     using h = slot_traits_helper<int16_t, -125>;
-    using type = embr::units::internal::unit_base<uint8_t, h::period, void, h::offset>;
+    using type = embr::units::detail::unit<uint8_t, h::period, void, h::offset>;
 };
 
 }}
