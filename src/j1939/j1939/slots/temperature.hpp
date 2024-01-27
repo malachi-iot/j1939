@@ -1,7 +1,8 @@
 #pragma once
 
+#include <embr/units/celsius.h>
+
 #include "slots.h"
-#include "../units/celsius.h"
 
 namespace embr { namespace j1939 {
 

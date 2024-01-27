@@ -1,11 +1,11 @@
 #pragma once
 
+#include <embr/units/amps.h>
+#include <embr/units/volts.h>
+#include <embr/units/watts.h>
+
 #include "slots.h"
 #include "../spn/ranges.h"
-
-#include "../units/amps.h"
-#include "../units/volts.h"
-#include "../units/watts.h"
 
 namespace embr { namespace j1939 {
 

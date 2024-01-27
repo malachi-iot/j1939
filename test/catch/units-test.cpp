@@ -2,18 +2,11 @@
 
 #include <estd/sstream.h>
 
-#include <j1939/units/amps.h>
 #include <j1939/units/ostream.h>
-#include <j1939/units/celsius.h>
-#include <j1939/units/distance.h>
 #include <j1939/units/frequency.h>
 #include <j1939/units/percent.h>
-#include <j1939/units/rpm.h>
-#include <j1939/units/volts.h>
 #include <j1939/units/operators.hpp>
 #include <j1939/units/time.h>
-#include <j1939/units/watts.h>
-#include <j1939/units/si.h>
 
 using namespace embr::units;
 using namespace estd::internal::units::literals;
@@ -28,54 +21,6 @@ TEST_CASE("units")
     const auto& out_s =
         out.rdbuf()->str();
 
-    SECTION("celsius")
-    {
-        // lifted right from SPN 4420
-        celsius<uint8_t, estd::ratio<1>, estd::internal::units::adder<int16_t, -40> > c1{0};
-        celsius<int> c2{c1};
-
-        REQUIRE(c1.count() == -40);
-        REQUIRE(c2.count() == -40);
-
-        write_abbrev(out, c1);
-
-        REQUIRE(out.rdbuf()->str() == "-40 deg C");
-    }
-    SECTION("amps")
-    {
-        milliamps<uint16_t> ma{3600};
-        amps<uint8_t> a = ma;
-
-        REQUIRE(a.count() == 3);
-
-        write(out, ma);
-
-        REQUIRE(out.rdbuf()->str() == "3600 milliamps");
-    }
-    SECTION("volts")
-    {
-        millivolts<uint16_t> mv{3600};
-        decivolts<uint8_t> dv{mv};
-        volts<uint8_t> v{mv};
-
-        REQUIRE(dv.count() == 36);
-        REQUIRE(v.count() == 3);
-
-        write(out, dv);
-
-        REQUIRE(out.rdbuf()->str() == "36 decivolts");
-    }
-    SECTION("rpm")
-    {
-        rpm<uint16_t> rpm1{5000};
-        rpm<uint16_t, estd::ratio<1, 2> > rpm2{rpm1};
-
-        REQUIRE(rpm2.count() == 10000);
-
-        write_abbrev(out, rpm1);
-
-        REQUIRE(out.rdbuf()->str() == "5000rpm");
-    }
     SECTION("percent")
     {
         percent<uint16_t, estd::ratio<1, 10> > percent1{974};
@@ -137,16 +82,6 @@ TEST_CASE("units")
             REQUIRE(adc1.count() == 519);
         }
     }
-    SECTION("rates/speed")
-    {
-        SECTION("meters per second")
-        {
-            constexpr kilometers_per_hour<uint8_t> kph(60);
-            meters_per_second<uint16_t> m_s{kph};
-
-            REQUIRE(m_s.count() == 60000 / 3600);
-        }
-    }
     SECTION("ostream")
     {
         //percent<double> p = 50_pct;   // FIX: It considers this narrowing, but wouldn't unsigned -> double be the opposite?
@@ -195,6 +130,7 @@ TEST_CASE("units")
 
         REQUIRE(v.count() == -412);
     }
+    // TODO: Move this out to embr
     SECTION("traits")
     {
         // Experimental and clumsy, but could be quite useful say to initialize

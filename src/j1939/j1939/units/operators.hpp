@@ -4,6 +4,8 @@
 
 #include <estd/internal/units/operators.hpp>
 
+#include <embr/units/amps.h>
+
 namespace embr { namespace units {
 
 // EXPERIMENTAL

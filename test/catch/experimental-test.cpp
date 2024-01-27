@@ -1,4 +1,5 @@
-#include <j1939/units/distance.h>
+#include <embr/units/feet.h>
+
 #include <j1939/units/time.h>
 
 #include <j1939/state-machines/string_gatherer.hpp>
@@ -15,6 +16,7 @@ TEST_CASE("experimental")
 {
     SECTION("A")
     {
+        // TODO: move this out to embr
         using unit = units::miles<int>::per<units::hours<int> >;
 
         unit mph{0};

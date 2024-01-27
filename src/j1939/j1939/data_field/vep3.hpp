@@ -3,7 +3,7 @@
 
 #include "base.hpp"
 
-#include "../units/volts.h"
+#include <embr/units/amps.h>
 #include "../slots.hpp"
 
 #define EMBR_J1939_SPN_DECLARE_SAE(name, slot, bytepos, bitpos, bitwidth)  \

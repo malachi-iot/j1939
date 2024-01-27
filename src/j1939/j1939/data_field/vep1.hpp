@@ -7,7 +7,7 @@
 
 #include "base.hpp"
 
-#include "../units/volts.h"
+#include <embr/units/volts.h>
 #include "../slots.hpp"
 
 namespace embr { namespace j1939 {
