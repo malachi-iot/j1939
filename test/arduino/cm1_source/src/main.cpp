@@ -18,8 +18,8 @@
 #include <j1939/data_field/oel.hpp>
 
 #include <j1939/units/percent.h>
-#include <j1939/units/volts.h>
-#include <j1939/units/si.h>
+#include <embr/units/volts.h>
+#include <estd/internal/units/si.h>
 
 #include "ca.h"
 #include "conf.h"
@@ -82,7 +82,7 @@ using adc_volts = embr::units::volts<int16_t,
     estd::ratio<(int)(CONFIG_LOGIC_VOLTAGE * 10), 1024 * 10> >;
 
 // i.e. // 512/1024 = 0.5 then we need * 100
-using adc_percent = embr::units::percent<int16_t, estd::ratio<100, 1024> >;
+using adc_percent = estd::internal::units::percent<int16_t, estd::ratio<100, 1024> >;
 
 
 void loop()
@@ -116,11 +116,11 @@ void loop()
 
         traits::send(t, pdu);
 
-        cout << F("reading: ") << embr::put_unit(mv2) << F("/");
+        cout << F("reading: ") << estd::put_unit(mv2) << F("/");
         cout << v.count() << F("/");
         // DEBT: Curiously, we can put <double> here but not <float>, estd's
         // ostream gets confused.  Doing neither just to save a few bytes
-        cout << embr::put_unit(embr::units::percent<int16_t>(v)) << endl;
+        cout << estd::put_unit(estd::internal::units::percent<int16_t>(v)) << endl;
     }
 
     transport::frame f;
