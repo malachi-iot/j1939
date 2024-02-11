@@ -32,7 +32,7 @@ struct data_field<pgns::tp_cm, TContainer> :
     {
         rts = 16,           ///< Destination Specific Request To Send [1] 5.10.3.1
         cts = 17,           ///< Destination Specific Clear To Send
-        ack = 19,
+        ack = 19,           ///< End of message acknowledge
         bam = 32,           ///< Broadcast Announce Message
         abort = 255
     };
@@ -114,16 +114,24 @@ struct data_field<pgns::tp_dt, TContainer> :
 {
     typedef internal::data_field_base<TContainer> base_type;
 
+    struct d
+    {
+        static constexpr spn::descriptor sequence_number()
+        {
+            return {1, 1, 8};
+        }
+    };
+
     ESTD_CPP_FORWARDING_CTOR(data_field)
 
     uint8_t sequence_number() const
     {
-        return base_type::template get<uint8_t>(1);
+        return base_type::template get<uint8_t>(d::sequence_number());
     }
 
     void sequence_number(uint8_t v)
     {
-        base_type::set(v);
+        base_type::set(d::sequence_number(), v);
     }
 
     // DEBT: Kinda confusing two different data()

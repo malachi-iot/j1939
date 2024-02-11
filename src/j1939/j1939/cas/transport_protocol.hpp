@@ -9,9 +9,123 @@
 #include "../ca.h"
 #include "../data_field/transport_protocol.hpp"
 
+#include <estd/internal/streambuf.h>
+
 namespace embr { namespace j1939 {
 
+namespace transport {
+
+// virtual connection as per [1] 5.10.3.1
+struct connection
+{
+    uint32_t pgn;
+    uint16_t total_size;
+    uint16_t remaining_size;    // DEBT: Rework this by doing total_size - sequence * 7
+    //pgns pgn;
+    uint8_t sequence;           ///<! total sequence/packets (corresponds to total_size)
+};
+
+}
+
 namespace impl {
+
+template <class Transport, class Traits>
+class out_tp_dt_streambuf : public estd::internal::impl::streambuf_base<Traits>
+{
+    using base_type = estd::internal::impl::streambuf_base<Traits>;
+
+    // DEBT: Do evaporate on this guy
+    Transport& transport_;
+    //transport::connection& connection_;
+    pdu<pgns::tp_dt> p;
+    unsigned pos_ = 0;
+    using transport_type = Transport;
+    using tt = transport_traits<transport_type>;
+    //using ft = frame_traits<typename transport_type::frame_type>;
+
+protected:
+    int sync()
+    {
+        // Can't send partial packets
+        if(pos_ != 7)   return -1;
+
+        p.sequence_number(p.sequence_number() + 1);
+
+        tt::send(transport_, p);
+
+        pos_ = 0;
+
+        return 0;
+    }
+
+public:
+    using typename base_type::char_type;
+    using typename base_type::int_type;
+
+    // Check this after sending last bit of data and make sure we match
+    // to connection->sequence
+    constexpr unsigned sequence_number() const
+    {
+        return p.sequence_number();
+    }
+
+    /*
+    out_tp_dt_streambuf(Transport& transport, transport::connection& connection) :
+        transport_(transport),
+        connection_(connection)
+    {}  */
+
+    out_tp_dt_streambuf(Transport& transport, uint8_t source_addr, uint8_t dest_addr) :
+        transport_{transport}
+    {
+        p.source_address(source_addr);
+        p.destination_address(dest_addr);
+    }
+
+    char_type* pbase() const
+    {
+        return reinterpret_cast<char_type*>(const_cast<uint8_t*>(p.data()));
+    }
+
+    char_type* pptr() const { return pbase() + pos_; }
+    char_type* epptr() const { return pbase() + 8; }
+
+    /*
+    int overflow(int_type c)
+    {
+        return c;
+    }   */
+
+    int_type sputc(char_type c)
+    {
+        if(pos_ == 7) sync();
+
+        *pptr() = c;
+
+        return c;
+    }
+
+    // TODO: Need 'overflow' for auto sputn to behave right
+    int xsputn(const char_type* data, estd::size_t sz)
+    {
+        unsigned remaining = 7 - pos_;
+
+        // DEBT: I think sputn does this for us... maybe?
+        if(remaining == 0)
+        {
+            sync();
+            remaining = 7;
+        }
+
+        sz = sz > remaining ? remaining : sz;
+
+        memcpy(pptr(), data, sz);
+
+        pos_ += sz;
+
+        return sz;
+    }
+};
 
 // Pertains to [1] 5.10
 template <class TTransport>
@@ -29,14 +143,7 @@ struct transport_protocol_ca : impl::controller_application<TTransport>
 
     using modes = pdu<pgns::tp_cm>::mode;
 
-    // virtual connection as per [1] 5.10.3.1
-    struct connection
-    {
-        uint16_t total_size;
-        uint16_t remaining_size;    // DEBT: Rework this by doing total_size - sequence * 7
-        pgns pgn;
-        uint8_t sequence;
-    };
+    using connection = transport::connection;
 
     struct receive_connection : connection
     {
@@ -70,6 +177,8 @@ struct transport_protocol_ca : impl::controller_application<TTransport>
         p_rts.payload().total_packets(total_packets);
 
         // DEBT: leaving max_packets at 0xFF (unlimited)
+
+        _transport_traits::send(t, p_rts);
     }
 
     inline void send_bam(transport_type& t, connection& c)
@@ -102,6 +211,8 @@ struct transport_protocol_ca : impl::controller_application<TTransport>
         p_ack.payload().total_size(c.total_size);
         p_ack.payload().total_packets(c.sequence);
         p_ack.payload().pgn((uint32_t)c.pgn);
+
+        _transport_traits::send(t, p_ack);
     }
 
     // [1] 5.10.3.4
@@ -111,6 +222,8 @@ struct transport_protocol_ca : impl::controller_application<TTransport>
 
         p_abort.payload().control(modes::abort);
         p_abort.payload().pgn((uint32_t)c.pgn);
+
+        _transport_traits::send(t, p_abort);
     }
 
 
@@ -129,6 +242,22 @@ struct transport_protocol_ca : impl::controller_application<TTransport>
 
     }
 
+    void receive_cts(transport_type& t, const pdu<pgns::tp_cm>& p)
+    {
+
+    }
+
+    void receive_rts(transport_type& t, const pdu<pgns::tp_cm>& p)
+    {
+        connection* c = &test_connection;
+
+        c->pgn = p.payload().pgn();
+        c->total_size = p.payload().total_size().value();
+        c->sequence = p.payload().max_packets();
+
+        send_cts(t, p);
+    }
+
     bool process_incoming(transport_type& t, const pdu<pgns::tp_cm>& p)
     {
         switch(p.control())
@@ -145,11 +274,12 @@ struct transport_protocol_ca : impl::controller_application<TTransport>
                 break;
 
             case modes::cts:
+                receive_cts(t, p);
                 break;
 
             // [1] 5.10.3.1
             case modes::rts:
-                send_cts(t, p);
+                receive_rts(t, p);
                 break;
 
             default:
@@ -165,14 +295,35 @@ struct transport_protocol_ca : impl::controller_application<TTransport>
         // otherwise stream processing is likely preferable, to avoid memory bloat
     }
 
+    // DEBT: For now we can only do one at a time, send or receive
+    connection* get_connection(const pdu<pgns::tp_dt>&)
+    {
+        return &test_connection;
+    }
+
 
     // [1] 5.10.4
     bool process_incoming(transport_type& t, const pdu<pgns::tp_dt>& p)
     {
+        connection* c = get_connection(p);
+
+        // TODO: Do something with this data!
+        //p.data();
+
+        if(p.sequence_number() == c->sequence)
+        {
+
+        }
+
         return false;
     }
 };
 
 }
+
+// DEBT: Move this over to estd::detail::streambuf
+template <class Transport, class Traits = estd::char_traits<char> >
+using out_tp_dt_streambuf = estd::internal::streambuf<
+    impl::out_tp_dt_streambuf<Transport, Traits>>;
 
 }}

@@ -261,6 +261,28 @@ TEST_CASE("Controller Applications")
             embr::j1939::ca::source::oel<can::loopback_transport> ca;
         }
     }
+    SECTION("transport protocol")
+    {
+        using streambuf_type = out_tp_dt_streambuf<can::loopback_transport>;
+        streambuf_type sb(t, 0xFF, 123);
+        estd::detail::basic_ostream<streambuf_type&> tp_out(sb);
+
+        REQUIRE(sb.pubsync() == -1);
+
+        sb.sputn("hi2u", 4);
+        tp_out << "567";
+
+        REQUIRE(t.queue.empty());
+
+        REQUIRE(sb.pubsync() == 0);
+
+        REQUIRE(t.queue.size() == 1);
+
+        // Not quite there, overflow needs implementation
+        //tp_out << "12345677654321!";
+
+        //REQUIRE(t.queue.size() == 3);
+    }
 }
 
 #include "macro/pop.h"
