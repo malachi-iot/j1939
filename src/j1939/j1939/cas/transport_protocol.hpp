@@ -29,6 +29,7 @@ struct connection
 
 namespace impl {
 
+// DEBT: Use estd's streambuf pos helper base class
 template <class Transport, class Traits>
 class out_tp_dt_streambuf : public estd::internal::impl::streambuf_base<Traits>
 {
@@ -90,22 +91,24 @@ public:
     char_type* pptr() const { return pbase() + pos_; }
     char_type* epptr() const { return pbase() + 8; }
 
-    /*
-    int overflow(int_type c)
+    int_type overflow(int_type c)
     {
-        return c;
-    }   */
+        sync();
 
-    int_type sputc(char_type c)
-    {
-        if(pos_ == 7) sync();
-
-        *pptr() = c;
+        if(Traits::not_eof(c))
+        {
+            *pptr() = Traits::to_char_type(c);
+            pos_++;
+        }
 
         return c;
     }
 
-    // TODO: Need 'overflow' for auto sputn to behave right
+    int_type sputc(char_type c)
+    {
+        return overflow(c);
+    }
+
     int xsputn(const char_type* data, estd::size_t sz)
     {
         unsigned remaining = 7 - pos_;

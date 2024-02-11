@@ -278,8 +278,7 @@ TEST_CASE("Controller Applications")
 
         REQUIRE(t.queue.size() == 1);
 
-        // Not quite there, overflow needs implementation
-        //tp_out << "12345677654321!";
+        tp_out << "12345677654321!";
 
         //REQUIRE(t.queue.size() == 3);
     }
