@@ -45,14 +45,17 @@ class out_tp_dt_streambuf : public estd::internal::impl::streambuf_base<Traits>
     //using ft = frame_traits<typename transport_type::frame_type>;
 
 protected:
-    int sync()
+    int sync(bool* eol = nullptr)
     {
         // Can't send partial packets
         if(pos_ != 7)   return -1;
 
         p.sequence_number(p.sequence_number() + 1);
 
+        // DEBT: Do a non blocking version of this and update eol properly
         tt::send(transport_, p);
+
+        if(eol) *eol = false;
 
         pos_ = 0;
 
@@ -83,17 +86,21 @@ public:
         p.destination_address(dest_addr);
     }
 
-    char_type* pbase() const
+    constexpr char_type* pbase() const
     {
         return reinterpret_cast<char_type*>(const_cast<uint8_t*>(p.data()));
     }
 
     char_type* pptr() const { return pbase() + pos_; }
-    char_type* epptr() const { return pbase() + 8; }
+    char_type* epptr() const { return pbase() + 7; }
 
     int_type overflow(int_type c)
     {
-        sync();
+        bool eol;
+
+        sync(&eol);
+
+        if(eol) return Traits::eof();
 
         if(Traits::not_eof(c))
         {
@@ -109,7 +116,7 @@ public:
         return overflow(c);
     }
 
-    int xsputn(const char_type* data, estd::size_t sz)
+    int xsputn_ideal(const char_type* data, estd::size_t sz)
     {
         unsigned remaining = 7 - pos_;
 
@@ -127,6 +134,38 @@ public:
         pos_ += sz;
 
         return sz;
+    }
+
+    // DEBT: Since neither ostream nor sputn wrapper auto loop, we have to.
+    // it's OK to auto loop since:
+    // a) it's expected underlying streambuf xsputn never blocks
+    // b) in the case where xputn can't output further data, the sputn call to
+    //    overflow would notice this and do an eof
+    // https://github.com/malachi-iot/estdlib/issues/25
+    estd::streamsize xsputn(const char_type* data, estd::streamsize sz)
+    {
+        // DEBT: No error/block checking - we'll do that with 'ideal' flavor
+        // up above
+
+        estd::streamsize orig = sz;
+
+        while(sz > 0)
+        {
+            bool eol;
+
+            sync(&eol);
+
+            if(eol) return orig - sz;
+
+            int chunk = sz > 7 ? 7 : (int)sz;
+
+            memcpy(pptr(), data, chunk);
+            pos_ += chunk;
+
+            sz -= chunk;
+        }
+
+        return orig;
     }
 };
 

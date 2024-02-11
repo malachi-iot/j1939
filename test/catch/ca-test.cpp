@@ -280,7 +280,7 @@ TEST_CASE("Controller Applications")
 
         tp_out << "12345677654321!";
 
-        //REQUIRE(t.queue.size() == 3);
+        REQUIRE(t.queue.size() == 3);
     }
 }
 
