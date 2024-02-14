@@ -23,6 +23,10 @@
 #include "nca.h"
 #include "streambuf.h"
 
+#if CONFIG_TWAI_TIMING == 125
+#warning 125Kbit TWAI config is deprecated, please use 500 or 1000
+#endif
+
 static esp_idf::log_ostream clog;   // Coming along well, almost ready
 
 extern void twai_init();

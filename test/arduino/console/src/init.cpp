@@ -13,6 +13,13 @@ bool can_online = false;
 
 //extern uint8_t source_address;
 
+#define STR_HELPER(x) #x
+#define STR(x) STR_HELPER(x)
+
+#ifndef CAN_TIMING
+#define CAN_TIMING 1000
+#endif
+
 extern arduino_ostream cout;
 
 void twai_init();
@@ -43,7 +50,16 @@ void init_can(transport& t)
     // we need MCP_8MHZ here.  Thanks to stumbling on this from 
     // https://how2electronics.com/interfacing-mcp2515-can-bus-module-with-arduino/
     //can_online &= mcp2515.setBitrate(CAN_125KBPS) == MCP2515::ERROR_OK;
+    
+#if CAN_TIMING == 125
     can_online &= mcp2515.setBitrate(CAN_125KBPS, MCP_8MHZ) == MCP2515::ERROR_OK;
+#elif CAN_TIMING == 500
+    can_online &= mcp2515.setBitrate(CAN_500KBPS, MCP_8MHZ) == MCP2515::ERROR_OK;
+#elif CAN_TIMING == 1000
+    can_online &= mcp2515.setBitrate(CAN_1000KBPS, MCP_8MHZ) == MCP2515::ERROR_OK;
+#else
+#error Unsupported CAN timing
+#endif
     
     if(!can_online) cout << F("Issue setting bit rate") << endl;
 
@@ -75,8 +91,13 @@ void init_can(transport& t)
     // 25 kbps where TWAI demo likes to be, but it seems
     // MPC2515 won't do it.  Also I suspect MPC2515 doesn't
     // want to go below 100kbit, but that's just speculation
+#if CAN_TIMING == 125
     can_online = CAN.begin(125E3);
+#else
+#error DEBT: Only 125kbit CAN timing supported
 #endif
 
-    cout << (can_online ? F("online") : F("offline")) << endl;
+#endif
+
+    cout << (can_online ? F("online: " STR(CAN_TIMING)) : F("offline")) << endl;
 }
