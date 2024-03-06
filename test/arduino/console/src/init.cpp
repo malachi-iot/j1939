@@ -93,8 +93,14 @@ void init_can(transport& t)
     // want to go below 100kbit, but that's just speculation
 #if CAN_TIMING == 125
     can_online = CAN.begin(125E3);
+#elif CAN_TIMING == 500
+    // UNTESTED
+    can_online = CAN.begin(500E3);
+#elif CAN_TIMING == 1000
+    // UNTESTED
+    can_online = CAN.begin(1000E3);
 #else
-#error DEBT: Only 125kbit CAN timing supported
+#error DEBT: Only 125, 500 and 1000 kbit CAN timing supported
 #endif
 
 #endif
